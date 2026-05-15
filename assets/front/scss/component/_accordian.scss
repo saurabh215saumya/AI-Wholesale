@@ -1,0 +1,32 @@
+.accordian {
+    &_heading {
+        background: $website-brand-color;
+        color: $base-light-color;
+        padding: 15px;
+        margin-bottom: 0;
+
+        span {
+            @extend .transition;
+            float: right;
+        }
+
+        &.rotate_icon {
+            span {
+                @extend .transition;
+                @include rotate(180);
+            }
+        }
+    }
+    &_body {
+        @extend .add_border_left;
+        @extend .add_border_right;
+    }
+    &_items {
+        padding: 15px 0;
+        @extend .add_border_bottom;
+
+        &:hover {
+            background: $base-light-grey-color;
+        }
+    }
+}

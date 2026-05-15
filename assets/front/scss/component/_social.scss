@@ -1,0 +1,44 @@
+// .social_links {
+//     a {
+//         color: $social-color;
+//         padding: 0 10px;
+
+//         &:first-child {
+//             padding-left: 0;
+//         }
+//         &:last-child {
+//             padding-right: 0;
+//         }
+//     }
+// }
+
+.social_links {
+    @include flexbox();
+
+    & > a {
+        color: $social-color;
+        width: 30px;
+        height: 30px;
+        @extend .middle_align;
+        @extend .transition;
+
+        &:hover {
+            @extend .transition;
+            @include border-radius(50%);
+            color: $social-hover-color;
+            
+            &.facebook {
+                background: $facebook-color 
+            }
+            &.twitter {
+                background: $twitter-color 
+            }
+            &.linkedin {
+                background: $linkedin-color 
+            }
+            &.instagram {
+                background: $instagram-color 
+            }
+        }
+    }
+}

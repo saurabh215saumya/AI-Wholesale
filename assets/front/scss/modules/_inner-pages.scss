@@ -1,0 +1,163 @@
+.inner_banner {
+    text-align: center;
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+
+    img {
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: absolute;
+    }
+    h1 {
+        position: relative;
+        z-index: 1;
+        padding: 10rem 0;
+        font-size: 60px;
+        font-weight: 100;
+        letter-spacing: 2px;
+    }
+}
+
+.pricing_bg {
+    background: url('../images/pricing-bg.jpg') no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    padding: 70px 0;
+    color: $base-light-color;
+    height: 100%
+}
+
+.inner_pricing {
+    .sub_services_list {
+        h5 {
+            background: rgba(255, 255, 255, 0.2);
+
+            &.active {
+                background: $base-light-color;
+                color: $base-font-color;
+
+                &::after {
+                    content: '';
+                    @include triangle(20px, right, $base-light-color);
+                }
+            }
+        }
+    }
+}
+
+.inner_service_left {
+    background: $base-v-light-grey-color;
+
+    h3 {
+        padding: 15px;
+        background: $website-brand-color;
+        color: $base-light-color;
+    }
+    a {
+        color: $base-font-color;
+        padding: 20px 30px;
+        display: block;
+        @extend .add_border_bottom;
+        @extend .transition;
+        position: relative;
+
+        &:last-child {
+            border: none;
+        }
+
+        &:hover {
+            background: $base-light-grey-color;
+            @extend .transition;
+            @include scale(1.05);
+            font-weight: 600;
+        }
+        &.active {
+            background: $base-light-grey-color;
+            font-weight: 600;
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 5px;
+                height: 100%;
+                background: $website-brand-color;
+            }
+        }
+    }
+}
+
+.why_best_block {
+    @extend .addborders;
+    text-align: center;
+    padding: 20px;
+    padding-top: 60px;
+    position: relative;
+    margin-bottom: 15px;
+    margin-top: 50px;
+
+    p {
+        margin-bottom: 0;
+    }
+    &::before {
+        width: 80px;
+        height: 80px;
+        @extend .middle_align;
+        position: absolute;
+        left: 50%;
+        top: -40px;
+        margin-left: -40px;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f091";
+        @extend .addborders;
+        @include border-radius(100px);
+        font-size: 30px;
+        color: $website-brand-color;
+        border-color: $website-brand-color;
+        border-width: 3px;
+        background: $base-light-color;
+    }
+    &.integrity {
+        &::before {
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f303";
+        }
+    }
+    &.strategy {
+        &::before {
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f11e";
+        }
+    }
+}
+
+.contact_wrapper {
+    background: url('../images/contact-bg.jpg') no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    padding: 70px 0;
+    margin-top: 0;
+}
+.contact_block {
+    text-align: center;
+    @extend .middle_align;
+    @include flex-direction(column);
+
+    span {
+        width: 100px;
+        height: 100px;
+        @include border-radius(50%);
+        @extend .addborders;
+        font-size: $base-font-size-2;
+        border-color: $website-brand-color;
+        color: $website-brand-color;
+        @extend .middle_align;
+        margin-bottom: 1.25rem;
+    }
+}

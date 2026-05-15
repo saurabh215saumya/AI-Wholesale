@@ -1,0 +1,22 @@
+.dropdown-menu {
+    padding: 0;
+    @include border-radius(0);
+    min-width: 15rem;
+    margin-top: 0;
+    font-size: $navigation-font-size;
+
+    .dropdown-item {
+        text-transform: uppercase;
+        color: $base-font-color;
+        border-bottom: solid 1px #e3e3ee;
+        padding: 0.625rem 1rem;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+.dropdown:hover > .dropdown-menu {
+    display: block;
+}

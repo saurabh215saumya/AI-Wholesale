@@ -1,0 +1,98 @@
+.scroll_to_top_action {
+    width: 60px;
+    height: 60px;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    background: $base-light-color;
+    color: $website-brand-color;
+    cursor: pointer;
+    display: none;
+    padding: 18px;
+    font-size: 24px;
+    @include box-shadow(0,0,5px,rgba(0,0,0,0.2));
+}
+.subscribe {
+    background: $website-brand-color;
+}
+/* .menu_btn {
+    width: 150px;
+    height: 150px;
+    background: $base-font-color;
+    @include flexbox();
+    @include align-items(center);
+    @include justify-content(center);
+    color: $white-color;
+    text-transform: uppercase;
+    z-index: 7;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    line-height: 24px;
+    letter-spacing: 6px;
+} */
+footer {
+    background: $footer-bg-color;
+    padding-top: 3.75rem;
+    color: $footer-color;
+    line-height: 1.675rem;
+    font-size: $footer-font-size;
+
+    .footer_company_info {
+        padding-bottom: 3.75rem;
+        margin-bottom: 3.75rem;
+        border-bottom: solid 1px $footer-end-color;
+
+        .footer_company_info_block {
+            i {
+                font-size: 3.125rem;
+                color: $footer-color;
+            }
+        }
+    }
+
+    h4 {
+        color: $footer-heading-color;
+        margin-bottom: 1.25rem;
+        font-weight: 600;
+    }
+    .usefull_links {
+        a {
+            display: block;
+            padding: 	0.625rem 0;
+            @extend .add_border_bottom;
+            color: $footer-color;
+
+            &:hover {
+                color: $website-brand-color;
+            }
+        }
+    }
+    .footer_end {
+        background: $footer-end-color;
+        color: $base-light-color;
+        text-align: center;
+        padding: 0.9375rem 0;
+    }
+    .form-control {
+        color: $footer-color;
+
+        &:focus {
+            color: $footer-color;
+        }
+    }
+    .footer_logo {
+        width: 8rem;
+        display: inline-block;
+    }
+    .bottomlinks {
+        margin-top: 3.75rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        
+        a {
+            padding: 0 10px;
+            color: #aaa;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+.flexbox {
+    @include flexbox();
+
+    .flex_1 {
+        @include flex(1);
+    }
+}
