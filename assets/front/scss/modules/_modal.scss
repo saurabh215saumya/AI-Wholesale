@@ -1,0 +1,17 @@
+.modal-dialog{
+    max-width: 700px;
+    .modal-content {
+        .modal-header, .modal-footer {
+            text-transform: uppercase;
+            background: #dee2e6;
+            padding: 1.875rem;
+            @include justify-content(center);
+        }
+        .modal-footer {
+            text-transform: none;
+        }
+        .modal-body {
+            padding: 1.875rem;
+        }
+    }
+}

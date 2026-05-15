@@ -1,0 +1,44 @@
+$(document).ready(function () {
+    $('.banner_slider').height($(window).outerHeight() - ($('header').outerHeight() + $('.top_header').outerHeight() + $('.navbar').outerHeight() + 0)).css({'overflow': 'hidden'});
+});
+
+function sticky_relocate() {
+    var window_top = $(window).scrollTop();
+    var div_top = $('#sticky-anchor').offset().top;
+    if (window_top > div_top) {
+      $('.sticky').addClass('sticky_header');
+    } else {
+      $('.sticky').removeClass('sticky_header');
+    }
+  }
+  
+$(function() {
+    $(window).scroll(sticky_relocate);
+    sticky_relocate();
+});
+
+
+$(window).scroll(function() {
+    if ($(window).scrollTop() > 100) {
+        // > 100px from top - show div
+        $('.scroll_to_top_action').fadeIn();
+    }
+    else {
+        // <= 100px from top - hide div
+        $('.scroll_to_top_action').fadeOut();
+    }
+});
+
+function subServices(e,id) {
+    $('.sub_services_list h5').removeClass('active');
+    $('.sub_services_cntent').hide();
+    $('#show-' + id).show();
+    $(e).addClass('active');
+}
+
+function priceServices(e,id) {
+    $('.pricing_services_tab').removeClass('active');
+    $('.price_services_cntent').hide();
+    $('#show-' + id).show();
+    $(e).addClass('active');
+}

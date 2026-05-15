@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script:400,700&display=swap');
+
+$base-font-family-2                 : 'Dancing Script', cursive;
+$base-font-family                   : 'Roboto', sans-serif;
+$base-font-size                     : 1rem;
+$base-font-size-2                   : 1.75rem;
+$base-font-color                    : #272828;
+$base-light-color                   : #fff;
+$base-light-grey-color              : #e3e3e3;
+$base-v-light-grey-color            : #f4f4f4;
+$base-font-weight                   : 300;
+$base-font-weight-2                 : 100;
+$base-line-height                   : 1.625rem;
+$common-spacing                     : 1.25rem;
+$letter-spacing                     : 2px;
+
+
+$grey-color                         : #aaa;
+$website-transparent-color          : rgba(0,140,203,0.2);
+$website-brand-color                : #272828;
+$website-brand-color-2              : #ff6000;
+$button-color                       : #ff6000;
+$white-color                        : #fff;
+$navigation-color                   : $base-light-color;
+$navigation-font-size               : 0.8125rem;
+
+$main-body-color                    : #fff;
+$muted-text                         : #020202;
+$border-color                       : #ababab;
+$placeholder-color                  : #ababab;
+$footer-bg-color                    : #eee;
+
+// Header Variables
+$header-color                       : #000;
+$header-font-size                   : 0.8125rem;
+$nav-sticky-color                   : #fff;
+
+//FOOTER VARIABLES
+$footer-color                       : $website-brand-color;
+$footer-heading-color               : $website-brand-color;
+$footer-end-color                   : #0e121a;
+$footer-font-size                   : 1rem;
+
+//SOCIAL VARIABLES
+$social-color                        : #000;
+$social-hover-color                  : #fff;
+$facebook-color                      : #3b5999;
+$linkedin-color                      : #0077B5;
+$twitter-color                       : #55acee;
+$instagram-color                     : #e4405f;
+
+$service-bg-color                    : #fff;
+
+$heading-1                           : 2.5rem;
+$heading-2                           : 1.5rem;
+$heading-3                           : 22px;
+$heading-4                           : 1.125rem;
+$heading-5                           : 1rem;
+$heading-6                           : 0.875rem;
+
+$see-more-font-size                  : 0.75rem;

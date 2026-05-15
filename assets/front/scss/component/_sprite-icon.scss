@@ -1,0 +1,42 @@
+.icons {
+    display: inline-block;
+    background: url('../images/sprite-icon.png') no-repeat;
+
+
+    &.threading_icon,
+    &.eyelashes_extension_icon,
+    &.heena_icon,
+    &.tints_icon {
+        width: 85px;
+        height: 65px;
+        background-position: -10px -8px;
+    }
+    &.eyelashes_extension_icon {
+        background-position: -101px -8px;
+    }
+    &.heena_icon {
+        background-position: -194px -8px;
+    }
+    &.tints_icon {
+        background-position: -284px -8px;
+    }    
+
+
+    &.threading_small_icon,
+    &.eyelashes_extension_small_icon,
+    &.heena_small_icon,
+    &.tints_small_icon {
+        width: 40px;
+        height: 30px;
+        background-position: -12px -92px;
+    }
+    &.eyelashes_extension_small_icon {
+        background-position: -59px -92px;
+    }
+    &.heena_small_icon {
+        background-position: -105px -92px;
+    }
+    &.tints_small_icon {
+        background-position: -150px -92px;
+    } 
+}

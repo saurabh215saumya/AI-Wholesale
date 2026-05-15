@@ -1,0 +1,38 @@
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>Category Management</h1>
+    <ol class="breadcrumb"><li><a href="<?php echo base_url('admin'); ?>">Home</a></li><li class="active">Categories</li></ol>
+  </section>
+  <section class="content">
+    <?php echo $this->session->flashdata('response'); ?>
+    <div class="box">
+      <div class="box-header"><h3 class="box-title">Category List</h3>
+        <a href="<?php echo base_url('category/addcategory'); ?>" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> Add Category</a>
+      </div>
+      <div class="box-body table-responsive">
+        <table class="table table-bordered table-striped" id="example1">
+          <thead><tr><th>#</th><th>Image</th><th>Banner</th><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+          <?php if(!empty($allcategories)): $i=1; foreach($allcategories as $c): ?>
+          <tr>
+            <td><?php echo $i++; ?></td>
+            <td><?php if($c['image']): ?><img src="<?php echo SHOW_CATEGORY_PATH.$c['image']; ?>" width="60" height="60" style="object-fit:cover;"><?php endif; ?></td>
+            <td><?php if($c['banner_image']): ?><img src="<?php echo SHOW_CATEGORY_PATH.$c['banner_image']; ?>" width="100" height="40" style="object-fit:cover;"><?php endif; ?></td>
+            <td><?php echo $c['category_name']; ?></td>
+            <td>
+              <span statusid="<?php echo $c['id']; ?>" statusvalue="<?php echo $c['status']; ?>" controllername="<?php echo $controller; ?>" style="color:<?php echo $c['status']?'#00a65a':'#ff0000'; ?>;cursor:pointer;">
+                <i class="fa fa-2x <?php echo $c['status']?'fa-check':'fa-ban'; ?>"></i>
+              </span>
+            </td>
+            <td>
+              <a href="<?php echo base_url('category/edit/'.$c['id']); ?>" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></a>
+              <a href="<?php echo base_url('category/delete/'.$c['id']); ?>" class="btn btn-xs btn-danger" onclick="return confirm('Delete?')"><i class="fa fa-trash"></i></a>
+            </td>
+          </tr>
+          <?php endforeach; endif; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

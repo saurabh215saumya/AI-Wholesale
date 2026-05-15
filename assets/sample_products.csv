@@ -1,0 +1,5 @@
+Product,Category,SubCategory,Price,WholesalePrice,RetailerPrice,Barcode,Quantity,Description
+Arome-01-Baggy,Baggy,Clear Zipper,1.40,1.00,1.20,AR001,60,Premium quality baggy product
+Arome-02-Baggy,Baggy,Clear Zipper,1.60,1.20,1.40,AR002,50,Premium quality baggy product
+Sample Product A,General,Misc,2.50,2.00,2.25,SP001,100,Sample product description
+Sample Product B,General,Misc,3.00,2.50,2.75,SP002,80,Sample product description

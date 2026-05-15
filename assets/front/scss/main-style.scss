@@ -1,0 +1,30 @@
+// PARTIALS
+@import "partials/global";
+
+//COMPONENT
+@import "component/mixin";
+@import "component/button";
+@import "component/social";
+@import 'component/vertical-text';
+@import "component/spacing";
+@import "component/flexbox";
+@import "component/form";
+@import "component/breadcrumb";
+@import 'component/sprite-icon';
+@import 'component/borders';
+@import 'component/dropdown';
+@import 'component/accordian';
+
+// MODULES
+@import "modules/layout";
+@import "modules/header";
+@import "modules/navbar";
+@import "modules/footer";
+@import "modules/owl-carousel";
+@import "modules/modal";
+@import 'modules/spinner';
+@import 'modules/homepage';
+@import 'modules/inner-pages';
+
+// RESPONSIVE
+// @import "responsive/min-width-1200";

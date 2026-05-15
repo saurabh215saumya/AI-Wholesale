@@ -1,0 +1,6 @@
+.vertical{
+    // writing-mode:tb-rl;
+    @include rotate (-90);
+    white-space:nowrap;
+    display:block;
+}

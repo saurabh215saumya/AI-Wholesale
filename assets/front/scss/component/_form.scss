@@ -1,0 +1,28 @@
+.form-control {
+    @extend .addborders;
+    box-shadow: none;
+    border-radius: 0;
+    height: 50px;
+    padding: 0.375rem 1.25rem;
+    font-size: $base-font-size;
+    background: none;
+
+    @include placeholder {
+        color: $placeholder-color;
+        font-weight: 300;
+        font-size: 12px;
+    }
+
+    &:focus {
+        background: none;
+        box-shadow: none;
+    }
+}
+
+
+.form-group {
+    margin-bottom: 2rem;
+    label {
+        font-weight: 400;
+    }
+}
