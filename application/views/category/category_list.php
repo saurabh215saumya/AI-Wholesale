@@ -118,25 +118,23 @@ $search   = $this->input->get('search');
             <?php if(!empty($pageCount) && $pageCount > 1):
                 $currentPage = (int)$this->input->get('page');
                 $totalPages  = $pageCount;
+                $visiblePages = 5;
+                $half = floor($visiblePages / 2);
+                $startPage = max(0, $currentPage - $half);
+                $endPage   = min($totalPages - 1, $startPage + $visiblePages - 1);
+                if ($endPage - $startPage < $visiblePages - 1) {
+                    $startPage = max(0, $endPage - $visiblePages + 1);
+                }
+                $qs = isset($search) && $search ? '&search='.urlencode($search) : '';
             ?>
-            <div class="toolbar-bottom mt-lg">
-                <div class="toolbar">
-                    <div class="sorter">
-                        <ul class="pagination">
-                            <?php if($currentPage > 0): ?>
-                            <li><a href="<?php echo $baseUrl.'?page='.($currentPage-1).(isset($search)&&$search?'&search='.urlencode($search):''); ?>"><i class="fa fa-caret-left"></i></a></li>
-                            <?php endif; ?>
-                            <?php for($pg = 0; $pg < $totalPages; $pg++): ?>
-                            <li class="<?php echo $pg==$currentPage?'active':''; ?>">
-                                <a href="<?php echo $baseUrl.'?page='.$pg.(isset($search)&&$search?'&search='.urlencode($search):''); ?>"><?php echo $pg+1; ?></a>
-                            </li>
-                            <?php endfor; ?>
-                            <?php if($currentPage < $totalPages-1): ?>
-                            <li><a href="<?php echo $baseUrl.'?page='.($currentPage+1).(isset($search)&&$search?'&search='.urlencode($search):''); ?>"><i class="fa fa-caret-right"></i></a></li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                </div>
+            <div class="jly-pg-wrap">
+                <a class="jly-pg-btn<?php echo $currentPage==0?' jly-pg-dis':''; ?>" href="<?php echo $currentPage>0?$baseUrl.'?page=0'.$qs:'#'; ?>" title="First">&laquo;</a>
+                <a class="jly-pg-btn<?php echo $currentPage==0?' jly-pg-dis':''; ?>" href="<?php echo $currentPage>0?$baseUrl.'?page='.($currentPage-1).$qs:'#'; ?>" title="Previous">&lsaquo;</a>
+                <?php for($pg=$startPage;$pg<=$endPage;$pg++): ?>
+                <a class="jly-pg-btn<?php echo $pg==$currentPage?' jly-pg-active':''; ?>" href="<?php echo $baseUrl.'?page='.$pg.$qs; ?>"><?php echo $pg+1; ?></a>
+                <?php endfor; ?>
+                <a class="jly-pg-btn<?php echo $currentPage==$totalPages-1?' jly-pg-dis':''; ?>" href="<?php echo $currentPage<$totalPages-1?$baseUrl.'?page='.($currentPage+1).$qs:'#'; ?>" title="Next">&rsaquo;</a>
+                <a class="jly-pg-btn<?php echo $currentPage==$totalPages-1?' jly-pg-dis':''; ?>" href="<?php echo $currentPage<$totalPages-1?$baseUrl.'?page='.($totalPages-1).$qs:'#'; ?>" title="Last">&raquo;</a>
             </div>
             <?php endif; ?>
 

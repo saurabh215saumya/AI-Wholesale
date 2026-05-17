@@ -1,6 +1,6 @@
 </div><!-- /.main -->
 
-<footer id="footer">
+<footer id="footer" style="background:#1e1e1e; color:#ccc;">
     <div class="container">
         <div class="row">
             <div class="footer-ribbon">

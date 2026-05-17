@@ -127,11 +127,11 @@ class Product_model extends CI_Model {
     }
 
     public function getVariantsByProduct($product_id) {
-        return $this->db->where('product_id', $product_id)->where('status', 1)->order_by('sort_order', 'ASC')->get('tbl_product_variants')->result_array();
+        return $this->db->where('product_id', $product_id)->where('status', 1)->order_by('CAST(label AS UNSIGNED)', 'ASC')->order_by('label', 'ASC')->get('tbl_product_variants')->result_array();
     }
 
     public function getAllVariantsByProduct($product_id) {
-        return $this->db->where('product_id', $product_id)->order_by('sort_order', 'ASC')->get('tbl_product_variants')->result_array();
+        return $this->db->where('product_id', $product_id)->order_by('CAST(label AS UNSIGNED)', 'ASC')->order_by('label', 'ASC')->get('tbl_product_variants')->result_array();
     }
 
     public function saveVariants($product_id, $variants) {

@@ -29,6 +29,9 @@ $route['cart-list'] = 'product/cart_list';
 $route['checkout'] = 'product/cart_checkout';
 $route['order-summary/(:any)'] = 'order/order_summary/$1';
 
+$route['wholesale'] = 'wholesale/index';
+$route['wholesale/apply'] = 'wholesale/apply';
+
 $route['ajax-login'] = 'appuser/ajax_login';
 $route['ajax-signup'] = 'appuser/ajax_signup';
 

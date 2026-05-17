@@ -1949,3 +1949,53 @@ footer .bottomlinks a {
     padding: 2rem 0;
   }
 }
+
+/* ===== Product List Pagination ===== */
+.jly-pg-wrap {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 30px 0 15px;
+    clear: both;
+    line-height: 1;
+    font-size: 0;
+}
+.jly-pg-btn {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    min-width: 36px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 10px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    color: #555;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s;
+}
+.jly-pg-btn:hover {
+    background: #e8e8e8;
+    border-color: #aaa;
+    color: #333;
+    text-decoration: none;
+}
+.jly-pg-btn.jly-pg-active {
+    background: #888;
+    border-color: #888;
+    color: #fff;
+    cursor: default;
+    pointer-events: none;
+}
+.jly-pg-btn.jly-pg-dis {
+    background: #f5f5f5;
+    border-color: #ddd;
+    color: #bbb;
+    cursor: not-allowed;
+    pointer-events: none;
+}

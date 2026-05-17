@@ -54,6 +54,14 @@
         </ul>
       </li>
 
+      <li class="treeview <?php echo ($url=='wholesale')?'active':''; ?>">
+        <a href="javascript:void(0);"><i class="fa fa-percent"></i> <span>Wholesale Pricing</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+          <li><a href="<?php echo base_url('wholesale/admin_pricing'); ?>"><i class="fa fa-circle-o"></i> Pricing Tiers</a></li>
+          <li><a href="<?php echo base_url('wholesale/add_tier'); ?>"><i class="fa fa-circle-o"></i> Add Tier</a></li>
+        </ul>
+      </li>
+
       <li class="treeview <?php echo ($url=='testimonial')?'active':''; ?>">
         <a href="javascript:void(0);"><i class="fa fa-comments"></i> <span>Testimonial Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">

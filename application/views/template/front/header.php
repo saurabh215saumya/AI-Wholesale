@@ -54,10 +54,8 @@ $cartProductArr = getUserCartProduct($userId);
                             <li><a href="<?php echo base_url('my-account'); ?>">My Account</a></li>
                             <li><a href="<?php echo base_url('wish-list'); ?>">My Wishlist</a></li>
                             <li><a href="<?php echo base_url('sign-out'); ?>">Log Out</a></li>
-                            <?php else: ?>
-                            <li><a href="<?php echo base_url('sign-in'); ?>">Log in</a></li>
                             <?php endif; ?>
-                            <li><i class="fa fa-phone"></i><span> 07414 560342</span></li>
+                            <li><a href="tel:07414560342" style="color:#ccc;"><i class="fa fa-phone" style="color:#ff6000;margin-right:4px;"></i>07414 560342</a></li>
                             <div class="cart-dropdown">
                                 <a href="<?php echo base_url('cart-list'); ?>" class="cart-dropdown-icon">
                                     <i class="minicart-icon"></i>
@@ -70,9 +68,9 @@ $cartProductArr = getUserCartProduct($userId);
                         </ul>
                     </div>
                     <?php if($logginUserArr): ?>
-                    <p class="welcome-msg">WELCOME <?php echo strtoupper($logginUserArr['first_name'].' '.$logginUserArr['last_name']); ?></p>
+                    <p class="welcome-msg"><i class="fa fa-user-circle" style="color:#ff6000;"></i> WELCOME <?php echo strtoupper($logginUserArr['first_name'].' '.$logginUserArr['last_name']); ?></p>
                     <?php else: ?>
-                    <p class="welcome-msg">WELCOME GUEST</p>
+                    <p class="welcome-msg"><i class="fa fa-user-circle" style="color:#ff6000;"></i> WELCOME GUEST &nbsp;|&nbsp; <a href="<?php echo base_url('sign-in'); ?>">Login</a> &nbsp;|&nbsp; <a href="<?php echo base_url('wholesale'); ?>" class="welcome-wholesale-btn">Wholesale</a></p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -102,14 +100,21 @@ $cartProductArr = getUserCartProduct($userId);
                                 <li class="dropdown <?php echo $pageSlug==''?'active':''; ?>">
                                     <a href="<?php echo base_url(); ?>">Home</a>
                                 </li>
+                                <li class="<?php echo $pageSlug=='all-products'?'active':''; ?>">
+                                    <a href="<?php echo base_url('all-products'); ?>">Shop</a>
+                                </li>
                                 <?php if(!empty($isActiveCategories)): foreach($isActiveCategories as $cat): ?>
                                 <li class="dropdown dropdown-mega-small <?php echo $pageSlug=='categories'&&$this->uri->segment(2)==$cat->category_slug?'active':''; ?>">
-                                    <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>" class="dropdown-toggle"><?php echo $cat->category_name; ?></a>
+                                    <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>" class="dropdown-toggle"><?php echo $cat->category_name; ?> <i class="fa fa-angle-down nav-arrow"></i></a>
                                     <ul class="dropdown-menu">
                                         <li>
                                             <div class="dropdown-mega-content dropdown-mega-content-small">
                                                 <div class="row">
                                                     <div class="col-md-7">
+                                                        <div class="nav-cat-header">
+                                                            <i class="fa fa-th-list"></i>
+                                                            <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
+                                                        </div>
                                                         <div class="row">
                                                             <?php
                                                             $subs = getAllSubCategory($cat->id);
@@ -134,9 +139,6 @@ $cartProductArr = getUserCartProduct($userId);
                                     </ul>
                                 </li>
                                 <?php endforeach; endif; ?>
-                                <li class="<?php echo $pageSlug=='all-products'?'active':''; ?>">
-                                    <a href="<?php echo base_url('all-products'); ?>">All Products</a>
-                                </li>
                                 <li class="nav-contact-us <?php echo $pageSlug=='contact-us'?'active':''; ?>">
                                     <a href="<?php echo base_url('contact-us'); ?>">Contact Us</a>
                                 </li>
@@ -153,6 +155,7 @@ $cartProductArr = getUserCartProduct($userId);
         <div class="mobile-nav-wrapper">
             <ul class="mobile-side-menu">
                 <li><a href="<?php echo base_url(); ?>">Home</a></li>
+                <li><a href="<?php echo base_url('all-products'); ?>">Shop</a></li>
                 <?php if(!empty($isActiveCategories)): foreach($isActiveCategories as $cat): ?>
                 <li>
                     <span class="mmenu-toggle"></span>
@@ -164,7 +167,6 @@ $cartProductArr = getUserCartProduct($userId);
                     </ul>
                 </li>
                 <?php endforeach; endif; ?>
-                <li><a href="<?php echo base_url('all-products'); ?>">All Products</a></li>
                 <li><a href="<?php echo base_url('contact-us'); ?>">Contact Us</a></li>
             </ul>
         </div>
