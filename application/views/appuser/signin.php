@@ -51,10 +51,25 @@ function doLogin() {
     if (!email) { $('#emailLoginError').show().html('<strong>Enter your email.</strong>'); valid = 0; } else { $('#emailLoginError').hide(); }
     if (!password) { $('#passwordLoginError').show().html('<strong>Enter your password.</strong>'); valid = 0; } else { $('#passwordLoginError').hide(); }
     if (!valid) return false;
+
+    // Detect redirect param from URL
+    var urlParams = new URLSearchParams(window.location.search);
+    var redirectTo = urlParams.get('redirect');
+
     $.ajax({ type:'POST', url: BASE_URL+'/appuser/ajax_login', data: {email:email, password:password},
         success: function(r) {
-            if (r === 'success') { window.location.href = BASE_URL+'/'; }
-            else { $('#resLoginErrorMsg').html('<div class="alert alert-danger"><strong>Invalid email or password.</strong></div>'); }
+            if (r === 'success') {
+                // Merge guest cart then redirect
+                $.post(BASE_URL+'/ajax-merge-guest-cart', {}, function() {
+                    if (redirectTo === 'checkout') {
+                        window.location.href = BASE_URL+'/checkout';
+                    } else {
+                        window.location.href = BASE_URL+'/';
+                    }
+                });
+            } else {
+                $('#resLoginErrorMsg').html('<div class="alert alert-danger"><strong>Invalid email or password.</strong></div>');
+            }
         }
     });
     return false;

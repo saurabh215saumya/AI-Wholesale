@@ -215,29 +215,11 @@ function updateTotal() {
 }
 
 function addVariantDetail() {
-    var uid = $('#session_user_id').val();
-    if (!uid) { window.location.href = BASE_URL + '/sign-in'; return; }
-    $.post(BASE_URL+'/product/addItemIntoCart', {
-        product_id: $('#pd-product-id').val(),
-        user_id: uid,
-        quantity: pdQty,
-        variant_price: pdSelectedPrice,
-        variant_label: pdSelectedLabel
-    }, function(r) {
-        if (r === 'login') { window.location.href = BASE_URL + '/sign-in'; return; }
-        window.location.href = BASE_URL+'/cart-list/';
-    });
+    addToCart($('#pd-product-id').val(), pdQty, pdSelectedPrice, pdSelectedLabel);
 }
 
-function addToCartSimple(pid, price) {
-    var uid = $('#session_user_id').val();
-    if (!uid) { window.location.href = BASE_URL + '/sign-in'; return; }
-    $.post(BASE_URL+'/product/addItemIntoCart', {
-        product_id: pid, user_id: uid, quantity: pdQty
-    }, function(r) {
-        if (r === 'login') { window.location.href = BASE_URL + '/sign-in'; return; }
-        window.location.href = BASE_URL+'/cart-list/';
-    });
+function addToCartSimple(pid) {
+    addToCart(pid, pdQty);
 }
 
 function addProductInWishlist(product_id) {

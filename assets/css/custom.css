@@ -1205,3 +1205,10 @@ html.sticky-header-enabled #header .header-body {
 /* Newsletter section */
 #footer .newsletter h4 { color: #fff; }
 #footer .newsletter .newsletter-info { color: #aaa; font-size: 13px; line-height: 1.6; }
+
+.jly-variant-row.jly-variant-added {
+    background: #e6f9ee !important;
+    border-color: #28a745 !important;
+    transition: background 0.2s, border-color 0.2s;
+}
+.jly-variant-row.jly-variant-added .jly-variant-icon { color: #28a745; }

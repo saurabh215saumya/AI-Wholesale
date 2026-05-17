@@ -88,7 +88,7 @@ class Product_model extends CI_Model {
     }
 
     public function getUserCartProduct($user_id) {
-        return $this->db->select('tc.id as cartId, tc.user_id, tc.product_id, tc.quantity, tc.amount, tp.product_name, tp.product_slug, tp.price, tp.wholesale_price, tp.retailer_price, tp.image')
+        return $this->db->select('tc.id as cartId, tc.user_id, tc.product_id, tc.quantity, tc.amount, tc.variant_label, tc.variant_price, tp.product_name, tp.product_slug, tp.price, tp.wholesale_price, tp.retailer_price, tp.image')
             ->from('tbl_cart AS tc')
             ->join('tbl_products AS tp', 'tp.id = tc.product_id')
             ->where('tc.user_id', $user_id)
@@ -101,12 +101,67 @@ class Product_model extends CI_Model {
         return $row ? $row['subTotal'] : 0;
     }
 
-    public function checkCartProduct($product_id, $user_id) {
-        return $this->db->where('product_id', $product_id)->where('user_id', $user_id)->get('tbl_cart')->row_array();
+    public function checkCartProduct($product_id, $user_id, $variant_label = NULL) {
+        $this->db->where('product_id', $product_id)->where('user_id', $user_id);
+        if ($variant_label !== NULL) $this->db->where('variant_label', $variant_label);
+        else $this->db->where('variant_label IS NULL', NULL, FALSE);
+        return $this->db->get('tbl_cart')->row_array();
+    }
+
+    public function checkGuestCartProduct($product_id, $guest_id, $variant_label = NULL) {
+        $this->db->where('product_id', $product_id)->where('guest_id', $guest_id)->where('user_id', 0);
+        if ($variant_label !== NULL) $this->db->where('variant_label', $variant_label);
+        else $this->db->where('variant_label IS NULL', NULL, FALSE);
+        return $this->db->get('tbl_cart')->row_array();
+    }
+
+    public function getGuestCartProducts($guest_id) {
+        return $this->db->select('tc.id as cartId, tc.user_id, tc.guest_id, tc.product_id, tc.quantity, tc.amount, tc.variant_label, tc.variant_price, tp.product_name, tp.product_slug, tp.price, tp.wholesale_price, tp.retailer_price, tp.image')
+            ->from('tbl_cart AS tc')
+            ->join('tbl_products AS tp', 'tp.id = tc.product_id')
+            ->where('tc.guest_id', $guest_id)
+            ->where('tc.user_id', 0)
+            ->order_by('tc.id', 'DESC')
+            ->get()->result_array();
+    }
+
+    public function getGuestCartSubTotal($guest_id) {
+        $row = $this->db->select('SUM(amount) AS subTotal')->where('guest_id', $guest_id)->where('user_id', 0)->get('tbl_cart')->row_array();
+        return $row ? $row['subTotal'] : 0;
+    }
+
+    public function mergeGuestCartToUser($guest_id, $user_id, $user_type = 'person') {
+        $guestItems = $this->getGuestCartProducts($guest_id);
+        foreach ($guestItems as $item) {
+            $product = $this->getProductById($item['product_id']);
+            if (!$product) continue;
+            if ($user_type === 'business' && $product['wholesale_price'] > 0) $price = $product['wholesale_price'];
+            elseif ($product['retailer_price'] > 0) $price = $product['retailer_price'];
+            else $price = $product['price'];
+            $existing = $this->checkCartProduct($item['product_id'], $user_id);
+            if ($existing) {
+                $newQty = $existing['quantity'] + $item['quantity'];
+                $this->db->where('id', $existing['id'])->update('tbl_cart', array('quantity' => $newQty, 'amount' => $newQty * $price));
+            } else {
+                $this->db->insert('tbl_cart', array(
+                    'product_id' => $item['product_id'],
+                    'user_id'    => $user_id,
+                    'guest_id'   => NULL,
+                    'quantity'   => $item['quantity'],
+                    'amount'     => $item['quantity'] * $price,
+                    'addedOn'    => date('Y-m-d H:i:s'),
+                ));
+            }
+        }
+        $this->db->where('guest_id', $guest_id)->where('user_id', 0)->delete('tbl_cart');
     }
 
     public function deleteCartProduct($id) {
         return $this->db->where('id', $id)->delete('tbl_cart');
+    }
+
+    public function deleteGuestCartProduct($id, $guest_id) {
+        return $this->db->where('id', $id)->where('guest_id', $guest_id)->where('user_id', 0)->delete('tbl_cart');
     }
 
     public function deleteAllUserCart($user_id) {
@@ -115,6 +170,20 @@ class Product_model extends CI_Model {
 
     public function checkWishlistProduct($product_id, $user_id) {
         return $this->db->where('product_id', $product_id)->where('user_id', $user_id)->count_all_results('tbl_wishlist_product');
+    }
+
+    public function countUserWishlist($user_id) {
+        return $this->db->where('user_id', $user_id)->count_all_results('tbl_wishlist_product');
+    }
+
+    public function getWishlistPaginated($user_id, $limit, $offset) {
+        return $this->db->select('twp.id as wishId, twp.product_id, tp.product_name, tp.product_slug, tp.price, tp.wholesale_price, tp.retailer_price, tp.image, tp.quantity')
+            ->from('tbl_wishlist_product AS twp')
+            ->join('tbl_products AS tp', 'tp.id = twp.product_id')
+            ->where('twp.user_id', $user_id)
+            ->order_by('twp.id', 'DESC')
+            ->limit($limit, $offset)
+            ->get()->result_array();
     }
 
     public function getAllUserWishlist($user_id) {
@@ -148,7 +217,7 @@ class Product_model extends CI_Model {
         }
     }
 
-    public function placeOrder($user_id, $payment_method, $billing_address_id) {
+    public function placeOrder($user_id, $payment_method, $billing_address_id, $special_instructions = '', $delivery_option = '', $transaction_ref = '') {
         $cartItems  = $this->getUserCartProduct($user_id);
         $totalAmt   = 0;
         $totalQty   = 0;
@@ -156,20 +225,21 @@ class Product_model extends CI_Model {
             $totalAmt += $item['amount'];
             $totalQty += $item['quantity'];
         }
-        $txnNo = generateCode(10);
+        $txnNo = $transaction_ref ?: generateCode(10);
         $orderId = null;
         $this->db->insert('tbl_order', array(
-            'user_id'            => $user_id,
-            'transaction_no'     => $txnNo,
-            'status'             => 0,
-            'pay_amount'         => $totalAmt,
-            'shipping_charge'    => 0,
-            'total_amount'       => $totalAmt,
-            'payment_method'     => $payment_method,
-            'billing_address_id' => $billing_address_id,
-            'comment'            => '',
-            'addedOn'            => date('Y-m-d H:i:s'),
-            'updatedOn'          => date('Y-m-d H:i:s'),
+            'user_id'              => $user_id,
+            'transaction_no'       => $txnNo,
+            'status'               => 0,
+            'pay_amount'           => $totalAmt,
+            'shipping_charge'      => 0,
+            'total_amount'         => $totalAmt,
+            'payment_method'       => $payment_method,
+            'billing_address_id'   => $billing_address_id,
+            'comment'              => $special_instructions,
+            'delivery_option'      => $delivery_option,
+            'addedOn'              => date('Y-m-d H:i:s'),
+            'updatedOn'            => date('Y-m-d H:i:s'),
         ));
         $orderId = $this->db->insert_id();
         if ($orderId) {

@@ -349,7 +349,14 @@ class Product extends CI_Controller {
 
     public function cart_list() {
         $front = $this->session->userdata('front_logged_in');
-        $data['allCartProducts']   = $front ? $this->Product_model->getUserCartProduct($front['id']) : array();
+        if ($front) {
+            $data['allCartProducts'] = $this->Product_model->getUserCartProduct($front['id']);
+            $data['isGuest']         = false;
+        } else {
+            $guest_id = get_cookie('guest_cart_id');
+            $data['allCartProducts'] = $guest_id ? $this->Product_model->getGuestCartProducts($guest_id) : array();
+            $data['isGuest']         = true;
+        }
         $data['isActiveCategories'] = getAllCategory();
         $this->load->view('template/front/header', $data);
         $this->load->view('product/cart_list', $data);
@@ -357,46 +364,124 @@ class Product extends CI_Controller {
     }
 
     public function cart_checkout() {
-        if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
+        if (!$this->session->userdata('front_logged_in')) {
+            redirect('sign-in?redirect=checkout');
+        }
         $user_id = $this->session->userdata('front_logged_in')['id'];
-        $data['billingArr']        = getUserBillingDetails($user_id);
-        $data['subTotal']          = $this->Product_model->getUserCartSubTotal($user_id);
+        $front   = $this->session->userdata('front_logged_in');
+        $data['billingArr']         = getUserBillingDetails($user_id);
+        $data['subTotal']           = $this->Product_model->getUserCartSubTotal($user_id);
         $data['isActiveCategories'] = getAllCategory();
+        $data['userInfo']           = $front;
         $this->load->view('template/front/header', $data);
         $this->load->view('product/cart_checkout', $data);
         $this->load->view('template/front/footer', $data);
     }
 
     public function addItemIntoCart() {
-        $front = $this->session->userdata('front_logged_in');
-        if (!$front) { echo 'login'; return; }
-        $product_id = $this->input->post('product_id');
-        $user_id    = $front['id'];
-        $quantity   = (int)$this->input->post('quantity') ?: 1;
-        $product    = $this->Product_model->getProductById($product_id);
-        if (!$product) { echo 'error'; return; }
-        $userType = $front['user_type'] ?? '';
-        $price = $userType == 'business' ? $product['wholesale_price'] : $product['retailer_price'];
-        if (!$price) $price = $product['price'];
-        $amount  = $quantity * $price;
-        $existing = $this->Product_model->checkCartProduct($product_id, $user_id);
-        if ($existing) {
-            $this->db->where('id', $existing['id'])->update('tbl_cart', array('quantity' => $quantity, 'amount' => $amount));
-            echo 'updated';
+        $front         = $this->session->userdata('front_logged_in');
+        $product_id    = (int)$this->input->post('product_id');
+        $quantity      = max(1, (int)$this->input->post('quantity'));
+        $variant_label = trim($this->input->post('variant_label'));
+        $variant_price = floatval($this->input->post('variant_price'));
+        $replace       = (bool)$this->input->post('replace'); // set to 1 to overwrite qty instead of increment
+        $product       = $this->Product_model->getProductById($product_id);
+        if (!$product) { echo json_encode(array('status' => 'error')); return; }
+
+        $variant_label = $variant_label !== '' ? $variant_label : NULL;
+        $price         = $variant_price > 0 ? $variant_price : floatval($product['price']);
+
+        if ($front) {
+            $user_id  = $front['id'];
+            $userType = $front['user_type'] ?? 'person';
+            if ($variant_price <= 0) {
+                if ($userType === 'business' && $product['wholesale_price'] > 0)
+                    $price = floatval($product['wholesale_price']);
+                elseif ($product['retailer_price'] > 0)
+                    $price = floatval($product['retailer_price']);
+            }
+            $existing = $this->Product_model->checkCartProduct($product_id, $user_id, $variant_label);
+            if ($existing) {
+                $newQty = $replace ? $quantity : $existing['quantity'] + $quantity;
+                $this->db->where('id', $existing['id'])->update('tbl_cart', array(
+                    'quantity'      => $newQty,
+                    'amount'        => $newQty * $price,
+                    'variant_price' => $variant_price > 0 ? $variant_price : NULL,
+                ));
+            } else {
+                $this->db->insert('tbl_cart', array(
+                    'product_id'    => $product_id,
+                    'user_id'       => $user_id,
+                    'guest_id'      => NULL,
+                    'quantity'      => $quantity,
+                    'amount'        => $quantity * $price,
+                    'variant_label' => $variant_label,
+                    'variant_price' => $variant_price > 0 ? $variant_price : NULL,
+                    'addedOn'       => date('Y-m-d H:i:s'),
+                ));
+            }
         } else {
-            $this->db->insert('tbl_cart', array('product_id' => $product_id, 'user_id' => $user_id, 'quantity' => $quantity, 'amount' => $amount, 'addedOn' => date('Y-m-d H:i:s')));
-            echo 'added';
+            $guest_id = get_cookie('guest_cart_id');
+            if (!$guest_id) {
+                $guest_id = md5(uniqid(mt_rand(), true));
+                set_cookie('guest_cart_id', $guest_id, 60 * 60 * 24 * 30);
+            }
+            $existing = $this->Product_model->checkGuestCartProduct($product_id, $guest_id, $variant_label);
+            if ($existing) {
+                $newQty = $replace ? $quantity : $existing['quantity'] + $quantity;
+                $this->db->where('id', $existing['id'])->update('tbl_cart', array(
+                    'quantity'      => $newQty,
+                    'amount'        => $newQty * $price,
+                    'variant_price' => $variant_price > 0 ? $variant_price : NULL,
+                ));
+            } else {
+                $this->db->insert('tbl_cart', array(
+                    'product_id'    => $product_id,
+                    'user_id'       => 0,
+                    'guest_id'      => $guest_id,
+                    'quantity'      => $quantity,
+                    'amount'        => $quantity * $price,
+                    'variant_label' => $variant_label,
+                    'variant_price' => $variant_price > 0 ? $variant_price : NULL,
+                    'addedOn'       => date('Y-m-d H:i:s'),
+                ));
+            }
         }
+        echo json_encode(array('status' => 'added'));
+    }
+
+    public function ajax_merge_guest_cart() {
+        $front = $this->session->userdata('front_logged_in');
+        if (!$front) { echo 'error'; return; }
+        $guest_id = get_cookie('guest_cart_id');
+        if ($guest_id) {
+            $this->Product_model->mergeGuestCartToUser($guest_id, $front['id'], $front['user_type'] ?? 'person');
+            delete_cookie('guest_cart_id');
+        }
+        echo 'ok';
     }
 
     public function delete_cart_product($id) {
-        $this->Product_model->deleteCartProduct($id);
+        $front = $this->session->userdata('front_logged_in');
+        if ($front) {
+            $this->Product_model->deleteCartProduct($id);
+        } else {
+            $guest_id = get_cookie('guest_cart_id');
+            if ($guest_id) $this->Product_model->deleteGuestCartProduct($id, $guest_id);
+        }
         redirect('cart-list');
     }
 
     public function wish_list() {
-        $front = $this->session->userdata('front_logged_in');
-        $data['allWishlistProducts'] = $front ? $this->Product_model->getAllUserWishlist($front['id']) : array();
+        $front   = $this->session->userdata('front_logged_in');
+        $perPage = 8;
+        $pageNo  = (int)($this->input->get('page') ?: 0);
+        $offset  = $perPage * $pageNo;
+        $total   = $front ? $this->Product_model->countUserWishlist($front['id']) : 0;
+        $data['allWishlistProducts'] = $front ? $this->Product_model->getWishlistPaginated($front['id'], $perPage, $offset) : array();
+        $data['wlTotalCount']        = $total;
+        $data['wlPageCount']         = ceil($total / $perPage);
+        $data['wlCurrentPage']       = $pageNo;
         $data['isActiveCategories']  = getAllCategory();
         $this->load->view('template/front/header', $data);
         $this->load->view('product/wish_list', $data);
@@ -429,6 +514,41 @@ class Product extends CI_Controller {
             echo $orderId;
         } else {
             echo 'error';
+        }
+    }
+
+    public function stripe_payment() {
+        if (!$this->session->userdata('front_logged_in')) { echo json_encode(['status'=>'login']); return; }
+        $user_id            = $this->session->userdata('front_logged_in')['id'];
+        $stripe_token       = $this->input->post('stripe_token');
+        $billing_address_id = $this->input->post('billing_address_id');
+        $special_instructions = $this->input->post('special_instructions');
+        $delivery_option    = $this->input->post('delivery_option');
+        $subTotal           = $this->Product_model->getUserCartSubTotal($user_id);
+        $amount_pence       = (int)round($subTotal * 100);
+
+        require_once APPPATH . 'libraries/Stripe/init.php';
+        \Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+        try {
+            $charge = \Stripe\Charge::create([
+                'amount'      => $amount_pence,
+                'currency'    => 'gbp',
+                'source'      => $stripe_token,
+                'description' => 'AI Wholesale Order',
+            ]);
+            if ($charge->status === 'succeeded') {
+                $orderId = $this->Product_model->placeOrder($user_id, 'stripe', $billing_address_id, $special_instructions, $delivery_option, $charge->id);
+                if ($orderId) {
+                    $this->Product_model->deleteAllUserCart($user_id);
+                    echo json_encode(['status'=>'success','order_id'=>$orderId]);
+                } else {
+                    echo json_encode(['status'=>'error','msg'=>'Order creation failed']);
+                }
+            } else {
+                echo json_encode(['status'=>'error','msg'=>'Payment not completed']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status'=>'error','msg'=>$e->getMessage()]);
         }
     }
 }

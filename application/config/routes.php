@@ -27,6 +27,7 @@ $route['product-details/(:any)'] = 'product/product_detail/$1';
 $route['wish-list'] = 'product/wish_list';
 $route['cart-list'] = 'product/cart_list';
 $route['checkout'] = 'product/cart_checkout';
+$route['stripe-payment'] = 'product/stripe_payment';
 $route['order-summary/(:any)'] = 'order/order_summary/$1';
 
 $route['wholesale'] = 'wholesale/index';
@@ -34,5 +35,6 @@ $route['wholesale/apply'] = 'wholesale/apply';
 
 $route['ajax-login'] = 'appuser/ajax_login';
 $route['ajax-signup'] = 'appuser/ajax_signup';
+$route['ajax-merge-guest-cart'] = 'product/ajax_merge_guest_cart';
 
 $route['page/(:any)'] = 'home/static_page/$1';

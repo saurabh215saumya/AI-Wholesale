@@ -163,8 +163,14 @@ if (!function_exists('generateCode')) {
 if (!function_exists('getUserCartProduct')) {
     function getUserCartProduct($user_id = '') {
         $CI =& get_instance();
-        if (!$user_id) return array();
-        $query = $CI->db->select('tc.id')->from('tbl_cart AS tc')->where('tc.user_id', $user_id)->get();
+        if ($user_id) {
+            $query = $CI->db->select('tc.id')->from('tbl_cart AS tc')->where('tc.user_id', $user_id)->get();
+            return $query->num_rows() > 0 ? $query->result() : array();
+        }
+        // Guest: count by cookie
+        $guest_id = isset($_COOKIE['guest_cart_id']) ? $_COOKIE['guest_cart_id'] : '';
+        if (!$guest_id) return array();
+        $query = $CI->db->select('tc.id')->from('tbl_cart AS tc')->where('tc.guest_id', $guest_id)->where('tc.user_id', 0)->get();
         return $query->num_rows() > 0 ? $query->result() : array();
     }
 }

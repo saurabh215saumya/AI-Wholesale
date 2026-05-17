@@ -86,10 +86,11 @@ class Appuser extends CI_Controller {
     }
 
     public function ajax_signup() {
-        $email = $this->input->post('email');
+        $email     = $this->input->post('email');
+        $user_type = $this->input->post('user_type') ?: 'person';
         if ($this->Appuser_model->getUserByEmail($email)) { echo 'duplicate_email'; return; }
         $insert = array(
-            'user_type'    => $this->input->post('user_type') ?: 'person',
+            'user_type'    => $user_type,
             'first_name'   => $this->input->post('first_name'),
             'last_name'    => $this->input->post('last_name'),
             'email'        => $email,
@@ -100,6 +101,18 @@ class Appuser extends CI_Controller {
             'addedOn'      => date('Y-m-d H:i:s'),
             'updatedOn'    => date('Y-m-d H:i:s'),
         );
+        if ($user_type === 'business') {
+            $insert['business_type']          = $this->input->post('business_type');
+            $insert['companies_house_number'] = $this->input->post('companies_house_number');
+            $insert['vat_number']             = $this->input->post('vat_number');
+            $insert['website']                = $this->input->post('website');
+            $insert['estimated_volume']       = $this->input->post('estimated_volume');
+            $insert['monthly_order']          = $this->input->post('monthly_order');
+            $insert['business_address']       = $this->input->post('business_address');
+            $insert['city']                   = $this->input->post('city');
+            $insert['postal_code']            = $this->input->post('postal_code');
+            $insert['country']                = $this->input->post('country');
+        }
         $this->db->insert($this->table, $insert);
         echo $this->db->insert_id() ? 'success' : 'error';
     }

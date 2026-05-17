@@ -1,10 +1,16 @@
 <?php
 $userId   = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['id'] : '';
 $userType = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['user_type'] : '';
+$isGuest  = isset($isGuest) ? $isGuest : false;
 ?>
 <div class="cart">
     <div class="container">
         <h1 class="h2 heading-primary mt-lg clearfix"><span>Shopping Cart</span></h1>
+        <?php if ($isGuest): ?>
+        <div class="alert alert-info" style="margin-bottom:15px;">
+            <i class="fa fa-info-circle"></i> You are shopping as a guest. <a href="<?php echo base_url('sign-in?redirect=checkout'); ?>"><strong>Sign in</strong></a> or <a href="<?php echo base_url('sign-up'); ?>"><strong>create an account</strong></a> to complete your purchase.
+        </div>
+        <?php endif; ?>
         <div class="row">
             <div class="col-md-8 col-lg-9">
                 <div class="cart-table-wrap">
@@ -18,9 +24,15 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
                         if(!empty($allCartProducts)):
                             foreach($allCartProducts as $row):
                                 $proImg = getProductImage($row['image']);
-                                if($userType=='business' && $row['wholesale_price']>0) $proPrice = $row['wholesale_price'];
-                                elseif($userType && $row['retailer_price']>0) $proPrice = $row['retailer_price'];
-                                else $proPrice = $row['price'];
+                                if(!empty($row['variant_price']) && $row['variant_price'] > 0) {
+                                    $proPrice = floatval($row['variant_price']);
+                                } elseif($userType=='business' && $row['wholesale_price']>0) {
+                                    $proPrice = $row['wholesale_price'];
+                                } elseif($userType && $row['retailer_price']>0) {
+                                    $proPrice = $row['retailer_price'];
+                                } else {
+                                    $proPrice = $row['price'];
+                                }
                                 $totPrice = $proPrice * $row['quantity'];
                                 $subTotal += $totPrice;
                         ?>
@@ -35,15 +47,18 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
                             </td>
                             <td class="product-name-td">
                                 <h2 class="product-name"><a href="<?php echo base_url('product-details/'.$row['product_slug']); ?>"><?php echo $row['product_name']; ?></a></h2>
+                                <?php if(!empty($row['variant_label'])): ?>
+                                <small class="text-muted"><i class="fa fa-tag"></i> <?php echo htmlspecialchars($row['variant_label']); ?></small>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo CURRENCY_SYMBOL.' '.number_format($proPrice,2); ?></span>
                             </td>
                             <td>
                                 <div class="qty-holder">
-                                    <a href="javascript:void(0);" onclick="return updateCartQty('<?php echo $row['product_id']; ?>','<?php echo $i; ?>',-1);" class="qty-dec-btn" title="Dec">-</a>
+                                    <a href="javascript:void(0);" onclick="return updateCartQty('<?php echo $row['product_id']; ?>','<?php echo $i; ?>',-1,'<?php echo addslashes($row['variant_label']); ?>','<?php echo $row['variant_price']; ?>');" class="qty-dec-btn" title="Dec">-</a>
                                     <input type="text" class="qty-input" id="quantity_<?php echo $i; ?>" value="<?php echo $row['quantity']; ?>">
-                                    <a href="javascript:void(0);" onclick="return updateCartQty('<?php echo $row['product_id']; ?>','<?php echo $i; ?>',1);" class="qty-inc-btn" title="Inc">+</a>
+                                    <a href="javascript:void(0);" onclick="return updateCartQty('<?php echo $row['product_id']; ?>','<?php echo $i; ?>',1,'<?php echo addslashes($row['variant_label']); ?>','<?php echo $row['variant_price']; ?>');" class="qty-inc-btn" title="Inc">+</a>
                                 </div>
                             </td>
                             <td>
@@ -82,7 +97,11 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
                                 </table>
                                 <?php if(!empty($allCartProducts)): ?>
                                 <div class="totals-table-action">
+                                    <?php if ($isGuest): ?>
+                                    <a href="<?php echo base_url('sign-in?redirect=checkout'); ?>" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                                    <?php else: ?>
                                     <a href="<?php echo base_url('checkout'); ?>" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                                    <?php endif; ?>
                                 </div>
                                 <?php endif; ?>
                             </div>
@@ -94,14 +113,16 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
     </div>
 </div>
 
-<input type="hidden" id="session_user_id" value="<?php echo $userId; ?>">
 <script>
-function updateCartQty(product_id, id, delta) {
+function updateCartQty(product_id, id, delta, variant_label, variant_price) {
     var qty = parseInt($('#quantity_'+id).val()) + delta;
     if (qty < 1) return false;
     $('#quantity_'+id).val(qty);
-    $.ajax({ type:'POST', url: BASE_URL+'/product/addItemIntoCart', data:'product_id='+product_id+'&user_id='+$('#session_user_id').val()+'&quantity='+qty,
-        success: function() { window.location.href = BASE_URL+'/cart-list/'; }
+    var data = {product_id: product_id, quantity: qty, replace: 1};
+    if (variant_label) data.variant_label = variant_label;
+    if (variant_price > 0) data.variant_price = variant_price;
+    $.ajax({ type:'POST', url: BASE_URL+'/product/addItemIntoCart', data: data, dataType: 'json',
+        success: function() { window.location.href = BASE_URL+'/cart-list'; }
     });
     return false;
 }

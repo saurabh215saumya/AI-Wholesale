@@ -99,26 +99,10 @@ function toggleQuickAdd(pid) {
     if (!isOpen) { $v.addClass('open'); $c.removeClass('fa-chevron-down').addClass('fa-chevron-up'); }
 }
 function doAddCart(pid, qty) {
-    var uid = $('#session_user_id').val();
-    if (!uid) { window.location.href = BASE_URL + '/sign-in'; return; }
-    $.post(BASE_URL + '/product/addItemIntoCart', {product_id: pid, user_id: uid, quantity: qty}, function(r) {
-        if (r === 'login') { window.location.href = BASE_URL + '/sign-in'; return; }
-        showToast('Added to cart!', 'success');
-        var $qty = $('.cart-qty'); $qty.text(parseInt($qty.text()) + 1);
-        var $btn = $('#card-' + pid + ' .jly-btn-quick');
-        $btn.html('<i class="fa fa-check"></i>&nbsp; Item in Cart').attr('onclick', "window.location.href=BASE_URL+'/cart-list'");
-    });
+    addToCart(pid, qty);
 }
 function addVariantToCart(pid, price, label) {
-    var uid = $('#session_user_id').val();
-    if (!uid) { window.location.href = BASE_URL + '/sign-in'; return; }
-    $.post(BASE_URL + '/product/addItemIntoCart', {product_id: pid, user_id: uid, quantity: 1, variant_price: price, variant_label: label}, function(r) {
-        if (r === 'login') { window.location.href = BASE_URL + '/sign-in'; return; }
-        showToast(label + ' added to cart!', 'success');
-        var $qty = $('.cart-qty'); $qty.text(parseInt($qty.text()) + 1);
-        $('#variants-' + pid).removeClass('open');
-        $('#chev-' + pid).removeClass('fa-chevron-up').addClass('fa-chevron-down');
-    });
+    addToCart(pid, 1, price, label);
 }
 function doWishlist(pid) {
     var uid = $('#session_user_id').val();
@@ -129,12 +113,6 @@ function doWishlist(pid) {
         else { $btn.removeClass('active').find('i').removeClass('fa-heart').addClass('fa-heart-o'); showToast('Removed from wishlist.', 'info'); }
     });
     return false;
-}
-function showToast(msg, type) {
-    var $t = $('<div class="jly-toast jly-toast-' + type + '">' + msg + '</div>');
-    $('body').append($t);
-    setTimeout(function() { $t.addClass('show'); }, 10);
-    setTimeout(function() { $t.removeClass('show'); setTimeout(function(){ $t.remove(); }, 400); }, 2500);
 }
 $(document).on('click', function(e) {
     if (!$(e.target).closest('.jly-btn-quick, .jly-variants').length) {

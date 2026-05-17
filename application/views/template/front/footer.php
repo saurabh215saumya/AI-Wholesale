@@ -84,5 +84,38 @@
 <script src="<?php echo base_url('assets/js/custom.js'); ?>"></script>
 <script src="<?php echo base_url('assets/js/theme.init.js'); ?>"></script>
 <script>var BASE_URL = '<?php echo BASE_URL; ?>';</script>
+<script>
+// ── Global guest-friendly cart functions ──────────────────────────────────
+function addToCart(pid, qty, variantPrice, variantLabel) {
+    var data = {product_id: pid, quantity: qty || 1};
+    if (variantPrice) data.variant_price = variantPrice;
+    if (variantLabel) data.variant_label = variantLabel;
+    $.post(BASE_URL + '/product/addItemIntoCart', data, function(r) {
+        var res = typeof r === 'string' ? JSON.parse(r) : r;
+        if (!res || res.status !== 'added') { showToast('Could not add to cart.', 'error'); return; }
+        showToast('Added to cart!', 'success');
+        var $qty = $('.cart-qty');
+        $qty.text(parseInt($qty.text() || 0) + 1);
+        // Close variant panel immediately
+        $('#variants-card-' + pid).removeClass('open');
+        $('#chev-card-' + pid).removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        // Flash the variant row that was clicked
+        if (variantLabel) {
+            var $row = $('#variants-card-' + pid + ' .jly-variant-row').filter(function() {
+                return $(this).find('.jly-variant-label').text().trim() === variantLabel ||
+                       $(this).find('.jly-variant-label').text().trim() === variantLabel + ' pieces';
+            });
+            $row.addClass('jly-variant-added');
+            setTimeout(function(){ $row.removeClass('jly-variant-added'); }, 1500);
+        }
+    }, 'json').fail(function(){ showToast('Could not add to cart.', 'error'); });
+}
+function showToast(msg, type) {
+    var $t = $('<div class="jly-toast jly-toast-' + (type||'success') + '">' + msg + '</div>');
+    $('body').append($t);
+    setTimeout(function(){ $t.addClass('show'); }, 10);
+    setTimeout(function(){ $t.removeClass('show'); setTimeout(function(){ $t.remove(); }, 400); }, 2500);
+}
+</script>
 </body>
 </html>
