@@ -96,13 +96,23 @@ $search   = $this->input->get('search');
                                 $vPrice = floatval($v['price']);
                             ?>
                             <button class="jly-variant-row<?php echo (!$inStock)?' variant-out':''; ?>"
-                                <?php if($inStock): ?>onclick="addVariantToCart(<?php echo $p['id']; ?>, <?php echo $vPrice; ?>, '<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
-                                <span class="jly-variant-icon"><i class="fa fa-shopping-cart"></i></span>
+                                <?php if($inStock): ?>onclick="qaSelectVariant(this, <?php echo $p['id']; ?>, <?php echo $vPrice; ?>, '<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
+                                <span class="jly-variant-icon"><i class="fa fa-tag"></i></span>
                                 <span class="jly-variant-label"><?php echo is_numeric(trim($v['label'])) ? trim($v['label']).' pieces' : htmlspecialchars($v['label']); ?></span>
                                 <span class="jly-variant-price"><?php echo '£ '.number_format($vPrice,2); ?></span>
                                 <?php if(!$inStock): ?><span class="jly-out-tag">Out</span><?php endif; ?>
                             </button>
                             <?php endforeach; ?>
+                            <div class="jly-qa-footer">
+                                <div class="jly-qa-qty">
+                                    <button class="jly-qa-qty-btn" onclick="qaChangeQty('<?php echo $p['id']; ?>', -1)">&#8722;</button>
+                                    <span class="jly-qa-qty-val" id="qa-qty-<?php echo $p['id']; ?>">1</span>
+                                    <button class="jly-qa-qty-btn" onclick="qaChangeQty('<?php echo $p['id']; ?>', 1)">&#43;</button>
+                                </div>
+                                <button class="jly-qa-cart-btn" id="qa-cart-<?php echo $p['id']; ?>" onclick="qaAddToCart('<?php echo $p['id']; ?>')" disabled>
+                                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
                         </div>
                         <?php else: ?>
                         <button class="jly-btn jly-btn-oos" disabled>
@@ -234,11 +244,23 @@ function toggleQuickAdd(cardId) {
         $c.removeClass('fa-chevron-down').addClass('fa-chevron-up');
     }
 }
-function doAddCart(pid, qty) {
-    addToCart(pid, qty);
+var qaState = {};
+function qaSelectVariant(el, pid, price, label) {
+    var $wrap = $(el).closest('.jly-variants');
+    $wrap.find('.jly-variant-row').removeClass('jly-variant-selected');
+    $(el).addClass('jly-variant-selected');
+    qaState[pid] = { price: price, label: label };
+    $('#qa-cart-' + pid).prop('disabled', false);
 }
-function addVariantToCart(pid, price, label) {
-    addToCart(pid, 1, price, label);
+function qaChangeQty(pid, delta) {
+    var $v = $('#qa-qty-' + pid);
+    var q = Math.max(1, (parseInt($v.text()) || 1) + delta);
+    $v.text(q);
+}
+function qaAddToCart(pid) {
+    if (!qaState[pid]) return;
+    var qty = parseInt($('#qa-qty-' + pid).text()) || 1;
+    addToCart(pid, qty, qaState[pid].price, qaState[pid].label);
 }
 function doWishlist(pid) {
     var uid = $('#session_user_id').val();

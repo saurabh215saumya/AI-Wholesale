@@ -1212,3 +1212,63 @@ html.sticky-header-enabled #header .header-body {
     transition: background 0.2s, border-color 0.2s;
 }
 .jly-variant-row.jly-variant-added .jly-variant-icon { color: #28a745; }
+
+/* ---- Quick Add: variant select + qty + cart ---- */
+.jly-variant-row.jly-variant-selected {
+    background: #fff3ee;
+    border-color: #ff6000;
+    box-shadow: 0 0 0 2px rgba(255,96,0,.15);
+}
+.jly-qa-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    padding: 6px 4px 2px;
+    border-top: 1px solid #f0e8e0;
+}
+.jly-qa-qty {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1.5px solid #ff6000;
+    border-radius: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.jly-qa-qty-btn {
+    background: none;
+    border: none;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ff6000;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: background .15s;
+}
+.jly-qa-qty-btn:hover { background: #fff3ee; }
+.jly-qa-qty-val {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #333;
+}
+.jly-qa-cart-btn {
+    flex: 1;
+    background: linear-gradient(90deg,#ff6000,#ff8c42);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .18s;
+    white-space: nowrap;
+}
+.jly-qa-cart-btn:hover { opacity: .88; }
+.jly-qa-cart-btn:disabled { opacity: .45; cursor: not-allowed; }
