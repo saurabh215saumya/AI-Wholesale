@@ -43,9 +43,9 @@ class Product extends CI_Controller {
         $this->form_validation->set_rules('sub_category_id', 'Sub Category', 'trim|required|integer');
         $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|max_length[255]');
         $this->form_validation->set_rules('product_code', 'Product Code', 'trim|required|max_length[100]');
-        $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
-        $this->form_validation->set_rules('wholesale_price', 'Wholesale Price', 'trim|decimal|greater_than_equal_to[0]');
-        $this->form_validation->set_rules('retailer_price', 'Retailer Price', 'trim|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('wholesale_price', 'Wholesale Price', 'trim|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('retailer_price', 'Retailer Price', 'trim|decimal|greater_than_equal_to[0]');
         $this->form_validation->set_rules('quantity', 'Quantity', 'trim|integer|greater_than_equal_to[0]');
         $this->form_validation->set_rules('status', 'Status', 'trim|required|in_list[0,1]');
         if ($this->form_validation->run() == FALSE) {
@@ -59,8 +59,8 @@ class Product extends CI_Controller {
                 'product_code'    => $this->input->post('product_code'),
                 'product_slug'    => url_title(strtolower($name), '-'),
                 'price'           => $this->input->post('price'),
-                'wholesale_price' => $this->input->post('wholesale_price'),
-                'retailer_price'  => $this->input->post('retailer_price'),
+                // 'wholesale_price' => $this->input->post('wholesale_price'),
+                // 'retailer_price'  => $this->input->post('retailer_price'),
                 'quantity'        => $this->input->post('quantity'),
                 'description'     => $this->input->post('description'),
                 'long_description'=> $this->input->post('long_description'),
@@ -112,9 +112,9 @@ class Product extends CI_Controller {
         $this->form_validation->set_rules('sub_category_id', 'Sub Category', 'trim|required|integer');
         $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|max_length[255]');
         $this->form_validation->set_rules('product_code', 'Product Code', 'trim|required|max_length[100]');
-        $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
-        $this->form_validation->set_rules('wholesale_price', 'Wholesale Price', 'trim|decimal|greater_than_equal_to[0]');
-        $this->form_validation->set_rules('retailer_price', 'Retailer Price', 'trim|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('wholesale_price', 'Wholesale Price', 'trim|decimal|greater_than_equal_to[0]');
+        // $this->form_validation->set_rules('retailer_price', 'Retailer Price', 'trim|decimal|greater_than_equal_to[0]');
         $this->form_validation->set_rules('quantity', 'Quantity', 'trim|integer|greater_than_equal_to[0]');
         $this->form_validation->set_rules('status', 'Status', 'trim|required|in_list[0,1]');
         if ($this->form_validation->run() == FALSE) {
@@ -128,8 +128,8 @@ class Product extends CI_Controller {
                 'product_code'    => $this->input->post('product_code'),
                 'product_slug'    => url_title(strtolower($name), '-'),
                 'price'           => $this->input->post('price'),
-                'wholesale_price' => $this->input->post('wholesale_price'),
-                'retailer_price'  => $this->input->post('retailer_price'),
+                // 'wholesale_price' => $this->input->post('wholesale_price'),
+                // 'retailer_price'  => $this->input->post('retailer_price'),
                 'quantity'        => $this->input->post('quantity'),
                 'description'     => $this->input->post('description'),
                 'long_description'=> $this->input->post('long_description'),
@@ -281,8 +281,8 @@ class Product extends CI_Controller {
             $categoryId = $subCat ? $subCat->category_id : 0;
             $subCatId   = $subCat ? $subCat->id : 0;
             $price          = isset($row['Price'])         ? trim($row['Price'])         : 0;
-            $wholesalePrice = isset($row['WholesalePrice'])? trim($row['WholesalePrice']): $price;
-            $retailerPrice  = isset($row['RetailerPrice']) ? trim($row['RetailerPrice']) : $price;
+            // $wholesalePrice = isset($row['WholesalePrice'])? trim($row['WholesalePrice']): $price;
+            // $retailerPrice  = isset($row['RetailerPrice']) ? trim($row['RetailerPrice']) : $price;
             $data = array(
                 'product_name'    => $productName,
                 'product_slug'    => url_title(strtolower($productName), '-'),
@@ -290,8 +290,8 @@ class Product extends CI_Controller {
                 'category_id'     => $categoryId,
                 'sub_cat_id'      => $subCatId,
                 'price'           => $price,
-                'wholesale_price' => $wholesalePrice,
-                'retailer_price'  => $retailerPrice,
+                // 'wholesale_price' => $wholesalePrice,
+                // 'retailer_price'  => $retailerPrice,
                 'quantity'        => isset($row['Quantity'])     ? trim($row['Quantity'])     : 0,
                 'description'     => isset($row['Description'])  ? trim($row['Description'])  : '',
                 'status'          => 1,

@@ -32,7 +32,7 @@
                 <tr>
                     <td><?php echo $o['id']; ?></td>
                     <td><?php echo $o['transaction_no']; ?></td>
-                    <td><?php echo CURRENCY_SYMBOL.' '.number_format($o['total_amount'],2); ?></td>
+                    <td><?php echo '£ '.number_format($o['total_amount'],2); ?></td>
                     <td><span class="label label-<?php echo $cls[$o['status']]??'default'; ?>"><?php echo $statuses[$o['status']]??'Unknown'; ?></span></td>
                     <td><?php echo date('d M Y', strtotime($o['addedOn'])); ?></td>
                 </tr>

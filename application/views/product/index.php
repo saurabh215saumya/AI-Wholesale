@@ -14,7 +14,7 @@
       </div>
       <div class="box-body table-responsive">
         <table class="table table-bordered table-striped" id="example1">
-          <thead><tr><th>#</th><th>Image</th><th>Name</th><th>Code</th><th>Category</th><th>Price</th><th>Qty</th><th>Variants</th><th>New</th><th>Featured</th><th>Status</th><th>Action</th></tr></thead>
+          <thead><tr><th>#</th><th>Image</th><th>Name</th><th>Code</th><th>Category</th><th>RRP Price</th><th>Qty</th><th>Variants</th><th>New</th><th>Featured</th><th>Status</th><th>Action</th></tr></thead>
           <tbody>
           <?php if(!empty($allproducts)): $i=1; foreach($allproducts as $p): ?>
           <tr>

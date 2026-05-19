@@ -52,8 +52,8 @@ $search   = $this->input->get('search');
                     $minP      = $hasVar ? min(array_column($variants,'price')) : floatval($p['price']);
                     $maxP      = $hasVar ? max(array_column($variants,'price')) : 0;
                     $priceStr  = ($hasVar && $maxP > $minP)
-                        ? CURRENCY_SYMBOL.number_format($minP,2).' - '.CURRENCY_SYMBOL.number_format($maxP,2)
-                        : CURRENCY_SYMBOL.number_format($minP,2);
+                        ? '£ '.number_format($minP,2).' - '.'£ '.number_format($maxP,2)
+                        : '£ '.number_format($minP,2);
                     $cardId    = 'card-'.$p['id'];
                 ?>
                 <div class="jly-card" id="<?php echo $cardId; ?>">
@@ -99,7 +99,7 @@ $search   = $this->input->get('search');
                                 <?php if($inStock): ?>onclick="addVariantToCart(<?php echo $p['id']; ?>, <?php echo $vPrice; ?>, '<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
                                 <span class="jly-variant-icon"><i class="fa fa-shopping-cart"></i></span>
                                 <span class="jly-variant-label"><?php echo is_numeric(trim($v['label'])) ? trim($v['label']).' pieces' : htmlspecialchars($v['label']); ?></span>
-                                <span class="jly-variant-price"><?php echo CURRENCY_SYMBOL.number_format($vPrice,2); ?></span>
+                                <span class="jly-variant-price"><?php echo '£ '.number_format($vPrice,2); ?></span>
                                 <?php if(!$inStock): ?><span class="jly-out-tag">Out</span><?php endif; ?>
                             </button>
                             <?php endforeach; ?>
@@ -197,7 +197,7 @@ $search   = $this->input->get('search');
             <!-- Feature boxes -->
             <div class="feature-box feature-box-style-3 mt-md">
                 <div class="feature-box-icon"><i class="fa fa-truck"></i></div>
-                <div class="feature-box-info"><h4>FREE SHIPPING</h4><p class="mb-none">On orders over <?php echo CURRENCY_SYMBOL; ?>99</p></div>
+                <div class="feature-box-info"><h4>FREE SHIPPING</h4><p class="mb-none">On orders over <?php echo '£ '; ?>99</p></div>
             </div>
             <div class="feature-box feature-box-style-3">
                 <div class="feature-box-icon"><i class="fa fa-gbp"></i></div>

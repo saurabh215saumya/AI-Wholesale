@@ -21,8 +21,8 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
             $minP     = $hasVar ? min(array_column($variants,'price')) : floatval($p['price']);
             $maxP     = $hasVar ? max(array_column($variants,'price')) : 0;
             $priceStr = ($hasVar && $maxP > $minP)
-                ? CURRENCY_SYMBOL.number_format($minP,2).' - '.CURRENCY_SYMBOL.number_format($maxP,2)
-                : CURRENCY_SYMBOL.number_format($minP,2);
+                ? '£ '.number_format($minP,2).' - '.'£ '.number_format($maxP,2)
+                : '£ '.number_format($minP,2);
         ?>
         <div class="jly-card" id="card-<?php echo $p['id']; ?>">
             <?php if($p['new_product']): ?><span class="jly-badge jly-badge-new">New</span><?php endif; ?>
@@ -67,7 +67,7 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
                         <?php if($inStock): ?>onclick="addVariantToCart(<?php echo $p['id']; ?>, <?php echo $vPrice; ?>, '<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
                         <span class="jly-variant-icon"><i class="fa fa-shopping-cart"></i></span>
                         <span class="jly-variant-label"><?php echo is_numeric(trim($v['label'])) ? trim($v['label']).' pieces' : htmlspecialchars($v['label']); ?></span>
-                        <span class="jly-variant-price"><?php echo CURRENCY_SYMBOL.number_format($vPrice,2); ?></span>
+                        <span class="jly-variant-price"><?php echo '£ '.number_format($vPrice,2); ?></span>
                         <?php if(!$inStock): ?><span class="jly-out-tag">Out</span><?php endif; ?>
                     </button>
                     <?php endforeach; ?>

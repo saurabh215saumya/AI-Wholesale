@@ -54,25 +54,25 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group <?php echo form_error('price') ? 'has-error' : ''; ?>">
-              <label>Price (Trader) <span class="text-danger">*</span></label>
+              <label>RRP Price <span class="text-danger">*</span></label>
               <input type="number" step="0.01" min="0" name="price" class="form-control" value="<?php echo set_value('price'); ?>">
               <?php echo form_error('price'); ?>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="form-group <?php echo form_error('wholesale_price') ? 'has-error' : ''; ?>">
+          <!-- <div class="col-md-4">
+            <div class="form-group <?php //echo form_error('wholesale_price') ? 'has-error' : ''; ?>">
               <label>Wholesale Price</label>
-              <input type="number" step="0.01" min="0" name="wholesale_price" class="form-control" value="<?php echo set_value('wholesale_price'); ?>">
-              <?php echo form_error('wholesale_price'); ?>
+              <input type="number" step="0.01" min="0" name="wholesale_price" class="form-control" value="<?php //echo set_value('wholesale_price'); ?>">
+              <?php //echo form_error('wholesale_price'); ?>
             </div>
           </div>
           <div class="col-md-4">
-            <div class="form-group <?php echo form_error('retailer_price') ? 'has-error' : ''; ?>">
+            <div class="form-group <?php //echo form_error('retailer_price') ? 'has-error' : ''; ?>">
               <label>Retailer Price</label>
-              <input type="number" step="0.01" min="0" name="retailer_price" class="form-control" value="<?php echo set_value('retailer_price'); ?>">
-              <?php echo form_error('retailer_price'); ?>
+              <input type="number" step="0.01" min="0" name="retailer_price" class="form-control" value="<?php //echo set_value('retailer_price'); ?>">
+              <?php //echo form_error('retailer_price'); ?>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="form-group <?php echo form_error('quantity') ? 'has-error' : ''; ?>">
           <label>Quantity</label>

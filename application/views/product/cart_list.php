@@ -52,7 +52,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo CURRENCY_SYMBOL.' '.number_format($proPrice,2); ?></span>
+                                <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo '£ '.number_format($proPrice,2); ?></span>
                             </td>
                             <td>
                                 <div class="qty-holder">
@@ -62,7 +62,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 </div>
                             </td>
                             <td>
-                                <span class="text-primary" id="totPrice_<?php echo $i; ?>"><?php echo CURRENCY_SYMBOL.' '.number_format($totPrice,2); ?></span>
+                                <span class="text-primary" id="totPrice_<?php echo $i; ?>"><?php echo '£ '.number_format($totPrice,2); ?></span>
                             </td>
                         </tr>
                         <?php $i++; endforeach; endif; ?>
@@ -90,9 +90,9 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                             <div class="panel-body">
                                 <table class="totals-table">
                                     <tbody>
-                                        <tr><td>Subtotal</td><td><?php echo CURRENCY_SYMBOL.' '.number_format($subTotal,2); ?></td></tr>
+                                        <tr><td>Subtotal</td><td><?php echo '£ '.number_format($subTotal,2); ?></td></tr>
                                         <tr><td>Shipping</td><td>Free</td></tr>
-                                        <tr><td><strong>Grand Total</strong></td><td><strong><?php echo CURRENCY_SYMBOL.' '.number_format($subTotal,2); ?></strong></td></tr>
+                                        <tr><td><strong>Grand Total</strong></td><td><strong><?php echo '£ '.number_format($subTotal,2); ?></strong></td></tr>
                                     </tbody>
                                 </table>
                                 <?php if(!empty($allCartProducts)): ?>

@@ -6,7 +6,7 @@
                 <i class="fa fa-truck bar-icon"></i>
                 <div class="bar-textarea">
                     <h3>FREE SHIPPING &amp; RETURN</h3>
-                    <p>Free shipping on all orders over <?php echo CURRENCY_SYMBOL; ?>99.</p>
+                    <p>Free shipping on all orders over <?php echo '£ '; ?>99.</p>
                 </div>
             </div>
             <div class="col-md-4">
