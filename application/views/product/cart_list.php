@@ -16,7 +16,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                 <div class="cart-table-wrap">
                     <table class="cart-table">
                         <thead>
-                            <tr><th></th><th></th><th>Product Name</th><th>Unit Price</th><th>VAT (20%)</th><th>Qty</th><th>Subtotal (inc. VAT)</th></tr>
+                            <tr><th></th><th></th><th>Product Name</th><th>Unit Price</th><th>Qty</th><th>Subtotal (inc. VAT)</th></tr>
                         </thead>
                         <tbody>
                         <?php
@@ -54,10 +54,8 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo '£ '.number_format($proPrice,2); ?></span>
-                            </td>
-                            <td>
-                                <span class="text-muted" style="font-size:12px;">£ <?php echo number_format($vatAmount,2); ?></span>
+                                <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo '£ '.number_format($proPrice,2); ?></span><br>
+                                <span class="vat-label">VAT 20%: £ <?php echo number_format($vatAmount * $row['quantity'],2); ?></span>
                             </td>
                             <td>
                                 <div class="qty-holder">
@@ -74,7 +72,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="6" class="clearfix">
+                                <td colspan="5" class="clearfix">
                                     <a href="<?php echo base_url('all-products'); ?>" class="btn-cart-continue">
                                         <i class="fa fa-arrow-left"></i> Continue Shopping
                                     </a>
@@ -101,7 +99,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                         <tr><td>Subtotal (ex. VAT)</td><td>£ <?php echo number_format($netTotal,2); ?></td></tr>
                                         <tr><td>VAT (20%)</td><td>£ <?php echo number_format($vatTotal,2); ?></td></tr>
                                         <tr><td>Shipping</td><td>Free</td></tr>
-                                        <tr><td><strong>Grand Total (inc. VAT)</strong></td><td><strong>£ <?php echo number_format($subTotal,2); ?></strong></td></tr>
+                                        <tr><td><strong>Grand Total</strong><br><small style="font-weight:400;color:#888;">(inc. VAT)</small></td><td><strong>£ <?php echo number_format($subTotal,2); ?></strong></td></tr>
                                     </tbody>
                                 </table>
                                 <?php if(!empty($allCartProducts)): ?>
