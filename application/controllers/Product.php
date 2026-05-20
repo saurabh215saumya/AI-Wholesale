@@ -370,7 +370,8 @@ class Product extends CI_Controller {
         $user_id = $this->session->userdata('front_logged_in')['id'];
         $front   = $this->session->userdata('front_logged_in');
         $data['billingArr']         = getUserBillingDetails($user_id);
-        $data['subTotal']           = $this->Product_model->getUserCartSubTotal($user_id);
+        $rawSubTotal                = $this->Product_model->getUserCartSubTotal($user_id);
+        $data['subTotal']           = $rawSubTotal * 1.20;
         $data['isActiveCategories'] = getAllCategory();
         $data['userInfo']           = $front;
         $this->load->view('template/front/header', $data);
@@ -524,7 +525,7 @@ class Product extends CI_Controller {
         $billing_address_id = $this->input->post('billing_address_id');
         $special_instructions = $this->input->post('special_instructions');
         $delivery_option    = $this->input->post('delivery_option');
-        $subTotal           = $this->Product_model->getUserCartSubTotal($user_id);
+        $subTotal           = $this->Product_model->getUserCartSubTotal($user_id) * 1.20;
         $amount_pence       = (int)round($subTotal * 100);
 
         require_once APPPATH . 'libraries/Stripe/init.php';

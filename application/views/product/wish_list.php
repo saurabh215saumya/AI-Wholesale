@@ -6,24 +6,6 @@ $currentPage = isset($wlCurrentPage) ? (int)$wlCurrentPage : 0;
 $baseUrl     = base_url('wish-list');
 ?>
 
-<style>
-.jly-product-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
-@media(max-width:1100px){.jly-product-grid-4{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:768px){.jly-product-grid-4{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){.jly-product-grid-4{grid-template-columns:1fr;}}
-.wl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
-.wl-count{color:#999;font-size:13px;margin:4px 0 0;}
-.wl-shop-btn{background:linear-gradient(90deg,#ff6b9d,#ff8c42);color:#fff;border:none;border-radius:30px;padding:9px 20px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .2s;display:inline-block;}
-.wl-shop-btn:hover{opacity:.85;color:#fff;text-decoration:none;}
-.wl-empty{text-align:center;padding:70px 20px;}
-.wl-empty-icon{font-size:64px;color:#ffb3cc;margin-bottom:16px;}
-.wl-empty h3{font-size:22px;font-weight:700;color:#333;margin-bottom:8px;}
-.wl-empty p{color:#999;font-size:14px;margin-bottom:24px;}
-.wl-browse-btn{display:inline-block;background:linear-gradient(90deg,#ff6b9d,#ff8c42);color:#fff;border-radius:30px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;transition:opacity .2s;}
-.wl-browse-btn:hover{opacity:.85;color:#fff;text-decoration:none;}
-.jly-card.wl-removing{opacity:0;transform:scale(.9);transition:all .3s ease;}
-</style>
-
 <section class="page-header mb-lg">
     <div class="container">
         <ul class="breadcrumb">
@@ -58,8 +40,8 @@ $baseUrl     = base_url('wish-list');
             $minP      = $hasVar ? min(array_column($variants,'price')) : floatval($p['price']);
             $maxP      = $hasVar ? max(array_column($variants,'price')) : 0;
             $priceStr  = ($hasVar && $maxP > $minP)
-                ? CURRENCY_SYMBOL.number_format($minP,2).' - '.CURRENCY_SYMBOL.number_format($maxP,2)
-                : CURRENCY_SYMBOL.number_format($minP,2);
+                ? '£ '.number_format($minP,2).' - '.'£ '.number_format($maxP,2)
+                : '£ '.number_format($minP,2);
             $cardId    = 'wlcard-'.$p['product_id'];
         ?>
         <div class="jly-card" id="<?php echo $cardId; ?>">
@@ -76,10 +58,13 @@ $baseUrl     = base_url('wish-list');
                 <?php else: ?>
                 <span class="jly-stock out"><i class="fa fa-exclamation-triangle"></i> Out of Stock</span>
                 <?php endif; ?>
-                <div class="jly-price"><?php echo $priceStr; ?></div>
+                <div class="jly-price"><?php echo $userId ? $priceStr : '—'; ?></div>
+                <?php if(!$userId): ?>
+                <p style="font-size:12px;color:#e74c3c;margin:4px 0 6px;"><i class="fa fa-lock"></i> Register/Login to view variant prices</p>
+                <?php endif; ?>
                 <a href="<?php echo $detailUrl; ?>" class="jly-btn jly-btn-view"><i class="fa fa-eye"></i> View Details</a>
                 <?php if($hasVar): ?>
-                <button class="jly-btn jly-btn-quick" onclick="toggleQuickAdd('<?php echo $cardId; ?>')" id="qabtn-<?php echo $cardId; ?>">
+                <button class="jly-btn jly-btn-quick" <?php if($userId): ?>onclick="toggleQuickAdd('<?php echo $cardId; ?>')"<?php else: ?>disabled style="opacity:.5;cursor:not-allowed;pointer-events:none;"<?php endif; ?> id="qabtn-<?php echo $cardId; ?>">
                     <i class="fa fa-shopping-cart"></i>&nbsp; Quick Add
                     <i class="fa fa-chevron-down jly-chevron" id="chev-<?php echo $cardId; ?>"></i>
                 </button>
@@ -89,23 +74,13 @@ $baseUrl     = base_url('wish-list');
                         $vPrice = floatval($v['price']);
                     ?>
                     <button class="jly-variant-row<?php echo !$inStock?' variant-out':''; ?>"
-                        <?php if($inStock): ?>onclick="qaSelectVariant(this, <?php echo $p['product_id']; ?>, <?php echo $vPrice; ?>, '<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
-                        <span class="jly-variant-icon"><i class="fa fa-tag"></i></span>
+                        <?php if($inStock): ?>onclick="addVariantToCart(<?php echo $p['product_id']; ?>,<?php echo $vPrice; ?>,'<?php echo $vLabel; ?>')"<?php else: ?>disabled<?php endif; ?>>
+                        <span class="jly-variant-icon"><i class="fa fa-shopping-cart"></i></span>
                         <span class="jly-variant-label"><?php echo is_numeric(trim($v['label'])) ? trim($v['label']).' pieces' : htmlspecialchars($v['label']); ?></span>
-                        <span class="jly-variant-price"><?php echo CURRENCY_SYMBOL.number_format($vPrice,2); ?></span>
+                        <span class="jly-variant-price"><?php echo '£ '.number_format($vPrice,2); ?></span>
                         <?php if(!$inStock): ?><span class="jly-out-tag">Out</span><?php endif; ?>
                     </button>
                     <?php endforeach; ?>
-                    <div class="jly-qa-footer">
-                        <div class="jly-qa-qty">
-                            <button class="jly-qa-qty-btn" onclick="qaChangeQty('<?php echo $p['product_id']; ?>', -1)">&#8722;</button>
-                            <span class="jly-qa-qty-val" id="qa-qty-<?php echo $p['product_id']; ?>">1</span>
-                            <button class="jly-qa-qty-btn" onclick="qaChangeQty('<?php echo $p['product_id']; ?>', 1)">&#43;</button>
-                        </div>
-                        <button class="jly-qa-cart-btn" id="qa-cart-<?php echo $p['product_id']; ?>" onclick="qaAddToCart('<?php echo $p['product_id']; ?>')" disabled>
-                            <i class="fa fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
                 </div>
                 <?php else: ?>
                 <button class="jly-btn jly-btn-oos" disabled><i class="fa fa-shopping-cart"></i>&nbsp; Out of Stock</button>
@@ -174,24 +149,6 @@ function toggleQuickAdd(cardId) {
     if (!isOpen) { $v.addClass('open'); $c.removeClass('fa-chevron-down').addClass('fa-chevron-up'); }
 }
 
-var qaState = {};
-function qaSelectVariant(el, pid, price, label) {
-    var $wrap = $(el).closest('.jly-variants');
-    $wrap.find('.jly-variant-row').removeClass('jly-variant-selected');
-    $(el).addClass('jly-variant-selected');
-    qaState[pid] = { price: price, label: label };
-    $('#qa-cart-' + pid).prop('disabled', false);
-}
-function qaChangeQty(pid, delta) {
-    var $v = $('#qa-qty-' + pid);
-    var q = Math.max(1, (parseInt($v.text()) || 1) + delta);
-    $v.text(q);
-}
-function qaAddToCart(pid) {
-    if (!qaState[pid]) return;
-    var qty = parseInt($('#qa-qty-' + pid).text()) || 1;
-    addToCart(pid, qty, qaState[pid].price, qaState[pid].label);
-}
 function addVariantToCart(pid, price, label) { addToCart(pid, 1, price, label); }
 
 $(document).on('click', function(e) {

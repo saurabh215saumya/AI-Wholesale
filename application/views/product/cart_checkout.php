@@ -3,87 +3,6 @@ $billing  = !empty($billingArr) ? $billingArr[0] : [];
 $fullName = !empty($billing) ? trim($billing['first_name'].' '.$billing['last_name']) : (isset($userInfo) ? trim($userInfo['first_name'].' '.$userInfo['last_name']) : '');
 $email    = isset($userInfo) ? $userInfo['email'] : '';
 ?>
-<style>
-*{box-sizing:border-box;}
-.co-wrap{max-width:600px;margin:30px auto;padding:0 15px 60px;font-family:'Segoe UI',sans-serif;}
-
-/* Progress Bar */
-.co-progress{display:flex;align-items:center;margin-bottom:32px;}
-.co-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
-.co-step-circle{width:36px;height:36px;border-radius:50%;background:#eee;color:#aaa;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s;border:2px solid #eee;z-index:1;}
-.co-step.active .co-step-circle{background:linear-gradient(135deg,#ff6b9d,#ff8c42);color:#fff;border-color:#ff6b9d;box-shadow:0 0 0 4px rgba(255,107,157,.15);}
-.co-step.done .co-step-circle{background:#28a745;color:#fff;border-color:#28a745;}
-.co-step-label{font-size:11px;color:#aaa;margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
-.co-step.active .co-step-label{color:#ff6b9d;}
-.co-step.done .co-step-label{color:#28a745;}
-.co-step-line{flex:1;height:2px;background:#eee;margin:0 -1px;margin-bottom:20px;transition:background .3s;}
-.co-step-line.done{background:#28a745;}
-
-/* Cards */
-.co-card{background:#fff;border-radius:16px;box-shadow:0 2px 20px rgba(0,0,0,.07);padding:28px;margin-bottom:16px;display:none;animation:fadeSlide .35s ease;}
-.co-card.active{display:block;}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-
-.co-card-header{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
-.co-card-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#ff6b9d,#ff8c42);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;}
-.co-card-title{font-size:17px;font-weight:700;color:#222;}
-.co-card-subtitle{font-size:12px;color:#999;margin-top:1px;}
-
-/* Form */
-.co-field{margin-bottom:14px;}
-.co-field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#555;text-transform:uppercase;letter-spacing:.4px;}
-.co-field label .req{color:#ff6b9d;}
-.co-field input,.co-field textarea,.co-field select{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:11px 14px;font-size:14px;color:#333;outline:none;transition:all .2s;background:#fafafa;}
-.co-field input:focus,.co-field textarea:focus,.co-field select:focus{border-color:#ff6b9d;background:#fff;box-shadow:0 0 0 3px rgba(255,107,157,.1);}
-.co-field input.valid{border-color:#28a745;background:#fff;}
-.co-field input.invalid{border-color:#e44;}
-.co-row{display:flex;gap:12px;}
-.co-row .co-field{flex:1;}
-
-/* Delivery */
-.co-delivery{border:1.5px solid #eee;border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s;background:#fafafa;}
-.co-delivery:hover{border-color:#ff6b9d;background:#fff8fb;}
-.co-delivery.selected{border-color:#ff6b9d;background:#fff8fb;box-shadow:0 0 0 3px rgba(255,107,157,.1);}
-.co-delivery input[type=radio]{accent-color:#ff6b9d;width:16px;height:16px;}
-.co-delivery-icon{font-size:20px;}
-.co-delivery-info{flex:1;}
-.co-delivery-name{font-weight:700;font-size:13px;color:#222;}
-.co-delivery-desc{font-size:12px;color:#888;margin-top:2px;}
-.co-delivery-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:#e8f5e9;color:#28a745;}
-.co-delivery-badge.paid{background:#fff3e0;color:#e65100;}
-.co-delivery-price{font-weight:700;font-size:14px;color:#222;white-space:nowrap;}
-.co-delivery-price.free{color:#28a745;}
-
-/* Summary */
-.co-summary-item{display:flex;justify-content:space-between;font-size:14px;color:#666;padding:8px 0;border-bottom:1px solid #f0f0f0;}
-.co-summary-item:last-child{border:none;}
-.co-summary-total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#222;padding:14px 0 0;margin-top:4px;}
-.co-summary-total span:last-child{color:#ff6b9d;}
-
-/* Stripe card */
-.co-stripe-box{border:1.5px solid #e8e8e8;border-radius:10px;padding:13px 14px;background:#fafafa;transition:all .2s;}
-.co-stripe-box:focus-within{border-color:#ff6b9d;background:#fff;box-shadow:0 0 0 3px rgba(255,107,157,.1);}
-.co-stripe-error{color:#e44;font-size:12px;margin-top:6px;min-height:18px;}
-
-/* Secure badges */
-.co-secure{display:flex;align-items:center;gap:6px;font-size:11px;color:#999;margin-top:10px;justify-content:center;}
-.co-secure i{color:#28a745;}
-
-/* Buttons */
-.co-btn-next{width:100%;background:linear-gradient(90deg,#ff6b9d,#ff8c42);border:none;border-radius:30px;color:#fff;font-size:15px;font-weight:700;padding:13px;cursor:pointer;margin-top:6px;transition:all .2s;letter-spacing:.3px;}
-.co-btn-next:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,157,.35);}
-.co-btn-back{width:100%;background:#f5f5f5;border:none;border-radius:30px;color:#666;font-size:14px;font-weight:600;padding:11px;cursor:pointer;margin-top:8px;transition:all .2s;}
-.co-btn-back:hover{background:#eee;}
-.co-btn-pay{width:100%;background:linear-gradient(90deg,#ff6b9d,#ff8c42);border:none;border-radius:30px;color:#fff;font-size:16px;font-weight:700;padding:15px;cursor:pointer;margin-top:10px;transition:all .2s;letter-spacing:.3px;}
-.co-btn-pay:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,157,.35);}
-.co-btn-pay:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
-
-/* Trust bar */
-.co-trust{display:flex;justify-content:center;gap:20px;margin-top:20px;flex-wrap:wrap;}
-.co-trust-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#aaa;font-weight:600;}
-.co-trust-item i{font-size:14px;color:#ff6b9d;}
-</style>
-
 <?php
 $addr1   = !empty($billing['address_1'])   ? htmlspecialchars($billing['address_1'])   : '';
 $addr2   = !empty($billing['address_2'])   ? htmlspecialchars($billing['address_2'])   : '';
@@ -249,9 +168,11 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
     <!-- Order Summary -->
     <div style="background:#fafafa;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
       <div style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Order Summary</div>
-      <div class="co-summary-item"><span>Subtotal</span><span>£<?php echo number_format($subTotal,2); ?></span></div>
+      <?php $netTotal = $subTotal / 1.20; $vatTotal = $subTotal - $netTotal; ?>
+      <div class="co-summary-item"><span>Subtotal (ex. VAT)</span><span>£<?php echo number_format($netTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>VAT (20%)</span><span>£<?php echo number_format($vatTotal,2); ?></span></div>
       <div class="co-summary-item"><span>Shipping</span><span id="shipping-display" style="color:#28a745;font-weight:700;">FREE</span></div>
-      <div class="co-summary-total"><span>Total</span><span id="total-display">£<?php echo number_format($subTotal,2); ?></span></div>
+      <div class="co-summary-total"><span>Total (inc. VAT)</span><span id="total-display">£<?php echo number_format($subTotal,2); ?></span></div>
     </div>
 
     <div class="co-field">
@@ -284,17 +205,7 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
 var SUBTOTAL = <?php echo floatval($subTotal); ?>;
 var shippingCost = 0;
 var currentStep = 1;
-
-var stripe = Stripe('<?php echo STRIPE_PUBLISHABLE_KEY; ?>');
-var elements = stripe.elements();
-var cardElement = elements.create('card', {
-    hidePostalCode: true,
-    style: { base: { fontSize: '15px', color: '#333', '::placeholder': { color: '#bbb' }, fontFamily: "'Segoe UI', sans-serif" } }
-});
-cardElement.mount('#stripe-card-element');
-cardElement.on('change', function(e) {
-    document.getElementById('stripe-card-errors').textContent = e.error ? e.error.message : '';
-});
+var stripe, cardElement;
 
 function goStep(n) {
     if (n > currentStep && !validateStep(currentStep)) return;
@@ -344,7 +255,19 @@ function selectDelivery(radio, optId, cost) {
     document.getElementById('pay-btn-amount').textContent = total.toFixed(2);
 }
 
-document.getElementById('stripe-pay-btn').addEventListener('click', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    stripe = Stripe('<?php echo STRIPE_PUBLISHABLE_KEY; ?>');
+    var elements = stripe.elements();
+    cardElement = elements.create('card', {
+        hidePostalCode: true,
+        style: { base: { fontSize: '15px', color: '#333', '::placeholder': { color: '#bbb' }, fontFamily: "'Segoe UI', sans-serif" } }
+    });
+    cardElement.mount('#stripe-card-element');
+    cardElement.on('change', function(e) {
+        document.getElementById('stripe-card-errors').textContent = e.error ? e.error.message : '';
+    });
+
+    document.getElementById('stripe-pay-btn').addEventListener('click', function() {
     if (!validateStep(1) || !validateStep(2)) { goStep(1); return; }
     var btn = this;
     btn.disabled = true;
@@ -376,20 +299,21 @@ document.getElementById('stripe-pay-btn').addEventListener('click', function() {
             }
         });
     });
-});
+    }); // end stripe-pay-btn click
 
-// Live input validation feedback
-['co_email','co_fullname','co_addr1','co_city','co_postal'].forEach(function(id) {
+    // Live input validation feedback
+    ['co_email','co_fullname','co_addr1','co_city','co_postal'].forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('blur', function() {
         this.classList.toggle('valid', this.value.trim().length > 0);
         this.classList.toggle('invalid', this.value.trim().length === 0);
     });
-    el.addEventListener('input', function() {
-        if (this.classList.contains('invalid') && this.value.trim().length > 0) {
-            this.classList.remove('invalid'); this.classList.add('valid');
-        }
-    });
-});
+        el.addEventListener('input', function() {
+            if (this.classList.contains('invalid') && this.value.trim().length > 0) {
+                this.classList.remove('invalid'); this.classList.add('valid');
+            }
+        });
+    }); // end forEach
+}); // end DOMContentLoaded
 </script>

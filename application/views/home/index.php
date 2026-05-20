@@ -47,14 +47,18 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
                 <span class="jly-stock out"><i class="fa fa-exclamation-triangle"></i> Out of Stock</span>
                 <?php endif; ?>
 
-                <div class="jly-price"><?php echo $priceStr; ?></div>
+                <div class="jly-price"><?php echo $userId ? $priceStr : '—'; ?></div>
+
+                <?php if(!$userId): ?>
+                <p style="font-size:12px;color:#e74c3c;margin:4px 0 6px;"><i class="fa fa-lock"></i> Register/Login to view variant prices</p>
+                <?php endif; ?>
 
                 <a href="<?php echo base_url('product-details/'.$p['product_slug']); ?>" class="jly-btn jly-btn-view">
                     <i class="fa fa-eye"></i> View Details
                 </a>
 
                 <?php if($hasVar): ?>
-                <button class="jly-btn jly-btn-quick" onclick="toggleQuickAdd(<?php echo $p['id']; ?>)" id="qabtn-<?php echo $p['id']; ?>">
+                <button class="jly-btn jly-btn-quick" <?php if($userId): ?>onclick="toggleQuickAdd(<?php echo $p['id']; ?>)"<?php else: ?>disabled style="opacity:.5;cursor:not-allowed;pointer-events:none;"<?php endif; ?> id="qabtn-<?php echo $p['id']; ?>">
                     <i class="fa fa-shopping-cart"></i>&nbsp; Quick Add
                     <i class="fa fa-chevron-down jly-chevron" id="chev-<?php echo $p['id']; ?>"></i>
                 </button>

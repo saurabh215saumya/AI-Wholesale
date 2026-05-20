@@ -1,5 +1,58 @@
 </div><!-- /.main -->
 
+<!-- ── Age Verification Dialog ─────────────────────────────────────────── -->
+<div id="age-verify-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(10,10,20,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:20px;max-width:460px;width:92%;margin:auto;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);position:relative;">
+        <!-- Top gradient bar -->
+        <div style="background:linear-gradient(135deg,#ff6000 0%,#ff8c42 50%,#ff6b9d 100%);padding:36px 30px 28px;text-align:center;">
+            <div style="width:72px;height:72px;background:rgba(255,255,255,.18);border:3px solid rgba(255,255,255,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:32px;color:#fff;line-height:1;">18+</div>
+            <h2 style="color:#fff;font-size:24px;font-weight:800;margin:0 0 6px;letter-spacing:.5px;">Age Verification</h2>
+            <p style="color:rgba(255,255,255,.88);font-size:13px;margin:0;">You must be 18 or older to enter this site</p>
+        </div>
+        <!-- Body -->
+        <div style="padding:28px 32px 32px;text-align:center;">
+            <p style="color:#555;font-size:14px;line-height:1.7;margin:0 0 24px;">This website contains products intended for adults only. By entering, you confirm that you are <strong style="color:#ff6000;">18 years of age or older</strong> and agree to our <a href="<?php echo base_url('terms-conditions'); ?>" style="color:#ff6000;">Terms &amp; Conditions</a>.</p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button onclick="ageVerifyConfirm()" style="flex:1;max-width:180px;background:linear-gradient(135deg,#ff6000,#ff8c42);color:#fff;border:none;border-radius:30px;padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 18px rgba(255,96,0,.35);">
+                    <i class="fa fa-check"></i>&nbsp; Yes, I'm 18+
+                </button>
+                <button onclick="ageVerifyDecline()" style="flex:1;max-width:180px;background:#f5f5f5;color:#888;border:1px solid #e0e0e0;border-radius:30px;padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;">
+                    <i class="fa fa-times"></i>&nbsp; No, Exit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Age-blocked screen (shown when user clicks No) -->
+<div id="age-blocked-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);align-items:center;justify-content:center;text-align:center;padding:30px;">
+    <div>
+        <div style="font-size:64px;margin-bottom:16px;">🚫</div>
+        <h2 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 10px;">Access Denied</h2>
+        <p style="color:rgba(255,255,255,.65);font-size:15px;max-width:340px;margin:0 auto 24px;line-height:1.7;">Sorry, you must be 18 or older to access this website.</p>
+        <a href="https://www.google.com" style="display:inline-block;background:linear-gradient(135deg,#ff6000,#ff8c42);color:#fff;border-radius:30px;padding:12px 32px;font-size:14px;font-weight:700;text-decoration:none;"><i class="fa fa-arrow-left"></i>&nbsp; Leave Site</a>
+    </div>
+</div>
+
+<script>
+(function(){
+    if(sessionStorage.getItem('age_verified') === '1') return;
+    var overlay = document.getElementById('age-verify-overlay');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+})();
+function ageVerifyConfirm(){
+    sessionStorage.setItem('age_verified','1');
+    document.getElementById('age-verify-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+}
+function ageVerifyDecline(){
+    document.getElementById('age-verify-overlay').style.display = 'none';
+    var blocked = document.getElementById('age-blocked-screen');
+    blocked.style.display = 'flex';
+}
+</script>
+
 <footer id="footer" style="background:#1e1e1e; color:#ccc;">
     <div class="container">
         <div class="row">

@@ -74,7 +74,12 @@ if(!empty($p['long_description'])) {
                     <div class="pd-section">
                         <h4 class="pd-section-title">Purchase Options</h4>
                         <div class="pd-purchase-box">
-                            <?php if($hasVar): ?>
+                            <?php if(!$userId): ?>
+                            <p style="color:#e74c3c;font-size:13px;margin:0 0 10px;"><i class="fa fa-lock"></i> Register/Login to view variant prices</p>
+                            <a href="<?php echo base_url('sign-in'); ?>" class="pd-add-cart-btn" style="text-decoration:none;display:inline-block;">
+                                <i class="fa fa-sign-in"></i> Login / Register
+                            </a>
+                            <?php elseif($hasVar): ?>
                             <p class="pd-select-label"><i class="fa fa-tag"></i> Select Pack Size</p>
                             <div class="pd-variant-list" id="pd-variant-list">
                                 <?php foreach($productVariants as $i => $v):
@@ -95,9 +100,9 @@ if(!empty($p['long_description'])) {
                                             <span class="pd-var-name"><?php echo $displayLabel; ?></span>
                                             <span class="pd-var-badge"><?php echo $displayLabel; ?></span>
                                         </div>
-                                        <div class="pd-var-per"><?php echo CURRENCY_SYMBOL.number_format($perPiece,2); ?> per piece</div>
+                                        <div class="pd-var-per"><?php echo '£ '.number_format($perPiece,2); ?> per piece</div>
                                     </div>
-                                    <div class="pd-var-price"><?php echo CURRENCY_SYMBOL.number_format($vPrice,2); ?></div>
+                                    <div class="pd-var-price"><?php echo '£ '.number_format($vPrice,2); ?></div>
                                 </div>
                                 <?php endforeach; ?>
                             </div>
@@ -116,7 +121,7 @@ if(!empty($p['long_description'])) {
                             <!-- Total -->
                             <div class="pd-total-row">
                                 <span>Total:</span>
-                                <span class="pd-total-price" id="pd-total-price"><?php echo CURRENCY_SYMBOL.number_format(floatval($productVariants[0]['price']),2); ?></span>
+                                <span class="pd-total-price" id="pd-total-price"><?php echo '£ '.number_format(floatval($productVariants[0]['price']),2); ?></span>
                             </div>
 
                             <!-- Add to Cart -->
@@ -137,7 +142,7 @@ if(!empty($p['long_description'])) {
                             elseif($userType && $p['retailer_price']>0) $price = $p['retailer_price'];
                             else $price = $p['price'];
                             ?>
-                            <div class="pd-single-price"><?php echo CURRENCY_SYMBOL.number_format($price,2); ?></div>
+                            <div class="pd-single-price"><?php echo '£ '.number_format($price,2); ?></div>
                             <div class="pd-qty-row">
                                 <label class="pd-qty-label">Quantity</label>
                                 <div class="pd-qty-ctrl">
@@ -148,7 +153,7 @@ if(!empty($p['long_description'])) {
                             </div>
                             <div class="pd-total-row">
                                 <span>Total:</span>
-                                <span class="pd-total-price" id="pd-total-price"><?php echo CURRENCY_SYMBOL.number_format($price,2); ?></span>
+                                <span class="pd-total-price" id="pd-total-price"><?php echo '£ '.number_format($price,2); ?></span>
                             </div>
                             <button class="pd-add-cart-btn pd-add-cart-oos" disabled>
                                 <i class="fa fa-ban"></i> Out of Stock
@@ -211,7 +216,7 @@ function changeQty(delta) {
 
 function updateTotal() {
     var total = pdQty * pdSelectedPrice;
-    document.getElementById('pd-total-price').textContent = '<?php echo CURRENCY_SYMBOL; ?>' + total.toFixed(2);
+    document.getElementById('pd-total-price').textContent = '<?php echo '£ '; ?>' + total.toFixed(2);
 }
 
 function addVariantDetail() {

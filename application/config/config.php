@@ -60,6 +60,9 @@ define('CURRENCY_SYMBOL', '£');
 define('UPLOAD_PRODUCT_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/uploads/products/');
 define('UPLOAD_BANNER_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/uploads/banners/');
 define('UPLOAD_PRODUCT_NO_IMAGE', BASE_URL.'/uploads/');
+define('STRIPE_PUBLISHABLE_KEY', 'pk_test_51TY9tX2fs6R6o5tbZ2sgsDgZkwqTRo1HxCAF0eausXsknsxw8EAXpeQbtorudsj2vpXR2rgKza1U9gfHphO2uJsB00dA1F1i1Q');
+define('STRIPE_SECRET_KEY', 'sk_test_51TY9tX2fs6R6o5tb6CdOMrUsB9uPk0ZKyvHpP6tFNsGmPTRrtUNNrMh10wtvAvxQ1dv3dQDPGJ2RSDJFhRsJ7Lln007LmGrnrB');
+
 define('ISSMTP', 0);
 define('SMTP_PROTOCOL', 'smtp');
 define('SMTP_HOST', 'ssl://smtp.gmail.com');

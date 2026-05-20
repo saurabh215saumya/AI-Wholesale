@@ -16,7 +16,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                 <div class="cart-table-wrap">
                     <table class="cart-table">
                         <thead>
-                            <tr><th></th><th></th><th>Product Name</th><th>Unit Price</th><th>Qty</th><th>Subtotal</th></tr>
+                            <tr><th></th><th></th><th>Product Name</th><th>Unit Price</th><th>VAT (20%)</th><th>Qty</th><th>Subtotal (inc. VAT)</th></tr>
                         </thead>
                         <tbody>
                         <?php
@@ -33,7 +33,9 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 } else {
                                     $proPrice = $row['price'];
                                 }
-                                $totPrice = $proPrice * $row['quantity'];
+                                $vatAmount  = $proPrice * 0.20;
+                                $priceWithVat = $proPrice * 1.20;
+                                $totPrice = $priceWithVat * $row['quantity'];
                                 $subTotal += $totPrice;
                         ?>
                         <tr>
@@ -55,6 +57,9 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 <span id="proPrice_<?php echo $i; ?>" class="amount"><?php echo '£ '.number_format($proPrice,2); ?></span>
                             </td>
                             <td>
+                                <span class="text-muted" style="font-size:12px;">£ <?php echo number_format($vatAmount,2); ?></span>
+                            </td>
+                            <td>
                                 <div class="qty-holder">
                                     <a href="javascript:void(0);" onclick="return updateCartQty('<?php echo $row['product_id']; ?>','<?php echo $i; ?>',-1,'<?php echo addslashes($row['variant_label']); ?>','<?php echo $row['variant_price']; ?>');" class="qty-dec-btn" title="Dec">-</a>
                                     <input type="text" class="qty-input" id="quantity_<?php echo $i; ?>" value="<?php echo $row['quantity']; ?>">
@@ -62,7 +67,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 </div>
                             </td>
                             <td>
-                                <span class="text-primary" id="totPrice_<?php echo $i; ?>"><?php echo '£ '.number_format($totPrice,2); ?></span>
+                                <span class="subtotal-price" id="totPrice_<?php echo $i; ?>"><?php echo '£ '.number_format($totPrice,2); ?></span>
                             </td>
                         </tr>
                         <?php $i++; endforeach; endif; ?>
@@ -70,7 +75,9 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                         <tfoot>
                             <tr>
                                 <td colspan="6" class="clearfix">
-                                    <a href="<?php echo base_url(); ?>"><button class="btn btn-default hover-primary btn-update">Continue Shopping</button></a>
+                                    <a href="<?php echo base_url('all-products'); ?>" class="btn-cart-continue">
+                                        <i class="fa fa-arrow-left"></i> Continue Shopping
+                                    </a>
                                 </td>
                             </tr>
                         </tfoot>
@@ -90,9 +97,11 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                             <div class="panel-body">
                                 <table class="totals-table">
                                     <tbody>
-                                        <tr><td>Subtotal</td><td><?php echo '£ '.number_format($subTotal,2); ?></td></tr>
+                                        <?php $netTotal = $subTotal / 1.20; $vatTotal = $subTotal - $netTotal; ?>
+                                        <tr><td>Subtotal (ex. VAT)</td><td>£ <?php echo number_format($netTotal,2); ?></td></tr>
+                                        <tr><td>VAT (20%)</td><td>£ <?php echo number_format($vatTotal,2); ?></td></tr>
                                         <tr><td>Shipping</td><td>Free</td></tr>
-                                        <tr><td><strong>Grand Total</strong></td><td><strong><?php echo '£ '.number_format($subTotal,2); ?></strong></td></tr>
+                                        <tr><td><strong>Grand Total (inc. VAT)</strong></td><td><strong>£ <?php echo number_format($subTotal,2); ?></strong></td></tr>
                                     </tbody>
                                 </table>
                                 <?php if(!empty($allCartProducts)): ?>
