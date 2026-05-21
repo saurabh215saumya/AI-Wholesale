@@ -12,6 +12,22 @@
       <input type="hidden" name="image_file_name" value="<?php echo $details['image']; ?>">
       <input type="hidden" name="banner_image_file_name" value="<?php echo $details['banner_image']; ?>">
       <div class="box-body">
+        <div class="form-group">
+          <label>Parent Category <small class="text-muted">(Set to "None" for Root/Top-level category)</small></label>
+          <select name="parent_id" class="form-control">
+            <option value="0">-- None (Root Category) --</option>
+            <?php
+            $catMap = array();
+            foreach($allcategories as $c) $catMap[$c['id']] = $c;
+            foreach($allcategories as $c):
+                if($c['id'] == $details['id']) continue;
+                $parentLabel = $c['parent_id'] > 0 ? ' [under: '.($catMap[$c['parent_id']]['category_name'] ?? '').' ]' : '';
+                $sel = ($details['parent_id'] == $c['id']) ? 'selected' : '';
+            ?>
+            <option value="<?php echo $c['id']; ?>" <?php echo $sel; ?>><?php echo $c['category_name'].$parentLabel; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
         <div class="form-group <?php echo form_error('category_name') ? 'has-error' : ''; ?>">
           <label>Category Name <span class="text-danger">*</span></label>
           <input type="text" name="category_name" class="form-control" value="<?php echo set_value('category_name', $details['category_name']); ?>">

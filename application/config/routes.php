@@ -8,7 +8,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['admin'] = 'admin/index';
 $route['admin/(:any)'] = 'admin/$1';
 
-$route['sign-up'] = 'appuser/sign_up';
+$route['sign-up'] = 'wholesale/apply';
 $route['sign-in'] = 'appuser/login';
 $route['sign-out'] = 'appuser/logout';
 $route['my-account'] = 'appuser/my_account';
@@ -22,7 +22,7 @@ $route['terms-conditions'] = 'home/terms_conditions';
 
 $route['all-products'] = 'product/all_products';
 $route['categories/(:any)'] = 'category/category_list/$1';
-$route['subcategories/(:any)'] = 'category/subcategory_list/$1';
+$route['subcategories/(:any)'] = 'category/category_list/$1';
 $route['product-details/(:any)'] = 'product/product_detail/$1';
 $route['wish-list'] = 'product/wish_list';
 $route['cart-list'] = 'product/cart_list';

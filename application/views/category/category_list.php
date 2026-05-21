@@ -2,7 +2,7 @@
 $userId   = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['id'] : '';
 $userType = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['user_type'] : '';
 $pageSlug = $this->uri->segment(1);
-$slug     = $this->uri->segment(2);
+$slug     = $this->uri->segment(2) ?: '';
 $search   = $this->input->get('search');
 ?>
 
@@ -173,18 +173,25 @@ $search   = $this->input->get('search');
                     <div id="panel-filter-category" class="accordion-body collapse in">
                         <div class="panel-body">
                             <ul>
-                                <li class="<?php echo $pageSlug=='all-products'||!$pageSlug?'active':''; ?>">
-                                    <a href="<?php echo base_url('all-products'); ?>">All Products</a>
-                                </li>
                                 <?php if(!empty($isActiveCategories)): foreach($isActiveCategories as $cat): ?>
                                 <?php
-                                    $subs = getAllSubCategory($cat->id);
-                                    $expandSubs = ($pageSlug=='categories' && $slug==$cat->category_slug)
-                                               || ($pageSlug=='subcategories' && !empty($subs) && in_array($slug, array_column((array)$subs, 'sub_category_slug')));
-                                    $hasSubs = !empty($subs);
-                                    $catId   = 'cat-subs-'.$cat->id;
+                                    $children    = getCategoryChildren($cat->id);
+                                    $hasSubs     = !empty($children);
+                                    $catId       = 'cat-subs-'.$cat->id;
+                                    $isCatActive = ($pageSlug=='categories' && $slug==$cat->category_slug);
+                                    // Check if current slug belongs to any child or grandchild of this cat
+                                    $expandSubs  = $isCatActive;
+                                    if(!$expandSubs && $hasSubs) {
+                                        foreach($children as $child) {
+                                            if($slug == $child->category_slug) { $expandSubs = true; break; }
+                                            $grandchildren = getCategoryChildren($child->id);
+                                            foreach($grandchildren as $gc) {
+                                                if($slug == $gc->category_slug) { $expandSubs = true; break 2; }
+                                            }
+                                        }
+                                    }
                                 ?>
-                                <li class="<?php echo $pageSlug=='categories'&&$slug==$cat->category_slug?'active':''; ?>">
+                                <li class="<?php echo $isCatActive?'active':''; ?>">
                                     <div class="sidebar-cat-row">
                                         <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
                                         <?php if($hasSubs): ?>
@@ -195,8 +202,35 @@ $search   = $this->input->get('search');
                                     </div>
                                     <?php if($hasSubs): ?>
                                     <ul id="<?php echo $catId; ?>" class="sidebar-sub-list" style="<?php echo $expandSubs?'':'display:none;'; ?>padding-left:15px;margin-top:5px;">
-                                        <?php foreach($subs as $sub): ?>
-                                        <li><a href="<?php echo base_url('subcategories/'.$sub->sub_category_slug); ?>" style="font-size:12px;<?php echo ($pageSlug=='subcategories'&&$slug==$sub->sub_category_slug)?'color:#ff6000;font-weight:700;':''; ?>"><?php echo $sub->sub_category_name; ?></a></li>
+                                        <?php foreach($children as $child):
+                                            $isChildActive = ($slug == $child->category_slug);
+                                            $grandchildren = getCategoryChildren($child->id);
+                                            $hasGrand      = !empty($grandchildren);
+                                            $gcId          = 'cat-subs-'.$child->id;
+                                            $expandGrand   = $isChildActive;
+                                            if(!$expandGrand && $hasGrand) {
+                                                foreach($grandchildren as $gc) {
+                                                    if($slug == $gc->category_slug) { $expandGrand = true; break; }
+                                                }
+                                            }
+                                        ?>
+                                        <li>
+                                            <div class="sidebar-cat-row">
+                                                <a href="<?php echo base_url('categories/'.$child->category_slug); ?>" style="font-size:13px;<?php echo $isChildActive?'color:#ff6000;font-weight:700;':''; ?>"><?php echo $child->category_name; ?></a>
+                                                <?php if($hasGrand): ?>
+                                                <span class="sidebar-cat-toggle <?php echo $expandGrand?'open':''; ?>" onclick="toggleSidebarCat('<?php echo $gcId; ?>', this)">
+                                                    <i class="fa <?php echo $expandGrand?'fa-chevron-up':'fa-chevron-down'; ?>"></i>
+                                                </span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <?php if($hasGrand): ?>
+                                            <ul id="<?php echo $gcId; ?>" class="sidebar-sub-list" style="<?php echo $expandGrand?'':'display:none;'; ?>padding-left:12px;margin-top:3px;">
+                                                <?php foreach($grandchildren as $gc): ?>
+                                                <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>" style="font-size:12px;<?php echo ($slug==$gc->category_slug)?'color:#ff6000;font-weight:700;':''; ?>"><i class="fa fa-angle-right"></i> <?php echo $gc->category_name; ?></a></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                            <?php endif; ?>
+                                        </li>
                                         <?php endforeach; ?>
                                     </ul>
                                     <?php endif; ?>

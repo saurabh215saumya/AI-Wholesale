@@ -10,10 +10,11 @@
                     <div class="col-sm-6">
                         <div class="form-content">
                             <h3 class="heading-text-color font-weight-normal">New Customers</h3>
-                            <p>By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.</p>
+                            <p>Want to shop with us? Apply for a wholesale account to get access to exclusive pricing and our full product catalogue.</p>
                         </div>
                         <div class="form-action clearfix">
-                            <a href="<?php echo base_url('sign-up'); ?>" class="btn btn-primary">Create an Account</a>
+                            <a href="<?php echo base_url('wholesale/apply'); ?>" class="btn btn-primary">Apply as Wholesaler</a>
+                            <a href="<?php echo base_url('wholesale'); ?>" class="btn btn-default" style="margin-left:8px;">Learn More</a>
                         </div>
                     </div>
                     <div class="col-sm-6">

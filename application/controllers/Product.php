@@ -9,7 +9,6 @@ class Product extends CI_Controller {
         $this->table = 'tbl_products';
         $this->load->model('Product_model');
         $this->load->model('Category_model');
-        $this->load->model('Subcategory_model');
         $this->load->model('Home_model');
         $this->load->library('Csvimport');
         $this->controller = $this->router->fetch_class();
@@ -27,8 +26,8 @@ class Product extends CI_Controller {
 
     public function addproduct() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
-        $data['categoryDataArr']    = getAllCategory();
-        $data['subCategoryDataArr'] = getAllSubCategories();
+        $data['categoryDataArr']    = getAllRootCategories();
+        $data['subCategoryDataArr'] = array();
         $data['controller']         = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
@@ -40,7 +39,6 @@ class Product extends CI_Controller {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $this->form_validation->set_error_delimiters('<p class="help-block text-danger">', '</p>');
         $this->form_validation->set_rules('category_id', 'Category', 'trim|required|integer');
-        $this->form_validation->set_rules('sub_category_id', 'Sub Category', 'trim|required|integer');
         $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|max_length[255]');
         $this->form_validation->set_rules('product_code', 'Product Code', 'trim|required|max_length[100]');
         // $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
@@ -95,8 +93,8 @@ class Product extends CI_Controller {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $data['details']            = $this->Product_model->productDetails($id);
         $data['variants']           = $this->Product_model->getAllVariantsByProduct($id);
-        $data['categoryDataArr']    = getAllCategory();
-        $data['subCategoryDataArr'] = getAllSubCategories();
+        $data['categoryDataArr']    = getAllRootCategories();
+        $data['subCategoryDataArr'] = !empty($data['details']['category_id']) ? getCategoryChildren($data['details']['category_id']) : array();
         $data['controller']         = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
@@ -109,7 +107,6 @@ class Product extends CI_Controller {
         $id = $this->input->post('product_id');
         $this->form_validation->set_error_delimiters('<p class="help-block text-danger">', '</p>');
         $this->form_validation->set_rules('category_id', 'Category', 'trim|required|integer');
-        $this->form_validation->set_rules('sub_category_id', 'Sub Category', 'trim|required|integer');
         $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|max_length[255]');
         $this->form_validation->set_rules('product_code', 'Product Code', 'trim|required|max_length[100]');
         // $this->form_validation->set_rules('price', 'Price', 'trim|required|decimal|greater_than_equal_to[0]');
@@ -331,7 +328,7 @@ class Product extends CI_Controller {
         $data['pageCount']          = ceil($totalCount / $limit);
         $data['currentPage']        = $pageNo;
         $data['baseUrl']            = base_url('all-products');
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $data['pageTitle']          = 'All Products';
         $this->load->view('template/front/header', $data);
         $this->load->view('category/category_list', $data);
@@ -341,7 +338,7 @@ class Product extends CI_Controller {
     public function product_detail($slug) {
         $data['productDetails']    = $this->Product_model->getProductBySlug($slug);
         $data['productVariants']   = !empty($data['productDetails']) ? $this->Product_model->getVariantsByProduct($data['productDetails']['id']) : array();
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('product/product_detail', $data);
         $this->load->view('template/front/footer', $data);
@@ -357,7 +354,7 @@ class Product extends CI_Controller {
             $data['allCartProducts'] = $guest_id ? $this->Product_model->getGuestCartProducts($guest_id) : array();
             $data['isGuest']         = true;
         }
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('product/cart_list', $data);
         $this->load->view('template/front/footer', $data);
@@ -372,7 +369,7 @@ class Product extends CI_Controller {
         $data['billingArr']         = getUserBillingDetails($user_id);
         $rawSubTotal                = $this->Product_model->getUserCartSubTotal($user_id);
         $data['subTotal']           = $rawSubTotal * 1.20;
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $data['userInfo']           = $front;
         $this->load->view('template/front/header', $data);
         $this->load->view('product/cart_checkout', $data);
@@ -483,7 +480,7 @@ class Product extends CI_Controller {
         $data['wlTotalCount']        = $total;
         $data['wlPageCount']         = ceil($total / $perPage);
         $data['wlCurrentPage']       = $pageNo;
-        $data['isActiveCategories']  = getAllCategory();
+        $data['isActiveCategories']  = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('product/wish_list', $data);
         $this->load->view('template/front/footer', $data);

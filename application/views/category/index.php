@@ -11,14 +11,22 @@
       </div>
       <div class="box-body table-responsive">
         <table class="table table-bordered table-striped" id="example1">
-          <thead><tr><th>#</th><th>Image</th><th>Banner</th><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+          <thead><tr><th>#</th><th>Image</th><th>Name</th><th>Parent</th><th>Level</th><th>Status</th><th>Action</th></tr></thead>
           <tbody>
-          <?php if(!empty($allcategories)): $i=1; foreach($allcategories as $c): ?>
+          <?php
+          // Build id=>name map for parent lookup
+          $catMap = array();
+          foreach($allcategories as $c) $catMap[$c['id']] = $c['category_name'];
+          if(!empty($allcategories)): $i=1; foreach($allcategories as $c):
+            $level = $c['parent_id'] == 0 ? 'Root' : ($catMap[$c['parent_id']] ?? 'Child');
+            $indent = $c['parent_id'] == 0 ? '' : '&nbsp;&nbsp;&nbsp;<i class="fa fa-level-up fa-rotate-90 text-muted"></i> ';
+          ?>
           <tr>
             <td><?php echo $i++; ?></td>
-            <td><?php if($c['image']): ?><img src="<?php echo SHOW_CATEGORY_PATH.$c['image']; ?>" width="60" height="60" style="object-fit:cover;"><?php endif; ?></td>
-            <td><?php if($c['banner_image']): ?><img src="<?php echo SHOW_CATEGORY_PATH.$c['banner_image']; ?>" width="100" height="40" style="object-fit:cover;"><?php endif; ?></td>
-            <td><?php echo $c['category_name']; ?></td>
+            <td><?php if($c['image']): ?><img src="<?php echo SHOW_CATEGORY_PATH.$c['image']; ?>" width="50" height="50" style="object-fit:cover;"><?php endif; ?></td>
+            <td><?php echo $indent.$c['category_name']; ?></td>
+            <td><?php echo $c['parent_id'] > 0 ? ($catMap[$c['parent_id']] ?? '-') : '<span class="label label-primary">Root</span>'; ?></td>
+            <td><?php echo $c['parent_id'] == 0 ? '<span class="label label-default">Level 1</span>' : '<span class="label label-info">Sub Level</span>'; ?></td>
             <td>
               <span statusid="<?php echo $c['id']; ?>" statusvalue="<?php echo $c['status']; ?>" controllername="<?php echo $controller; ?>" style="color:<?php echo $c['status']?'#00a65a':'#ff0000'; ?>;cursor:pointer;">
                 <i class="fa fa-2x <?php echo $c['status']?'fa-check':'fa-ban'; ?>"></i>

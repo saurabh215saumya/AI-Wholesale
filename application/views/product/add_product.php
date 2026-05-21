@@ -24,11 +24,11 @@
           </div>
           <div class="col-md-6">
             <div class="form-group <?php echo form_error('sub_category_id') ? 'has-error' : ''; ?>">
-              <label>Sub Category <span class="text-danger">*</span></label>
+              <label>Sub Category</label>
               <select name="sub_category_id" id="sub_category_id" class="form-control">
                 <option value="">Select Sub Category</option>
                 <?php foreach($subCategoryDataArr as $s): ?>
-                <option value="<?php echo $s->id; ?>" <?php echo set_select('sub_category_id',$s->id); ?>><?php echo $s->sub_category_name; ?></option>
+                <option value="<?php echo $s->id; ?>" <?php echo set_select('sub_category_id',$s->id); ?>><?php echo $s->category_name; ?></option>
                 <?php endforeach; ?>
               </select>
               <?php echo form_error('sub_category_id'); ?>
@@ -158,7 +158,7 @@
 <script>
 function loadSubCategories(catId) {
   if (!catId) return;
-  $.post('<?php echo base_url('category/getSubcategoriesByCategory'); ?>', {category_id: catId}, function(res) {
+  $.post('<?php echo base_url('category/getChildCategories'); ?>', {parent_id: catId}, function(res) {
     $('#sub_category_id').html(res);
   });
 }

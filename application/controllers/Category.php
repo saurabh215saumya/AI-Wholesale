@@ -25,6 +25,7 @@ class Category extends CI_Controller {
 
     public function addcategory() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
+        $data['allcategories'] = $this->Category_model->allCategories();
         $data['controller'] = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
@@ -42,6 +43,7 @@ class Category extends CI_Controller {
         } else {
             $name = $this->input->post('category_name');
             $insert = array(
+                'parent_id'      => (int)$this->input->post('parent_id'),
                 'category_name'  => $name,
                 'category_slug'  => url_title(strtolower($name), '-'),
                 'description'    => $this->input->post('description'),
@@ -62,6 +64,7 @@ class Category extends CI_Controller {
     public function edit($id) {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $data['details'] = $this->Category_model->categoryDetails($id);
+        $data['allcategories'] = $this->Category_model->allCategories();
         $data['controller'] = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
@@ -80,6 +83,7 @@ class Category extends CI_Controller {
         } else {
             $name = $this->input->post('category_name');
             $update = array(
+                'parent_id'          => (int)$this->input->post('parent_id'),
                 'category_name'      => $name,
                 'category_slug'      => url_title(strtolower($name), '-'),
                 'description'        => $this->input->post('description'),
@@ -156,37 +160,40 @@ class Category extends CI_Controller {
         redirect($this->controller);
     }
 
-    public function getSubcategoriesByCategory() {
-        $cat_id = $this->input->post('category_id');
-        $subs = getAllSubCategory($cat_id);
+    public function getChildCategories() {
+        $parent_id = $this->input->post('parent_id');
+        $children = getCategoryChildren($parent_id);
         $html = '<option value="">Select Sub Category</option>';
-        foreach ($subs as $s) {
-            $html .= '<option value="' . $s->id . '">' . $s->sub_category_name . '</option>';
+        foreach ($children as $c) {
+            $html .= '<option value="' . $c->id . '">' . $c->category_name . '</option>';
         }
         echo $html;
     }
 
     public function category_list($slug) {
-        $pageSlug = $this->uri->segment(1);
         $limit  = PER_PAGE_DATA;
         $pageNo = $this->input->get('page') ?: 0;
         $offset = $limit * $pageNo;
-        if ($pageSlug === 'categories') {
-            $catId = getCategoryIdByCatSlug($slug);
+
+        $catRow = getCategoryBySlug($slug);
+        if ($catRow) {
+            $catId = $catRow->id;
             $data['allProducts'] = $this->Product_model->getProductsByCategory($catId, $limit, $offset);
             $data['totalCount']  = $this->Product_model->countByCategory($catId);
-            $data['pageTitle']   = getCategoryName($catId);
+            $data['pageTitle']   = $catRow->category_name;
+            $data['categoryRow'] = $catRow;
         } else {
-            $subId = getSubCategoryIdBySubCatSlug($slug);
-            $data['allProducts'] = $this->Product_model->getProductsBySubCategory($subId, $limit, $offset);
-            $data['totalCount']  = $this->Product_model->countBySubCategory($subId);
-            $data['pageTitle']   = getSubCategoryName($subId);
+            $data['allProducts'] = array();
+            $data['totalCount']  = 0;
+            $data['pageTitle']   = '';
+            $data['categoryRow'] = null;
         }
-        $data['pageCount']         = ceil($data['totalCount'] / $limit);
-        $data['currentPage']       = $pageNo;
-        $data['baseUrl']           = base_url($pageSlug . '/' . $slug);
-        $data['isActiveCategories'] = getAllCategory();
-        $data['allBanners']        = $this->Home_model->getHomeBanners();
+
+        $data['pageCount']          = ceil($data['totalCount'] / $limit);
+        $data['currentPage']        = $pageNo;
+        $data['baseUrl']            = base_url('categories/' . $slug);
+        $data['isActiveCategories'] = getAllRootCategories();
+        $data['allBanners']         = $this->Home_model->getHomeBanners();
         $this->load->view('template/front/header', $data);
         $this->load->view('category/category_list', $data);
         $this->load->view('template/front/footer', $data);

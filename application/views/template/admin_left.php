@@ -22,14 +22,6 @@
         </ul>
       </li>
 
-      <li class="treeview <?php echo ($url=='subcategory')?'active':''; ?>">
-        <a href="javascript:void(0);"><i class="fa fa-sitemap"></i> <span>Sub Category</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
-        <ul class="treeview-menu">
-          <li><a href="<?php echo base_url('subcategory'); ?>"><i class="fa fa-circle-o"></i> Sub Category List</a></li>
-          <li><a href="<?php echo base_url('subcategory/addsubcategory'); ?>"><i class="fa fa-circle-o"></i> Add Sub Category</a></li>
-        </ul>
-      </li>
-
       <li class="treeview <?php echo ($url=='product')?'active':''; ?>">
         <a href="javascript:void(0);"><i class="fa fa-shopping-bag"></i> <span>Product Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">

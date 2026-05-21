@@ -11,16 +11,17 @@ class Wholesale extends CI_Controller {
 
     public function index() {
         $data['pricingTiers']       = $this->Wholesale_model->getActiveTiers();
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $data['pageTitle']          = 'Wholesale';
+        $data['loggedIn']           = $this->session->userdata('front_logged_in');
         $this->load->view('template/front/header', $data);
         $this->load->view('wholesale/index', $data);
         $this->load->view('template/front/footer', $data);
     }
 
     public function apply() {
-        if ($this->session->userdata('front_logged_in')) redirect('/');
-        $data['isActiveCategories'] = getAllCategory();
+        if ($this->session->userdata('front_logged_in')) redirect('wholesale');
+        $data['isActiveCategories'] = getAllRootCategories();
         $data['pageTitle']          = 'Apply as Wholesaler';
         $data['is_wholesale']       = true;
         $this->load->view('template/front/header', $data);

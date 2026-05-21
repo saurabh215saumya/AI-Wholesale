@@ -68,7 +68,7 @@ $cartProductArr = getUserCartProduct($userId);
                         </ul>
                     </div>
                     <?php if($logginUserArr): ?>
-                    <p class="welcome-msg"><i class="fa fa-user-circle" style="color:#ff6000;"></i> WELCOME <?php echo strtoupper($logginUserArr['first_name'].' '.$logginUserArr['last_name']); ?></p>
+                    <p class="welcome-msg"><i class="fa fa-user-circle" style="color:#ff6000;"></i> WELCOME <?php echo strtoupper($logginUserArr['first_name'].' '.$logginUserArr['last_name']); ?> &nbsp;|&nbsp; <a href="<?php echo base_url('wholesale'); ?>" class="welcome-wholesale-btn">Wholesale</a></p>
                     <?php else: ?>
                     <p class="welcome-msg"><i class="fa fa-user-circle" style="color:#ff6000;"></i> WELCOME GUEST &nbsp;|&nbsp; <a href="<?php echo base_url('sign-in'); ?>">Login</a> &nbsp;|&nbsp; <a href="<?php echo base_url('wholesale'); ?>" class="welcome-wholesale-btn">Wholesale</a></p>
                     <?php endif; ?>
@@ -104,33 +104,45 @@ $cartProductArr = getUserCartProduct($userId);
                                     <a href="<?php echo base_url('all-products'); ?>">Shop</a>
                                 </li>
                                 <?php if(!empty($isActiveCategories)): foreach($isActiveCategories as $cat): ?>
-                                <li class="dropdown dropdown-mega-small <?php echo $pageSlug=='categories'&&$this->uri->segment(2)==$cat->category_slug?'active':''; ?>">
+                                <li class="dropdown dropdown-mega-small <?php echo ($pageSlug=='categories'&&$this->uri->segment(2)==$cat->category_slug)?'active':''; ?>">
                                     <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>" class="dropdown-toggle"><?php echo $cat->category_name; ?> <i class="fa fa-angle-down nav-arrow"></i></a>
                                     <ul class="dropdown-menu">
                                         <li>
                                             <div class="dropdown-mega-content dropdown-mega-content-small">
                                                 <div class="row">
-                                                    <div class="col-md-7">
+                                                    <div class="col-md-12">
                                                         <div class="nav-cat-header">
                                                             <i class="fa fa-th-list"></i>
                                                             <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
                                                         </div>
                                                         <div class="row">
+                                                        <?php
+                                                        $children = getCategoryChildren($cat->id);
+                                                        if(!empty($children)):
+                                                            $i = 0;
+                                                            foreach($children as $child):
+                                                                if($i % 10 == 0) echo '<div class="col-md-4"><ul class="dropdown-mega-sub-nav">';
+                                                        ?>
+                                                        <li>
+                                                            <a href="<?php echo base_url('categories/'.$child->category_slug); ?>"><?php echo $child->category_name; ?></a>
                                                             <?php
-                                                            $subs = getAllSubCategory($cat->id);
-                                                            if(!empty($subs)):
-                                                                $i = 0;
-                                                                foreach($subs as $sub):
-                                                                    if($i % 10 == 0) echo '<div class="col-md-6"><ul class="dropdown-mega-sub-nav">';
+                                                            $grandchildren = getCategoryChildren($child->id);
+                                                            if(!empty($grandchildren)):
                                                             ?>
-                                                            <li><a href="<?php echo base_url('subcategories/'.$sub->sub_category_slug); ?>"><?php echo $sub->sub_category_name; ?></a></li>
-                                                            <?php
-                                                                    $i++;
-                                                                    if($i % 10 == 0) echo '</ul></div>';
-                                                                endforeach;
-                                                                if($i % 10 != 0) echo '</ul></div>';
-                                                            endif;
-                                                            ?>
+                                                            <ul class="dropdown-mega-sub-nav" style="padding-left:10px;">
+                                                            <?php foreach($grandchildren as $gc): ?>
+                                                            <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>" style="font-size:12px;color:#888;"><i class="fa fa-angle-right"></i> <?php echo $gc->category_name; ?></a></li>
+                                                            <?php endforeach; ?>
+                                                            </ul>
+                                                            <?php endif; ?>
+                                                        </li>
+                                                        <?php
+                                                                $i++;
+                                                                if($i % 10 == 0) echo '</ul></div>';
+                                                            endforeach;
+                                                            if($i % 10 != 0) echo '</ul></div>';
+                                                        endif;
+                                                        ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -160,11 +172,23 @@ $cartProductArr = getUserCartProduct($userId);
                 <li>
                     <span class="mmenu-toggle"></span>
                     <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
+                    <?php $children = getCategoryChildren($cat->id); if(!empty($children)): ?>
                     <ul>
-                        <?php $subs = getAllSubCategory($cat->id); foreach($subs as $sub): ?>
-                        <li><a href="<?php echo base_url('subcategories/'.$sub->sub_category_slug); ?>"><?php echo $sub->sub_category_name; ?></a></li>
+                        <?php foreach($children as $child): ?>
+                        <li>
+                            <span class="mmenu-toggle"></span>
+                            <a href="<?php echo base_url('categories/'.$child->category_slug); ?>"><?php echo $child->category_name; ?></a>
+                            <?php $grandchildren = getCategoryChildren($child->id); if(!empty($grandchildren)): ?>
+                            <ul>
+                                <?php foreach($grandchildren as $gc): ?>
+                                <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>"><?php echo $gc->category_name; ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php endif; ?>
+                        </li>
                         <?php endforeach; ?>
                     </ul>
+                    <?php endif; ?>
                 </li>
                 <?php endforeach; endif; ?>
                 <li><a href="<?php echo base_url('contact-us'); ?>">Contact Us</a></li>

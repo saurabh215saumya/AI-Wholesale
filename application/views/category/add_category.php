@@ -9,6 +9,20 @@
       <div class="box-header"><h3 class="box-title">Add New Category</h3></div>
       <?php echo form_open_multipart('category/add_newcategory'); ?>
       <div class="box-body">
+        <div class="form-group">
+          <label>Parent Category <small class="text-muted">(Leave as "None" to create a Root/Top-level category)</small></label>
+          <select name="parent_id" class="form-control">
+            <option value="0">-- None (Root Category) --</option>
+            <?php
+            $catMap = array();
+            foreach($allcategories as $c) $catMap[$c['id']] = $c;
+            foreach($allcategories as $c):
+                $parentLabel = $c['parent_id'] > 0 ? ' [under: '.($catMap[$c['parent_id']]['category_name'] ?? '').' ]' : '';
+            ?>
+            <option value="<?php echo $c['id']; ?>"><?php echo $c['category_name'].$parentLabel; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
         <div class="form-group <?php echo form_error('category_name') ? 'has-error' : ''; ?>">
           <label>Category Name <span class="text-danger">*</span></label>
           <input type="text" name="category_name" class="form-control" value="<?php echo set_value('category_name'); ?>">
@@ -23,7 +37,7 @@
           <input type="file" name="image_file" class="form-control" accept="image/*">
         </div>
         <div class="form-group">
-          <label>Banner Image <small class="text-muted">(Optional - Recommended: 1350x530px - auto resized)</small></label>
+          <label>Banner Image <small class="text-muted">(Optional - Recommended: 1350x530px)</small></label>
           <input type="file" name="banner_image_file" class="form-control" accept="image/*">
         </div>
         <div class="form-group <?php echo form_error('status') ? 'has-error' : ''; ?>">

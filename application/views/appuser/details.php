@@ -12,6 +12,8 @@
           <tr><th>Email</th><td><?php echo $details['email']; ?></td></tr>
           <tr><th>Mobile</th><td><?php echo $details['mobile']; ?></td></tr>
           <tr><th>Company</th><td><?php echo $details['company_name']; ?></td></tr>
+          <tr><th>Company Reg No.</th><td><?php echo $details['company_reg_number'] ?: '-'; ?></td></tr>
+          <tr><th>Business Type</th><td><?php echo $details['business_type'] ? ucfirst(str_replace('_',' ',$details['business_type'])) : '-'; ?></td></tr>
           <tr><th>User Type</th><td><?php echo ucfirst($details['user_type']); ?></td></tr>
           <tr><th>Status</th><td><?php echo $details['status']?'Active':'Inactive'; ?></td></tr>
           <tr><th>Joined</th><td><?php echo $details['addedOn']; ?></td></tr>

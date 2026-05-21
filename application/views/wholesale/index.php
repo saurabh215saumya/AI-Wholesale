@@ -1,4 +1,4 @@
-<?php $brandColor = '#ff6000'; ?>
+<?php $brandColor = '#ff6000'; $loggedIn = isset($loggedIn) ? $loggedIn : false; ?>
 
 <!-- Page Header -->
 <section class="page-header page-header-classic">
@@ -33,12 +33,21 @@
                 <p style="color:rgba(255,255,255,0.8); font-size:16px; line-height:1.8; margin-bottom:28px;">
                     Join our wholesale program and unlock exclusive volume pricing, priority stock access, and a dedicated account manager — built for retailers, distributors, and online sellers.
                 </p>
+                <?php if(!$loggedIn): ?>
                 <a href="<?php echo base_url('wholesale/apply'); ?>" class="btn btn-primary btn-lg" style="margin-right:10px; border-radius:4px;">
                     Apply as Wholesaler &nbsp;<i class="fa fa-arrow-right"></i>
                 </a>
                 <a href="<?php echo base_url('sign-in'); ?>" style="color:rgba(255,255,255,0.75); font-size:14px; line-height:46px; vertical-align:middle;">
                     Already a member? Login
                 </a>
+                <?php else: ?>
+                <div style="background:rgba(255,96,0,0.15); border:1px solid rgba(255,96,0,0.4); border-radius:6px; padding:14px 20px; display:inline-block;">
+                    <i class="fa fa-check-circle" style="color:#ff6000; font-size:18px; margin-right:8px;"></i>
+                    <span style="color:#fff; font-size:15px; font-weight:600;">You are logged in as a wholesale member.</span>
+                    &nbsp;&nbsp;
+                    <a href="<?php echo base_url('all-products'); ?>" class="btn btn-primary btn-sm" style="border-radius:4px;">Shop Now &nbsp;<i class="fa fa-shopping-bag"></i></a>
+                </div>
+                <?php endif; ?>
             </div>
             <div class="col-md-5 hidden-sm hidden-xs text-center">
                 <div style="display:inline-block; position:relative; margin-top:10px;">
@@ -168,8 +177,8 @@
                             </li>
                             <?php endif; ?>
                         </ul>
-                        <a href="<?php echo base_url('wholesale/apply'); ?>" class="btn btn-block btn-primary" style="background:<?php echo $col; ?> !important; border-color:<?php echo $col; ?> !important; font-weight:700; border-radius:4px;">
-                            Get Started
+                        <a href="<?php echo $loggedIn ? base_url('all-products') : base_url('wholesale/apply'); ?>" class="btn btn-block btn-primary" style="background:<?php echo $col; ?> !important; border-color:<?php echo $col; ?> !important; font-weight:700; border-radius:4px;">
+                            <?php echo $loggedIn ? 'Shop Now' : 'Get Started'; ?>
                         </a>
                     </div>
                 </div>
@@ -215,9 +224,15 @@
         </div>
         <div class="row" style="margin-top:20px;">
             <div class="col-md-12 text-center">
+                <?php if(!$loggedIn): ?>
                 <a href="<?php echo base_url('wholesale/apply'); ?>" class="btn btn-primary btn-lg" style="border-radius:4px; padding:12px 36px;">
                     Apply Now &nbsp;<i class="fa fa-arrow-right"></i>
                 </a>
+                <?php else: ?>
+                <a href="<?php echo base_url('all-products'); ?>" class="btn btn-primary btn-lg" style="border-radius:4px; padding:12px 36px;">
+                    Browse Products &nbsp;<i class="fa fa-shopping-bag"></i>
+                </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -276,9 +291,15 @@
     <div class="container">
         <h2 style="color:#fff; font-size:32px; font-weight:800; margin-bottom:14px;">Ready to Get Started?</h2>
         <p style="color:rgba(255,255,255,0.75); font-size:16px; margin-bottom:28px;">Join hundreds of businesses already benefiting from our wholesale program.</p>
+        <?php if(!$loggedIn): ?>
         <a href="<?php echo base_url('wholesale/apply'); ?>" class="btn btn-primary btn-lg" style="border-radius:4px; padding:14px 42px; font-size:16px; font-weight:700;">
             Apply as Wholesaler &nbsp;<i class="fa fa-arrow-right"></i>
         </a>
+        <?php else: ?>
+        <a href="<?php echo base_url('all-products'); ?>" class="btn btn-primary btn-lg" style="border-radius:4px; padding:14px 42px; font-size:16px; font-weight:700;">
+            Start Shopping &nbsp;<i class="fa fa-shopping-bag"></i>
+        </a>
+        <?php endif; ?>
         <br><br>
         <p style="color:rgba(255,255,255,0.45); font-size:13px; margin:0;">
             Have questions? <a href="<?php echo base_url('contact-us'); ?>" style="color:#ff6000;">Contact our team</a>

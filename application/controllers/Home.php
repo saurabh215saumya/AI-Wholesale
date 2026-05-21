@@ -16,7 +16,7 @@ class Home extends CI_Controller {
         $data['allBanners']        = $this->Home_model->getHomeBanners();
         $data['featuredProducts']   = $this->Product_model->getAllProducts(12, 0);
         $data['allTestimonials']    = $this->Testimonial_model->getActiveTestimonials();
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('template/front/home_banner', $data);
         $this->load->view('template/front/home_page_bar', $data);
@@ -29,7 +29,7 @@ class Home extends CI_Controller {
 
     public function about_us() {
         $data['pageData']           = $this->Home_model->getPageData('about_us');
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('home/content_page', $data);
         $this->load->view('template/front/footer', $data);
@@ -37,7 +37,7 @@ class Home extends CI_Controller {
 
     public function privacy_policy() {
         $data['pageData']           = $this->Home_model->getPageData('privacy_policy');
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('home/content_page', $data);
         $this->load->view('template/front/footer', $data);
@@ -45,14 +45,14 @@ class Home extends CI_Controller {
 
     public function terms_conditions() {
         $data['pageData']           = $this->Home_model->getPageData('terms_and_condition');
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('home/content_page', $data);
         $this->load->view('template/front/footer', $data);
     }
 
     public function contact_us() {
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         if ($this->input->post()) {
             $this->Home_model->saveEnquiry(array(
                 'name'    => $this->input->post('name'),
@@ -73,7 +73,7 @@ class Home extends CI_Controller {
 
     public function static_page($identifier) {
         $data['pageData']           = $this->Staticpage_model->getPageByIdentifier($identifier);
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('home/content_page', $data);
         $this->load->view('template/front/footer', $data);

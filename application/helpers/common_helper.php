@@ -50,24 +50,28 @@ if (!function_exists('delete_file')) {
 if (!function_exists('getAllCategory')) {
     function getAllCategory() {
         $CI =& get_instance();
-        $query = $CI->db->where('is_deleted', '0')->where('status', '1')->order_by('category_name', 'ASC')->get('tbl_category');
+        $query = $CI->db->where('is_deleted', '0')->where('status', '1')->where('parent_id', 0)->order_by('category_name', 'ASC')->get('tbl_category');
         return $query->num_rows() > 0 ? $query->result() : array();
     }
 }
 
-if (!function_exists('getAllSubCategories')) {
-    function getAllSubCategories() {
+if (!function_exists('getAllRootCategories')) {
+    function getAllRootCategories() {
+        return getAllCategory();
+    }
+}
+
+if (!function_exists('getCategoryChildren')) {
+    function getCategoryChildren($parent_id) {
         $CI =& get_instance();
-        $query = $CI->db->where('is_deleted', '0')->where('status', '1')->order_by('sub_category_name', 'ASC')->get('tbl_sub_category');
+        $query = $CI->db->where('parent_id', $parent_id)->where('is_deleted', '0')->where('status', '1')->order_by('category_name', 'ASC')->get('tbl_category');
         return $query->num_rows() > 0 ? $query->result() : array();
     }
 }
 
 if (!function_exists('getAllSubCategory')) {
     function getAllSubCategory($category_id) {
-        $CI =& get_instance();
-        $query = $CI->db->where('category_id', $category_id)->where('is_deleted', '0')->where('status', '1')->order_by('sub_category_name', 'ASC')->get('tbl_sub_category');
-        return $query->num_rows() > 0 ? $query->result() : array();
+        return getCategoryChildren($category_id);
     }
 }
 
@@ -81,9 +85,15 @@ if (!function_exists('getCategoryName')) {
 
 if (!function_exists('getSubCategoryName')) {
     function getSubCategoryName($id) {
+        return getCategoryName($id);
+    }
+}
+
+if (!function_exists('getCategoryBySlug')) {
+    function getCategoryBySlug($slug) {
         $CI =& get_instance();
-        $row = $CI->db->select('sub_category_name')->where('id', $id)->get('tbl_sub_category')->row();
-        return $row ? $row->sub_category_name : '';
+        $row = $CI->db->where('category_slug', $slug)->where('is_deleted', '0')->get('tbl_category')->row();
+        return $row ? $row : null;
     }
 }
 
@@ -97,27 +107,40 @@ if (!function_exists('getCategoryIdByCatSlug')) {
 
 if (!function_exists('getSubCategoryIdBySubCatSlug')) {
     function getSubCategoryIdBySubCatSlug($slug) {
-        $CI =& get_instance();
-        $row = $CI->db->select('id')->where('sub_category_slug', $slug)->get('tbl_sub_category')->row();
-        return $row ? $row->id : 0;
+        return getCategoryIdByCatSlug($slug);
     }
 }
 
 if (!function_exists('getSubCategoryIdByName')) {
     function getSubCategoryIdByName($name) {
         $CI =& get_instance();
-        $row = $CI->db->select('id, category_id')
-                      ->where('LOWER(sub_category_name)', strtolower(trim($name)))
-                      ->get('tbl_sub_category')->row();
-        return $row ? $row : null;
+        $row = $CI->db->select('id, parent_id')
+                      ->where('LOWER(category_name)', strtolower(trim($name)))
+                      ->where('parent_id >', 0)
+                      ->get('tbl_category')->row();
+        return $row ? (object)array('id' => $row->id, 'category_id' => $row->parent_id) : null;
     }
 }
 
 if (!function_exists('getSubCatIdByProductId')) {
     function getSubCatIdByProductId($id) {
         $CI =& get_instance();
-        $row = $CI->db->select('category_id')->where('id', $id)->get('tbl_products')->row();
-        return $row ? $row->category_id : 0;
+        $row = $CI->db->select('sub_cat_id')->where('id', $id)->get('tbl_products')->row();
+        return $row ? $row->sub_cat_id : 0;
+    }
+}
+
+if (!function_exists('getCategoryBreadcrumb')) {
+    function getCategoryBreadcrumb($id) {
+        $CI =& get_instance();
+        $breadcrumb = array();
+        $current = $CI->db->where('id', $id)->get('tbl_category')->row();
+        while ($current) {
+            array_unshift($breadcrumb, $current);
+            if ($current->parent_id == 0) break;
+            $current = $CI->db->where('id', $current->parent_id)->get('tbl_category')->row();
+        }
+        return $breadcrumb;
     }
 }
 
@@ -191,9 +214,7 @@ if (!function_exists('getCategoryNameBySlug')) {
 
 if (!function_exists('getSubCategoryNameBySlug')) {
     function getSubCategoryNameBySlug($slug) {
-        $CI =& get_instance();
-        $row = $CI->db->select('sub_category_name')->where('sub_category_slug', $slug)->get('tbl_sub_category')->row();
-        return $row ? $row->sub_category_name : '';
+        return getCategoryNameBySlug($slug);
     }
 }
 

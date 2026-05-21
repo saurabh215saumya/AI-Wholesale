@@ -6,10 +6,10 @@ class Product_model extends CI_Model {
     protected $table = 'tbl_products';
 
     public function allproducts() {
-        return $this->db->select('tbl_products.*, tbl_category.category_name, tbl_sub_category.sub_category_name')
+        return $this->db->select('tbl_products.*, tbl_category.category_name, sc.category_name as sub_category_name')
             ->from($this->table)
             ->join('tbl_category', 'tbl_category.id = tbl_products.category_id', 'left')
-            ->join('tbl_sub_category', 'tbl_sub_category.id = tbl_products.sub_cat_id', 'left')
+            ->join('tbl_category sc', 'sc.id = tbl_products.sub_cat_id', 'left')
             ->where('tbl_products.is_deleted', '0')
             ->order_by('tbl_products.id', 'DESC')
             ->get()->result_array();

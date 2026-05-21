@@ -87,19 +87,20 @@ class Appuser extends CI_Controller {
 
     public function ajax_signup() {
         $email     = $this->input->post('email');
-        $user_type = $this->input->post('user_type') ?: 'person';
+        $user_type = $this->input->post('user_type') ?: 'business';
         if ($this->Appuser_model->getUserByEmail($email)) { echo 'duplicate_email'; return; }
         $insert = array(
-            'user_type'    => $user_type,
-            'first_name'   => $this->input->post('first_name'),
-            'last_name'    => $this->input->post('last_name'),
-            'email'        => $email,
-            'mobile'       => $this->input->post('mobile'),
-            'company_name' => $this->input->post('company_name'),
-            'password'     => md5($this->input->post('password')),
-            'status'       => 1,
-            'addedOn'      => date('Y-m-d H:i:s'),
-            'updatedOn'    => date('Y-m-d H:i:s'),
+            'user_type'          => $user_type,
+            'first_name'         => $this->input->post('first_name'),
+            'last_name'          => $this->input->post('last_name'),
+            'email'              => $email,
+            'mobile'             => $this->input->post('mobile'),
+            'company_name'       => $this->input->post('company_name'),
+            'company_reg_number' => $this->input->post('company_reg_number'),
+            'password'           => md5($this->input->post('password')),
+            'status'             => 1,
+            'addedOn'            => date('Y-m-d H:i:s'),
+            'updatedOn'          => date('Y-m-d H:i:s'),
         );
         if ($user_type === 'business') {
             $insert['business_type']          = $this->input->post('business_type');
@@ -120,39 +121,12 @@ class Appuser extends CI_Controller {
     /* ---- FRONT-END SECTION ---- */
 
     public function sign_up() {
-        if ($this->session->userdata('front_logged_in')) redirect('/');
-        $data['isActiveCategories'] = getAllCategory();
-        if ($this->input->post()) {
-            $email = $this->input->post('email');
-            $existing = $this->Appuser_model->getUserByEmail($email);
-            if ($existing) {
-                $data['error'] = 'Email already registered.';
-            } else {
-                $insert = array(
-                    'user_type'    => $this->input->post('user_type') ?: 'person',
-                    'first_name'   => $this->input->post('first_name'),
-                    'last_name'    => $this->input->post('last_name'),
-                    'email'        => $email,
-                    'mobile'       => $this->input->post('mobile'),
-                    'company_name' => $this->input->post('company_name'),
-                    'password'     => md5($this->input->post('password')),
-                    'status'       => 1,
-                    'addedOn'      => date('Y-m-d H:i:s'),
-                    'updatedOn'    => date('Y-m-d H:i:s'),
-                );
-                $this->db->insert($this->table, $insert);
-                $this->session->set_flashdata('success', 'Registration successful! Please login.');
-                redirect('sign-in');
-            }
-        }
-        $this->load->view('template/front/header', $data);
-        $this->load->view('appuser/signup', $data);
-        $this->load->view('template/front/footer', $data);
+        redirect('wholesale/apply');
     }
 
     public function login() {
         if ($this->session->userdata('front_logged_in')) redirect('/');
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         if ($this->input->post()) {
             $email    = $this->input->post('email');
             $password = md5($this->input->post('password'));
@@ -185,7 +159,7 @@ class Appuser extends CI_Controller {
         if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
         $user_id = $this->session->userdata('front_logged_in')['id'];
         $data['details'] = $this->Appuser_model->userDetails($user_id);
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('appuser/my_account', $data);
         $this->load->view('template/front/footer', $data);
@@ -195,7 +169,7 @@ class Appuser extends CI_Controller {
         if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
         $user_id = $this->session->userdata('front_logged_in')['id'];
         $data['orders'] = $this->Appuser_model->getUserOrders($user_id);
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('appuser/my_order', $data);
         $this->load->view('template/front/footer', $data);
@@ -225,7 +199,7 @@ class Appuser extends CI_Controller {
             redirect('billing-address');
         }
         $data['billingArr'] = getUserBillingDetails($user_id);
-        $data['isActiveCategories'] = getAllCategory();
+        $data['isActiveCategories'] = getAllRootCategories();
         $this->load->view('template/front/header', $data);
         $this->load->view('appuser/billing_address', $data);
         $this->load->view('template/front/footer', $data);
