@@ -183,9 +183,9 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
 
     <input type="hidden" id="billing_address_id" value="<?php echo !empty($billing['id']) ? $billing['id'] : ''; ?>">
 
-    <button class="co-btn-pay" id="stripe-pay-btn">
-      <i class="fa fa-lock"></i>&nbsp; Pay £<span id="pay-btn-amount"><?php echo number_format($subTotal,2); ?></span> Securely
-    </button>
+    <!-- <button class="co-btn-pay" id="stripe-pay-btn">
+      <i class="fa fa-lock"></i>&nbsp; Pay £<span id="pay-btn-amount"><?php //echo number_format($subTotal,2); ?></span> Securely
+    </button> -->
     <div class="co-secure"><i class="fa fa-shield"></i> SSL Encrypted &nbsp;·&nbsp; <i class="fa fa-cc-stripe"></i> Powered by Stripe</div>
     <button class="co-btn-back" onclick="goStep(3)" style="margin-top:10px;"><i class="fa fa-arrow-left"></i>&nbsp; Back</button>
   </div>

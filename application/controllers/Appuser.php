@@ -175,6 +175,36 @@ class Appuser extends CI_Controller {
         $this->load->view('template/front/footer', $data);
     }
 
+    public function update_account() {
+        if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
+        $user_id = $this->session->userdata('front_logged_in')['id'];
+        $update = array(
+            'first_name'   => $this->input->post('first_name'),
+            'last_name'    => $this->input->post('last_name'),
+            'mobile'       => $this->input->post('mobile'),
+            'company_name' => $this->input->post('company_name'),
+            'updatedOn'    => date('Y-m-d H:i:s'),
+        );
+        $new_pass = $this->input->post('new_password');
+        if ($new_pass) $update['password'] = md5($new_pass);
+        $this->Appuser_model->updateUser($user_id, $update);
+        // Refresh session name
+        $sess = $this->session->userdata('front_logged_in');
+        $sess['first_name'] = $update['first_name'];
+        $sess['last_name']  = $update['last_name'];
+        $this->session->set_userdata('front_logged_in', $sess);
+        $this->session->set_flashdata('success', 'Profile updated successfully.');
+        redirect('my-account');
+    }
+
+    public function delete_billing($id) {
+        if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
+        $user_id = $this->session->userdata('front_logged_in')['id'];
+        $this->db->where('id', $id)->where('user_id', $user_id)->delete('tbl_user_billing');
+        $this->session->set_flashdata('success', 'Address removed.');
+        redirect('billing-address');
+    }
+
     public function billing_address() {
         if (!$this->session->userdata('front_logged_in')) redirect('sign-in');
         $user_id = $this->session->userdata('front_logged_in')['id'];

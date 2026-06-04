@@ -12,8 +12,10 @@ $route['sign-up'] = 'wholesale/apply';
 $route['sign-in'] = 'appuser/login';
 $route['sign-out'] = 'appuser/logout';
 $route['my-account'] = 'appuser/my_account';
+$route['update-account'] = 'appuser/update_account';
 $route['my-orders'] = 'appuser/my_orders';
 $route['billing-address'] = 'appuser/billing_address';
+$route['delete-billing/(:num)'] = 'appuser/delete_billing/$1';
 
 $route['about-us'] = 'home/about_us';
 $route['contact-us'] = 'home/contact_us';
