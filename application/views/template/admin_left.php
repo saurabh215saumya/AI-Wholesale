@@ -54,6 +54,15 @@
         </ul>
       </li>
 
+      <li class="treeview <?php echo ($url=='keyword')?'active':''; ?>">
+        <a href="javascript:void(0);"><i class="fa fa-key"></i> <span>Keyword Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+          <li><a href="<?php echo base_url('keyword'); ?>"><i class="fa fa-circle-o"></i> Keyword List</a></li>
+          <li><a href="<?php echo base_url('keyword/add'); ?>"><i class="fa fa-circle-o"></i> Add Keyword</a></li>
+          <li><a href="<?php echo base_url('keyword/upload_csv'); ?>"><i class="fa fa-circle-o"></i> Upload CSV</a></li>
+        </ul>
+      </li>
+
       <li class="treeview <?php echo ($url=='testimonial')?'active':''; ?>">
         <a href="javascript:void(0);"><i class="fa fa-comments"></i> <span>Testimonial Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">

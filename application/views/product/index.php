@@ -10,6 +10,7 @@
         <div class="pull-right">
           <a href="<?php echo base_url('product/addproduct'); ?>" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Product</a>
           <a href="<?php echo base_url('product/upload_bulk_product'); ?>" class="btn btn-success btn-sm"><i class="fa fa-upload"></i> Bulk Upload</a>
+          <a href="<?php echo base_url('product/export_packing_list'); ?>" class="btn btn-warning btn-sm" target="_blank"><i class="fa fa-print"></i> Export Packing List</a>
         </div>
       </div>
       <div class="box-body table-responsive">

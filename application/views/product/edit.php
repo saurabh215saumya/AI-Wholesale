@@ -149,6 +149,9 @@
           </select>
           <?php echo form_error('status'); ?>
         </div>
+
+        <?php $this->load->view('template/seo_fields'); ?>
+
       </div>
       <div class="box-footer">
         <button type="submit" class="btn btn-primary">Update Product</button>

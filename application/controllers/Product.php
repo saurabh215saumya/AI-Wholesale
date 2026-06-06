@@ -229,6 +229,13 @@ class Product extends CI_Controller {
         redirect($this->controller);
     }
 
+    public function export_packing_list() {
+        if (!$this->session->userdata('logged_in')) redirect('user/login');
+        $data['products'] = $this->Product_model->allproducts();
+        $data['date']     = date('Y-m-d');
+        $this->load->view('product/export_packing_list', $data);
+    }
+
     public function upload_bulk_product() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $data['controller'] = $this->controller;
