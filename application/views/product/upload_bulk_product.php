@@ -10,27 +10,20 @@
       <div class="box-body">
         <div class="alert alert-info">
           <strong>CSV Format:</strong> Only <code>Product</code> (product name) column is required.<br>
-          Optional columns: <code>Category, Price, WholesalePrice, RetailerPrice, Barcode, Quantity, Description</code><br>
-          <strong>Note:</strong> The <code>Category</code> column should contain the <strong>Sub Category name</strong>. If it matches an existing sub-category, the parent category will be auto-assigned.<br>
-          If a product with the same name already exists it will be <strong>updated</strong>, otherwise a new product is <strong>inserted</strong>.
+          <strong>Product columns (optional):</strong> <code>Category</code>, <code>Price</code>, <code>Barcode</code>, <code>Quantity</code>, <code>Description</code><br>
+          <strong>SEO columns (all optional):</strong> <code>MetaTitle</code>, <code>MetaDescription</code>, <code>MetaKeywords</code>, <code>H1Tag</code>, <code>H2Tag</code>, <code>H3Tag</code>, <code>Robots</code>, <code>Canonical</code>, <code>OgTitle</code>, <code>OgDescription</code>, <code>OgImage</code>, <code>OgUrl</code>, <code>OgSiteName</code>, <code>OgLocale</code>, <code>OgType</code>, <code>OgTag</code>, <code>Author</code>, <code>TwitterSite</code>, <code>TwitterDescription</code>, <code>Facebook</code>, <code>Instagram</code>, <code>Youtube</code><br>
+          <strong>Note:</strong> The <code>Category</code> column should contain the <strong>Sub Category name</strong>. If a product with the same name already exists it will be <strong>updated</strong>, otherwise a new product is <strong>inserted</strong>.
         </div>
         <?php echo form_open_multipart('product/import_csv'); ?>
         <div class="form-group">
-          <label>Select CSV File</label>
+          <label>Select CSV File <span class="text-danger">*</span></label>
           <input type="file" name="csv_file" class="form-control" accept=".csv">
         </div>
+        <a href="<?php echo base_url('product/sample_csv'); ?>" class="btn btn-default btn-sm"><i class="fa fa-download"></i> Download Sample CSV</a>
+        &nbsp;
         <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Import CSV</button>
         <a href="<?php echo base_url('product'); ?>" class="btn btn-default">Cancel</a>
         <?php echo form_close(); ?>
-      </div>
-    </div>
-    <div class="box">
-      <div class="box-header"><h3 class="box-title">Sample CSV Template</h3></div>
-      <div class="box-body">
-        <pre>Product,Category,Price,WholesalePrice,RetailerPrice,Barcode,Quantity,Description
-Arome-01-Baggy,Clear Zipper,1.40,1.00,1.20,AR001,60,Product description here
-Simple Product,,,,,,, </pre>
-        <a href="<?php echo base_url('assets/sample_products.csv'); ?>" class="btn btn-default btn-sm"><i class="fa fa-download"></i> Download Sample CSV</a>
       </div>
     </div>
   </section>

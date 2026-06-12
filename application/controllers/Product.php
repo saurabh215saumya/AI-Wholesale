@@ -236,6 +236,16 @@ class Product extends CI_Controller {
         $this->load->view('product/export_packing_list', $data);
     }
 
+    public function sample_csv() {
+        if (!$this->session->userdata('logged_in')) redirect('user/login');
+        $file = FCPATH . 'assets/sample_products.csv';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="sample_products.csv"');
+        header('Content-Length: ' . filesize($file));
+        readfile($file);
+        exit;
+    }
+
     public function upload_bulk_product() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $data['controller'] = $this->controller;
@@ -299,6 +309,28 @@ class Product extends CI_Controller {
                 'quantity'        => isset($row['Quantity'])     ? trim($row['Quantity'])     : 0,
                 'description'     => isset($row['Description'])  ? trim($row['Description'])  : '',
                 'status'          => 1,
+                'meta_title'          => trim($row['MetaTitle'] ?? ''),
+                'meta_description'    => trim($row['MetaDescription'] ?? ''),
+                'meta_keywords'       => trim($row['MetaKeywords'] ?? ''),
+                'h1_tag'              => trim($row['H1Tag'] ?? ''),
+                'h2_tag'              => trim($row['H2Tag'] ?? ''),
+                'h3_tag'              => trim($row['H3Tag'] ?? ''),
+                'robots'              => trim($row['Robots'] ?? ''),
+                'canonical'           => trim($row['Canonical'] ?? ''),
+                'og_title'            => trim($row['OgTitle'] ?? ''),
+                'og_description'      => trim($row['OgDescription'] ?? ''),
+                'og_image'            => trim($row['OgImage'] ?? ''),
+                'og_url'              => trim($row['OgUrl'] ?? ''),
+                'og_site_name'        => trim($row['OgSiteName'] ?? ''),
+                'og_locale'           => trim($row['OgLocale'] ?? ''),
+                'og_type'             => trim($row['OgType'] ?? ''),
+                'og_tag'              => trim($row['OgTag'] ?? ''),
+                'author'              => trim($row['Author'] ?? ''),
+                'twitter_site'        => trim($row['TwitterSite'] ?? ''),
+                'twitter_description' => trim($row['TwitterDescription'] ?? ''),
+                'facebook'            => trim($row['Facebook'] ?? ''),
+                'instagram'           => trim($row['Instagram'] ?? ''),
+                'youtube'             => trim($row['Youtube'] ?? ''),
             );
             $existing = $this->db->where('product_name', $productName)->get($this->table)->row();
             if ($existing) {
