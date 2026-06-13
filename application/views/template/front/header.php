@@ -111,10 +111,6 @@ $cartProductArr = getUserCartProduct($userId);
                                             <div class="dropdown-mega-content dropdown-mega-content-small">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <div class="nav-cat-header">
-                                                            <i class="fa fa-th-list"></i>
-                                                            <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
-                                                        </div>
                                                         <div class="row">
                                                         <?php
                                                         $children = getCategoryChildren($cat->id);
@@ -122,16 +118,17 @@ $cartProductArr = getUserCartProduct($userId);
                                                             $i = 0;
                                                             foreach($children as $child):
                                                                 if($i % 10 == 0) echo '<div class="col-md-4"><ul class="dropdown-mega-sub-nav">';
+                                                                $grandchildren = getCategoryChildren($child->id);
                                                         ?>
-                                                        <li>
-                                                            <a href="<?php echo base_url('categories/'.$child->category_slug); ?>"><?php echo $child->category_name; ?></a>
-                                                            <?php
-                                                            $grandchildren = getCategoryChildren($child->id);
-                                                            if(!empty($grandchildren)):
-                                                            ?>
-                                                            <ul class="dropdown-mega-sub-nav" style="padding-left:10px;">
+                                                        <li class="nav-sub-item<?php echo !empty($grandchildren) ? ' has-sub' : ''; ?>">
+                                                            <div class="nav-sub-row">
+                                                                <a href="<?php echo base_url('categories/'.$child->category_slug); ?>" class="nav-sub-link"><?php echo $child->category_name; ?></a>
+                                                                <?php if(!empty($grandchildren)): ?><span class="nav-sub-toggle"><i class="fa fa-angle-down nav-sub-arrow"></i></span><?php endif; ?>
+                                                            </div>
+                                                            <?php if(!empty($grandchildren)): ?>
+                                                            <ul class="nav-grandchild-list">
                                                             <?php foreach($grandchildren as $gc): ?>
-                                                            <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>" style="font-size:12px;color:#888;"><i class="fa fa-angle-right"></i> <?php echo $gc->category_name; ?></a></li>
+                                                            <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>"><?php echo $gc->category_name; ?></a></li>
                                                             <?php endforeach; ?>
                                                             </ul>
                                                             <?php endif; ?>
@@ -169,16 +166,18 @@ $cartProductArr = getUserCartProduct($userId);
                 <li><a href="<?php echo base_url(); ?>">Home</a></li>
                 <li><a href="<?php echo base_url('all-products'); ?>">Shop</a></li>
                 <?php if(!empty($isActiveCategories)): foreach($isActiveCategories as $cat): ?>
-                <li>
-                    <span class="mmenu-toggle"></span>
+                <?php $children = getCategoryChildren($cat->id); ?>
+                <li<?php if(!empty($children)): ?> class="has-children"<?php endif; ?>>
+                    <?php if(!empty($children)): ?><span class="mmenu-toggle"></span><?php endif; ?>
                     <a href="<?php echo base_url('categories/'.$cat->category_slug); ?>"><?php echo $cat->category_name; ?></a>
-                    <?php $children = getCategoryChildren($cat->id); if(!empty($children)): ?>
+                    <?php if(!empty($children)): ?>
                     <ul>
                         <?php foreach($children as $child): ?>
-                        <li>
-                            <span class="mmenu-toggle"></span>
+                        <?php $grandchildren = getCategoryChildren($child->id); ?>
+                        <li<?php if(!empty($grandchildren)): ?> class="has-children"<?php endif; ?>>
+                            <?php if(!empty($grandchildren)): ?><span class="mmenu-toggle"></span><?php endif; ?>
                             <a href="<?php echo base_url('categories/'.$child->category_slug); ?>"><?php echo $child->category_name; ?></a>
-                            <?php $grandchildren = getCategoryChildren($child->id); if(!empty($grandchildren)): ?>
+                            <?php if(!empty($grandchildren)): ?>
                             <ul>
                                 <?php foreach($grandchildren as $gc): ?>
                                 <li><a href="<?php echo base_url('categories/'.$gc->category_slug); ?>"><?php echo $gc->category_name; ?></a></li>

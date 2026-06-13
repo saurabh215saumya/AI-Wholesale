@@ -25,13 +25,23 @@
           <div class="col-md-6">
             <div class="form-group <?php echo form_error('sub_category_id') ? 'has-error' : ''; ?>">
               <label>Sub Category</label>
-              <select name="sub_category_id" id="sub_category_id" class="form-control">
+              <select name="sub_category_id" id="sub_category_id" class="form-control" onchange="loadGrandSubCategories(this.value)">
                 <option value="">Select Sub Category</option>
                 <?php foreach($subCategoryDataArr as $s): ?>
                 <option value="<?php echo $s->id; ?>" <?php echo set_select('sub_category_id',$s->id); ?>><?php echo $s->category_name; ?></option>
                 <?php endforeach; ?>
               </select>
               <?php echo form_error('sub_category_id'); ?>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group" <?php echo empty($grandSubCategoryDataArr) ? 'style="display:none;"' : ''; ?>>
+              <label>Grand Sub Category <small class="text-muted">(3rd level, optional)</small></label>
+              <select name="grand_sub_category_id" id="grand_sub_category_id" class="form-control">
+                <option value="">Select Grand Sub Category</option>
+              </select>
             </div>
           </div>
         </div>
@@ -157,11 +167,24 @@
 </div>
 <script>
 function loadSubCategories(catId) {
-  if (!catId) return;
+  if (!catId) { $('#sub_category_id').html('<option value="">Select Sub Category</option>'); $('#grand_sub_category_id').html('<option value="">Select Grand Sub Category</option>').closest('.form-group').hide(); return; }
   $.post('<?php echo base_url('category/getChildCategories'); ?>', {parent_id: catId}, function(res) {
     $('#sub_category_id').html(res);
+    $('#grand_sub_category_id').html('<option value="">Select Grand Sub Category</option>').closest('.form-group').hide();
   });
 }
+function loadGrandSubCategories(subCatId) {
+  if (!subCatId) { $('#grand_sub_category_id').html('<option value="">Select Grand Sub Category</option>').closest('.form-group').hide(); return; }
+  $.post('<?php echo base_url('category/getChildCategories'); ?>', {parent_id: subCatId}, function(res) {
+    var $tmp = $('<select>').html(res);
+    if ($tmp.find('option[value!=""]').length > 0) {
+      $('#grand_sub_category_id').html(res).closest('.form-group').show();
+    } else {
+      $('#grand_sub_category_id').html('<option value="">Select Grand Sub Category</option>').closest('.form-group').hide();
+    }
+  });
+}
+$(document).ready(function(){ $('#grand_sub_category_id').closest('.form-group').hide(); });
 $(document).on('click','#add-variant-btn',function(){
   var row = '<div class="variant-row row" style="margin-bottom:8px;"><div class="col-md-5"><input type="text" name="variant_label[]" class="form-control" placeholder="Label e.g. 25 pieces"></div><div class="col-md-4"><input type="number" step="0.01" name="variant_price[]" class="form-control" placeholder="Price"></div><div class="col-md-3"><button type="button" class="btn btn-danger btn-sm remove-variant"><i class="fa fa-trash"></i> Remove</button></div></div>';
   $('#variants-container').append(row);

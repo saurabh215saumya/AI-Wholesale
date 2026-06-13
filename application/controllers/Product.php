@@ -50,9 +50,12 @@ class Product extends CI_Controller {
             $this->addproduct();
         } else {
             $name = $this->input->post('product_name');
+            $grandSubCatId = (int)$this->input->post('grand_sub_category_id');
+            $subCatId      = (int)$this->input->post('sub_category_id');
             $insert = array(
-                'category_id'     => $this->input->post('category_id'),
-                'sub_cat_id'      => $this->input->post('sub_category_id'),
+                'category_id'      => $this->input->post('category_id'),
+                'sub_cat_id'       => $subCatId,
+                'grand_sub_cat_id' => $grandSubCatId,
                 'product_name'    => $name,
                 'product_code'    => $this->input->post('product_code'),
                 'product_slug'    => url_title(strtolower($name), '-'),
@@ -91,11 +94,12 @@ class Product extends CI_Controller {
 
     public function edit($id) {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
-        $data['details']            = $this->Product_model->productDetails($id);
-        $data['variants']           = $this->Product_model->getAllVariantsByProduct($id);
-        $data['categoryDataArr']    = getAllRootCategories();
-        $data['subCategoryDataArr'] = !empty($data['details']['category_id']) ? getCategoryChildren($data['details']['category_id']) : array();
-        $data['controller']         = $this->controller;
+        $data['details']               = $this->Product_model->productDetails($id);
+        $data['variants']              = $this->Product_model->getAllVariantsByProduct($id);
+        $data['categoryDataArr']       = getAllRootCategories();
+        $data['subCategoryDataArr']    = !empty($data['details']['category_id']) ? getCategoryChildren($data['details']['category_id']) : array();
+        $data['grandSubCategoryDataArr'] = !empty($data['details']['sub_cat_id']) ? getCategoryChildren($data['details']['sub_cat_id']) : array();
+        $data['controller']            = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
         $this->load->view('product/edit', $data);
@@ -118,9 +122,12 @@ class Product extends CI_Controller {
             $this->edit($id);
         } else {
             $name = $this->input->post('product_name');
+            $grandSubCatId = (int)$this->input->post('grand_sub_category_id');
+            $subCatId      = (int)$this->input->post('sub_category_id');
             $update = array(
-                'category_id'     => $this->input->post('category_id'),
-                'sub_cat_id'      => $this->input->post('sub_category_id'),
+                'category_id'      => $this->input->post('category_id'),
+                'sub_cat_id'       => $subCatId,
+                'grand_sub_cat_id' => $grandSubCatId,
                 'product_name'    => $name,
                 'product_code'    => $this->input->post('product_code'),
                 'product_slug'    => url_title(strtolower($name), '-'),

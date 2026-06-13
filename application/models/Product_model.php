@@ -6,10 +6,11 @@ class Product_model extends CI_Model {
     protected $table = 'tbl_products';
 
     public function allproducts() {
-        return $this->db->select('tbl_products.*, tbl_category.category_name, sc.category_name as sub_category_name')
+        return $this->db->select('tbl_products.*, tbl_category.category_name, sc.category_name as sub_category_name, gc.category_name as grand_sub_category_name')
             ->from($this->table)
             ->join('tbl_category', 'tbl_category.id = tbl_products.category_id', 'left')
             ->join('tbl_category sc', 'sc.id = tbl_products.sub_cat_id', 'left')
+            ->join('tbl_category gc', 'gc.id = tbl_products.grand_sub_cat_id', 'left')
             ->where('tbl_products.is_deleted', '0')
             ->order_by('tbl_products.id', 'DESC')
             ->get()->result_array();
@@ -56,13 +57,27 @@ class Product_model extends CI_Model {
     }
 
     public function getProductsByCategory($cat_id, $limit = '', $offset = '') {
-        $this->db->where('category_id', $cat_id)->where('is_deleted', '0')->where('status', '1')->order_by('id', 'DESC');
+        $allIds = array_merge(array((int)$cat_id), getAllDescendantIds($cat_id));
+        $this->db->where('is_deleted', '0')->where('status', '1')
+            ->group_start()
+                ->where_in('category_id', $allIds)
+                ->or_where_in('sub_cat_id', $allIds)
+                ->or_where_in('grand_sub_cat_id', $allIds)
+            ->group_end()
+            ->order_by('id', 'DESC');
         if ($limit) $this->db->limit($limit, $offset);
         return $this->db->get($this->table)->result_array();
     }
 
     public function countByCategory($cat_id) {
-        return $this->db->where('category_id', $cat_id)->where('is_deleted', '0')->where('status', '1')->count_all_results($this->table);
+        $allIds = array_merge(array((int)$cat_id), getAllDescendantIds($cat_id));
+        return $this->db->where('is_deleted', '0')->where('status', '1')
+            ->group_start()
+                ->where_in('category_id', $allIds)
+                ->or_where_in('sub_cat_id', $allIds)
+                ->or_where_in('grand_sub_cat_id', $allIds)
+            ->group_end()
+            ->count_all_results($this->table);
     }
 
     public function getProductsBySubCategory($sub_cat_id, $limit = '', $offset = '') {

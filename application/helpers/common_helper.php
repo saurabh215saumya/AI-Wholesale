@@ -130,6 +130,23 @@ if (!function_exists('getSubCatIdByProductId')) {
     }
 }
 
+if (!function_exists('getAllDescendantIds')) {
+    function getAllDescendantIds($cat_id) {
+        $CI =& get_instance();
+        $ids = array();
+        $stack = array($cat_id);
+        while (!empty($stack)) {
+            $current = array_pop($stack);
+            $rows = $CI->db->select('id')->where('parent_id', $current)->where('is_deleted', '0')->get('tbl_category')->result();
+            foreach ($rows as $r) {
+                $ids[] = (int)$r->id;
+                $stack[] = (int)$r->id;
+            }
+        }
+        return $ids;
+    }
+}
+
 if (!function_exists('getCategoryBreadcrumb')) {
     function getCategoryBreadcrumb($id) {
         $CI =& get_instance();

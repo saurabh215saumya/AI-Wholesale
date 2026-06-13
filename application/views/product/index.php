@@ -23,7 +23,7 @@
             <td><?php if($p['image']): ?><img src="<?php echo SHOW_PRODUCT_PATH.$p['image']; ?>" width="50" height="50" style="object-fit:cover;"><?php endif; ?></td>
             <td><?php echo $p['product_name']; ?></td>
             <td><?php echo $p['product_code']; ?></td>
-            <td><?php echo $p['category_name']; ?><br><small><?php echo $p['sub_category_name']; ?></small></td>
+            <td><?php echo $p['category_name']; ?><br><small><?php echo $p['sub_category_name']; ?></small><?php if(!empty($p['grand_sub_category_name'])): ?><br><small class="text-muted"><?php echo $p['grand_sub_category_name']; ?></small><?php endif; ?></td>
             <td>£<?php echo number_format($p['price'],2); ?></td>
             <td><?php echo $p['quantity']; ?></td>
             <td>
