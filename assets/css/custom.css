@@ -1485,3 +1485,25 @@ html.sticky-header-enabled #header .header-body {
 .totals-table tbody tr:last-child td { white-space: nowrap; }
 .totals-table tbody tr:last-child td:last-child { color: #ff6000 !important; font-size: 17px !important; font-weight: 700 !important; }
 .totals-table-action .btn-primary { border-radius: 30px !important; font-weight: 700 !important; padding: 11px 20px !important; font-size: 14px !important; letter-spacing: .3px; }
+
+/* Variant Type: Per Quantity tier info rows */
+.pd-tier-row { display:flex; justify-content:space-between; align-items:center; padding:5px 10px; border:1px solid #eee; border-radius:5px; margin-bottom:5px; font-size:13px; color:#555; }
+.pd-tier-row .pd-var-price { font-size:13px; font-weight:700; color:#ff6000; }
+.pq-tier-row { cursor: default !important; pointer-events: none; }
+
+/* Qty number input — list cards */
+.jly-qa-qty-input { width:46px; text-align:center; border:1px solid #ddd; border-radius:4px; font-size:13px; font-weight:700; color:#333; padding:2px 4px; height:28px; -moz-appearance:textfield; }
+.jly-qa-qty-input::-webkit-outer-spin-button, .jly-qa-qty-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+/* Qty number input — product detail page */
+.pd-qty-input { width:56px; text-align:center; border:1px solid #ddd; border-radius:6px; font-size:15px; font-weight:700; color:#333; padding:3px 6px; height:34px; -moz-appearance:textfield; }
+.pd-qty-input::-webkit-outer-spin-button, .pd-qty-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.jly-qa-total { font-size:13px; color:#555; padding:6px 0 4px; }
+.jly-qa-total strong { color:#ff6000; font-size:15px; margin-left:4px; }
+
+/* Footer layout: total on its own row, qty+button below */
+.jly-qa-footer { display:flex; flex-direction:column; gap:4px; padding:6px 0 0; }
+.jly-qa-total { font-size:13px; color:#555; text-align:right; padding:0; }
+.jly-qa-total strong { color:#ff6000; font-size:16px; margin-left:4px; }
+.jly-qa-bottom { display:flex; align-items:center; gap:8px; }
+.jly-qa-bottom .jly-qa-qty { flex-shrink:0; }
+.jly-qa-bottom .jly-qa-cart-btn { flex:1; }

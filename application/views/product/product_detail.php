@@ -1,13 +1,14 @@
 <?php
-$userId   = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['id'] : '';
-$userType = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['user_type'] : '';
-$p = $productDetails;
+$userId      = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['id'] : '';
+$userType    = $this->session->userdata('front_logged_in') ? $this->session->userdata('front_logged_in')['user_type'] : '';
+$p           = $productDetails;
 if(empty($p)) { redirect('all-products'); return; }
-$img = getProductImage($p['image']);
+$img         = getProductImage($p['image']);
 $wishlistExist = checkUserProductInWishlist($p['id'], $userId);
-$hasVar = !empty($productVariants);
+$hasVar      = !empty($productVariants);
+$variantType = !empty($p['variant_type']) ? $p['variant_type'] : 'per_quantity';
 
-// Parse features from long_description (each line starting with - or • or just newlines)
+// Parse features from long_description
 $features = array();
 if(!empty($p['long_description'])) {
     $stripped = strip_tags($p['long_description']);
@@ -16,6 +17,17 @@ if(!empty($p['long_description'])) {
         $line = trim(ltrim(trim($line), '-•*'));
         if($line !== '') $features[] = $line;
     }
+}
+
+// Build sorted tiers for per_quantity: [ ['min'=>1,'price'=>10.00], ['min'=>15,'price'=>9.25], ... ]
+$pqTiers = array();
+if($hasVar && $variantType === 'per_quantity') {
+    foreach($productVariants as $v) {
+        $min = (int)preg_replace('/[^0-9]/', '', $v['label']);
+        if($min < 1) $min = 1;
+        $pqTiers[] = array('min' => $min, 'price' => floatval($v['price']));
+    }
+    usort($pqTiers, function($a,$b){ return $a['min'] - $b['min']; });
 }
 ?>
 <section class="page-header mb-lg">
@@ -79,60 +91,78 @@ if(!empty($p['long_description'])) {
                             <a href="<?php echo base_url('sign-in'); ?>" class="pd-add-cart-btn" style="text-decoration:none;display:inline-block;">
                                 <i class="fa fa-sign-in"></i> Login / Register
                             </a>
-                            <?php elseif($hasVar): ?>
-                            <p class="pd-select-label"><i class="fa fa-tag"></i> Select Pack Size</p>
+
+                            <?php elseif($hasVar && $variantType === 'per_quantity'): ?>
+                            <!-- PER QUANTITY: price tiers, no manual variant select -->
+                            <div class="pd-tier-info" style="margin-bottom:12px;">
+                                <p class="pd-select-label" style="margin-bottom:6px;"><i class="fa fa-tags"></i> Price Tiers</p>
+                                <?php foreach($pqTiers as $ti => $tier): ?>
+                                <div class="pd-tier-row">
+                                    <span><?php echo ($ti < count($pqTiers)-1) ? $tier['min'].' - '.($pqTiers[$ti+1]['min']-1).' pcs' : $tier['min'].'+ pcs'; ?></span>
+                                    <span class="pd-var-price"><?php echo '£ '.number_format($tier['price'],2); ?> / pc</span>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="pd-qty-row">
+                                <label class="pd-qty-label">Quantity</label>
+                                <div class="pd-qty-ctrl">
+                                    <button class="pd-qty-btn" onclick="pqChangeQty(-1)">&#8722;</button>
+                                    <input type="number" id="pd-qty-val" class="pd-qty-input" value="1" min="1" oninput="pqOnInput(this.value)">
+                                    <button class="pd-qty-btn" onclick="pqChangeQty(1)">&#43;</button>
+                                </div>
+                                <span class="pd-qty-info" id="pd-qty-info">@ £ <?php echo number_format($pqTiers[0]['price'],2); ?>/pc</span>
+                            </div>
+                            <div class="pd-total-row">
+                                <span>Total:</span>
+                                <span class="pd-total-price" id="pd-total-price"><?php echo '£ '.number_format($pqTiers[0]['price'],2); ?></span>
+                            </div>
+                            <?php if($p['quantity'] > 0): ?>
+                            <button class="pd-add-cart-btn" onclick="pqAddToCart()">
+                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <?php else: ?>
+                            <button class="pd-add-cart-btn pd-add-cart-oos" disabled><i class="fa fa-ban"></i> Out of Stock</button>
+                            <?php endif; ?>
+
+                            <?php elseif($hasVar && $variantType === 'per_carton'): ?>
+                            <!-- PER CARTON: select carton variant first -->
+                            <p class="pd-select-label"><i class="fa fa-tag"></i> Select Carton Size</p>
                             <div class="pd-variant-list" id="pd-variant-list">
                                 <?php foreach($productVariants as $i => $v):
-                                    $vPrice      = floatval($v['price']);
-                                    $vLabel      = htmlspecialchars($v['label'], ENT_QUOTES);
-                                    preg_match('/(\d+)/', $v['label'], $m);
-                                    $pieces      = isset($m[1]) ? intval($m[1]) : 1;
-                                    $perPiece    = $pieces > 0 ? $vPrice / $pieces : $vPrice;
+                                    $vPrice = floatval($v['price']);
+                                    $vLabel = htmlspecialchars($v['label'], ENT_QUOTES);
                                     $displayLabel = is_numeric(trim($v['label'])) ? trim($v['label']).' pieces' : htmlspecialchars($v['label']);
                                 ?>
                                 <div class="pd-variant-option <?php echo $i===0?'selected':''; ?>"
                                      data-price="<?php echo $vPrice; ?>"
                                      data-label="<?php echo $vLabel; ?>"
-                                     data-pieces="<?php echo $pieces; ?>"
                                      onclick="selectVariant(this)">
                                     <div class="pd-var-left">
-                                        <div class="pd-var-top">
-                                            <span class="pd-var-name"><?php echo $displayLabel; ?></span>
-                                            <span class="pd-var-badge"><?php echo $displayLabel; ?></span>
-                                        </div>
-                                        <div class="pd-var-per"><?php echo '£ '.number_format($perPiece,2); ?> per piece</div>
+                                        <span class="pd-var-name"><?php echo $displayLabel; ?></span>
+                                        <div class="pd-var-per">£ <?php echo number_format($vPrice,2); ?> per carton &nbsp;|&nbsp; £ <?php $cPcs=(int)preg_replace('/[^0-9]/','', $v['label']); if($cPcs<1)$cPcs=1; echo number_format(round($vPrice/$cPcs,2),2); ?>/pc</div>
                                     </div>
-                                    <div class="pd-var-price"><?php echo '£ '.number_format($vPrice,2); ?></div>
+                                    <div class="pd-var-price">£ <?php echo number_format($vPrice,2); ?></div>
                                 </div>
                                 <?php endforeach; ?>
                             </div>
-
-                            <!-- Quantity -->
                             <div class="pd-qty-row">
-                                <label class="pd-qty-label">Quantity</label>
+                                <label class="pd-qty-label">Cartons</label>
                                 <div class="pd-qty-ctrl">
                                     <button class="pd-qty-btn" onclick="changeQty(-1)">&#8722;</button>
-                                    <span id="pd-qty-val">1</span>
+                                    <input type="number" id="pd-qty-val" class="pd-qty-input" value="1" min="1" oninput="pdOnInput(this.value)">
                                     <button class="pd-qty-btn" onclick="changeQty(1)">&#43;</button>
                                 </div>
-                                <span class="pd-qty-info" id="pd-qty-info">1 total pieces</span>
                             </div>
-
-                            <!-- Total -->
                             <div class="pd-total-row">
                                 <span>Total:</span>
                                 <span class="pd-total-price" id="pd-total-price"><?php echo '£ '.number_format(floatval($productVariants[0]['price']),2); ?></span>
                             </div>
-
-                            <!-- Add to Cart -->
-                            <?php if($hasVar && $p['quantity'] > 0): ?>
+                            <?php if($p['quantity'] > 0): ?>
                             <button class="pd-add-cart-btn" onclick="addVariantDetail()">
                                 <i class="fa fa-shopping-cart"></i> Add to Cart
                             </button>
                             <?php else: ?>
-                            <button class="pd-add-cart-btn pd-add-cart-oos" disabled>
-                                <i class="fa fa-ban"></i> Out of Stock
-                            </button>
+                            <button class="pd-add-cart-btn pd-add-cart-oos" disabled><i class="fa fa-ban"></i> Out of Stock</button>
                             <?php endif; ?>
 
                             <?php else: ?>
@@ -184,47 +214,71 @@ if(!empty($p['long_description'])) {
 
 <input type="hidden" id="session_user_id" value="<?php echo $userId; ?>">
 <input type="hidden" id="pd-product-id" value="<?php echo $p['id']; ?>">
-<input type="hidden" id="pd-base-price" value="<?php echo $hasVar ? floatval($productVariants[0]['price']) : floatval($p['price']); ?>">
+<input type="hidden" id="pd-variant-type" value="<?php echo $variantType; ?>">
 
 <script>
 var pdQty = 1;
-var pdSelectedPrice = <?php echo $hasVar ? floatval($productVariants[0]['price']) : floatval($p['price']); ?>;
-var pdSelectedLabel = '<?php echo $hasVar ? htmlspecialchars($productVariants[0]['label'], ENT_QUOTES) : ''; ?>';
-var pdSelectedPieces = <?php
-    if($hasVar) {
-        preg_match('/(\d+)/', $productVariants[0]['label'], $m);
-        echo isset($m[1]) ? intval($m[1]) : 1;
-    } else { echo 1; }
-?>;
+// Per Carton state
+var pdSelectedPrice = <?php echo ($hasVar && $variantType==='per_carton') ? floatval($productVariants[0]['price']) : floatval($p['price']); ?>;
+var pdSelectedLabel = '<?php echo ($hasVar && $variantType==='per_carton') ? htmlspecialchars($productVariants[0]['label'], ENT_QUOTES) : ''; ?>';
 
+// Per Quantity tiers
+var pqTiers = <?php echo $hasVar && $variantType==='per_quantity' ? json_encode(array_values($pqTiers)) : '[]'; ?>;
+
+function pqGetTierPrice(qty) {
+    var price = pqTiers.length ? pqTiers[0].price : 0;
+    for (var i = 0; i < pqTiers.length; i++) {
+        if (qty >= pqTiers[i].min) price = pqTiers[i].price;
+    }
+    return price;
+}
+
+function pqChangeQty(delta) {
+    pdQty = Math.max(1, pdQty + delta);
+    document.getElementById('pd-qty-val').value = pdQty;
+    var price = pqGetTierPrice(pdQty);
+    document.getElementById('pd-qty-info').textContent = '@ £ ' + price.toFixed(2) + '/pc';
+    document.getElementById('pd-total-price').textContent = '£ ' + (pdQty * price).toFixed(2);
+}
+function pqOnInput(val) {
+    pdQty = Math.max(1, parseInt(val) || 1);
+    document.getElementById('pd-qty-val').value = pdQty;
+    var price = pqGetTierPrice(pdQty);
+    document.getElementById('pd-qty-info').textContent = '@ £ ' + price.toFixed(2) + '/pc';
+    document.getElementById('pd-total-price').textContent = '£ ' + (pdQty * price).toFixed(2);
+}
+
+function pqAddToCart() {
+    var price = pqGetTierPrice(pdQty);
+    addToCart($('#pd-product-id').val(), pdQty, price, '');
+}
+
+// Per Carton functions
 function selectVariant(el) {
     document.querySelectorAll('.pd-variant-option').forEach(function(o){ o.classList.remove('selected'); });
     el.classList.add('selected');
-    pdSelectedPrice  = parseFloat(el.dataset.price);
-    pdSelectedLabel  = el.dataset.label;
-    pdSelectedPieces = parseInt(el.dataset.pieces) || 1;
+    pdSelectedPrice = parseFloat(el.dataset.price);
+    pdSelectedLabel = el.dataset.label;
     updateTotal();
 }
 
 function changeQty(delta) {
     pdQty = Math.max(1, pdQty + delta);
-    document.getElementById('pd-qty-val').textContent = pdQty;
-    var info = document.getElementById('pd-qty-info');
-    if(info) info.textContent = (pdQty * pdSelectedPieces) + ' total pieces';
+    document.getElementById('pd-qty-val').value = pdQty;
+    updateTotal();
+}
+function pdOnInput(val) {
+    pdQty = Math.max(1, parseInt(val) || 1);
+    document.getElementById('pd-qty-val').value = pdQty;
     updateTotal();
 }
 
 function updateTotal() {
-    var total = pdQty * pdSelectedPrice;
-    document.getElementById('pd-total-price').textContent = '<?php echo '£ '; ?>' + total.toFixed(2);
+    document.getElementById('pd-total-price').textContent = '£ ' + (pdQty * pdSelectedPrice).toFixed(2);
 }
 
 function addVariantDetail() {
     addToCart($('#pd-product-id').val(), pdQty, pdSelectedPrice, pdSelectedLabel);
-}
-
-function addToCartSimple(pid) {
-    addToCart(pid, pdQty);
 }
 
 function addProductInWishlist(product_id) {

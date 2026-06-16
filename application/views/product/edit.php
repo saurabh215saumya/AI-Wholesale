@@ -99,10 +99,20 @@
           <?php echo form_error('quantity'); ?>
         </div>
 
+        <!-- Sell Type -->
+        <div class="form-group">
+          <label>Sell Type <span class="text-danger">*</span></label>
+          <div>
+            <label class="radio-inline"><input type="radio" name="variant_type" value="per_quantity" <?php echo ($details['variant_type']!='per_carton')?'checked':''; ?>> Per Quantity <small class="text-muted">(auto price tier by quantity entered)</small></label>
+            &nbsp;&nbsp;
+            <label class="radio-inline"><input type="radio" name="variant_type" value="per_carton" <?php echo ($details['variant_type']=='per_carton')?'checked':''; ?>> Per Carton <small class="text-muted">(customer selects carton size)</small></label>
+          </div>
+        </div>
+
         <!-- Price Variants -->
         <div class="box box-default">
           <div class="box-header with-border">
-            <h3 class="box-title"><i class="fa fa-tags"></i> Price Variants (Quick Add Tiers) <small class="text-muted">- Optional</small></h3>
+            <h3 class="box-title"><i class="fa fa-tags"></i> Price Variants <small class="text-muted" id="variant-hint-edit"></small></h3>
           </div>
           <div class="box-body">
             <div id="variants-container">
@@ -193,6 +203,14 @@ function loadGrandSubCategories(subCatId) {
       $('#grand_sub_category_id').html('<option value="">Select Grand Sub Category</option>').closest('.form-group').hide();
     }
   });
+}
+$(document).ready(function(){
+  updateVariantHint();
+});
+$('input[name="variant_type"]').on('change', updateVariantHint);
+function updateVariantHint() {
+  var t = $('input[name="variant_type"]:checked').val();
+  $('#variant-hint-edit').text(t === 'per_quantity' ? '- Label = min qty threshold, e.g. "1", "15", "30"' : '- Label = pieces per carton, e.g. "10", "15", "30"');
 }
 $(document).on('click','#add-variant-btn',function(){
   var row = '<div class="variant-row row" style="margin-bottom:8px;"><div class="col-md-5"><input type="text" name="variant_label[]" class="form-control" placeholder="Label e.g. 25 pieces"></div><div class="col-md-4"><input type="number" step="0.01" name="variant_price[]" class="form-control" placeholder="Price"></div><div class="col-md-3"><button type="button" class="btn btn-danger btn-sm remove-variant"><i class="fa fa-trash"></i> Remove</button></div></div>';
