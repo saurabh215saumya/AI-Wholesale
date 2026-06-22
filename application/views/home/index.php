@@ -21,9 +21,21 @@ $userType = $this->session->userdata('front_logged_in') ? $this->session->userda
             $inStock  = $p['quantity'] > 0;
             $minP     = $hasVar ? min(array_column($variants,'price')) : floatval($p['price']);
             $maxP     = $hasVar ? max(array_column($variants,'price')) : 0;
-            $priceStr = ($hasVar && $maxP > $minP)
-                ? '£ '.number_format($minP,2).' - '.'£ '.number_format($maxP,2)
-                : '£ '.number_format($minP,2);
+            if($hasVar && $varType === 'per_carton') {
+                $perPcPrices = array();
+                foreach($variants as $v) {
+                    $pcs = (int)preg_replace('/[^0-9]/','', $v['label']); if($pcs < 1) $pcs = 1;
+                    $perPcPrices[] = round(floatval($v['price']) / $pcs, 2);
+                }
+                $minPpc = min($perPcPrices); $maxPpc = max($perPcPrices);
+                $priceStr = ($maxPpc > $minPpc)
+                    ? '£ '.number_format($maxPpc,2).' - £ '.number_format($minPpc,2).' /pc'
+                    : '£ '.number_format($minPpc,2).' /pc';
+            } else {
+                $priceStr = ($hasVar && $maxP > $minP)
+                    ? '£ '.number_format($minP,2).' - '.'£ '.number_format($maxP,2)
+                    : '£ '.number_format($minP,2);
+            }
             $pqHomeTiers = array();
             if($hasVar && $varType === 'per_quantity') {
                 foreach($variants as $v) {

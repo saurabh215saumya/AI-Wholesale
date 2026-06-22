@@ -13,27 +13,51 @@ if (!function_exists('upload_image')) {
     function upload_image($file_key, $upload_dir, $resize_w = 0, $resize_h = 0) {
         $image = $_FILES[$file_key];
         if (empty($image['name']) || $image['error'] > 0) return '';
-        $imgName    = pathinfo($image['name']);
-        $ext        = strtolower($imgName['extension']);
-        $newImgName = substr(preg_replace('/[^a-zA-Z0-9\._]/', '_', $image['name']), 0, 50) . time() . '.' . $ext;
+        // Detect real image type from tmp file content, not extension
+        $props = @getimagesize($image['tmp_name']);
+        if (!$props) return ''; // not a real image
+        $detectedType = $props[2];
+        // WebP: convert to JPEG (GD WebP may not be compiled in)
+        if ($detectedType == IMAGETYPE_WEBP) {
+            $rawBytes = file_get_contents($image['tmp_name']);
+            $res = @imagecreatefromstring($rawBytes);
+            if (!$res) return ''; // cannot decode webp
+            $baseName   = substr(preg_replace('/[^a-zA-Z0-9_]/', '_', pathinfo($image['name'], PATHINFO_FILENAME)), 0, 50);
+            $newImgName = $baseName . time() . '.jpg';
+            $uploadPath = $upload_dir . '/' . $newImgName;
+            if ($resize_w > 0 && $resize_h > 0) {
+                $res = fn_resize($res, $props[0], $props[1], $resize_w, $resize_h);
+            }
+            imagejpeg($res, $uploadPath, 90);
+            imagedestroy($res);
+            return file_exists($uploadPath) ? $newImgName : '';
+        }
+        $typeMap = array(
+            IMAGETYPE_JPEG => 'jpg',
+            IMAGETYPE_PNG  => 'png',
+            IMAGETYPE_GIF  => 'gif',
+        );
+        if (!isset($typeMap[$detectedType])) return '';
+        $ext        = $typeMap[$detectedType];
+        $baseName   = substr(preg_replace('/[^a-zA-Z0-9_]/', '_', pathinfo($image['name'], PATHINFO_FILENAME)), 0, 50);
+        $newImgName = $baseName . time() . '.' . $ext;
         $uploadPath = $upload_dir . '/' . $newImgName;
         if (move_uploaded_file($image['tmp_name'], $uploadPath)) {
             if ($resize_w > 0 && $resize_h > 0) {
-                $props = getimagesize($uploadPath);
-                $type  = $props[2];
-                if ($type == IMAGETYPE_JPEG) {
+                if ($detectedType == IMAGETYPE_JPEG) {
                     $res = imagecreatefromjpeg($uploadPath);
                     $res = fn_resize($res, $props[0], $props[1], $resize_w, $resize_h);
-                    imagejpeg($res, $uploadPath);
-                } elseif ($type == IMAGETYPE_PNG) {
+                    imagejpeg($res, $uploadPath, 90);
+                } elseif ($detectedType == IMAGETYPE_PNG) {
                     $res = imagecreatefrompng($uploadPath);
                     $res = fn_resize($res, $props[0], $props[1], $resize_w, $resize_h);
                     imagepng($res, $uploadPath);
-                } elseif ($type == IMAGETYPE_GIF) {
+                } elseif ($detectedType == IMAGETYPE_GIF) {
                     $res = imagecreatefromgif($uploadPath);
                     $res = fn_resize($res, $props[0], $props[1], $resize_w, $resize_h);
                     imagegif($res, $uploadPath);
                 }
+                if (isset($res)) imagedestroy($res);
             }
             return $newImgName;
         }

@@ -50,18 +50,19 @@ if($hasVar && $variantType === 'per_quantity') {
                         <button class="jly-wish-btn pd-wish-btn <?php echo !empty($wishlistExist)?'active':''; ?>" onclick="return addProductInWishlist('<?php echo $p['id']; ?>')" title="Wishlist">
                             <i class="fa fa-heart<?php echo !empty($wishlistExist)?'':'-o'; ?>"></i>
                         </button>
-                        <img id="pd-main-img" src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['product_name']); ?>" class="pd-main-img">
+                        <img id="pd-main-img" src="<?php echo $img; ?>" alt="<?php echo !empty($p['img_alt_1']) ? htmlspecialchars($p['img_alt_1']) : htmlspecialchars($p['product_name']); ?>" class="pd-main-img">
                     </div>
                     <!-- Thumbnails -->
                     <?php
                     $thumbs = array_filter(array('image','image_1','image_2','image_3','image_4'), function($k) use($p){ return !empty($p[$k]); });
+                    $altMap = array('image'=>'img_alt_1','image_1'=>'img_alt_2','image_2'=>'img_alt_3','image_3'=>'img_alt_4','image_4'=>'img_alt_5');
                     if(count($thumbs) > 1):
                     ?>
                     <div class="pd-thumbs">
                         <?php foreach($thumbs as $tf):
                             $ti = getProductImage($p[$tf]);
                         ?>
-                        <img src="<?php echo $ti; ?>" alt="" class="pd-thumb <?php echo $tf=='image'?'active':''; ?>" onclick="document.getElementById('pd-main-img').src='<?php echo $ti; ?>'; document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active');}); this.classList.add('active');">
+                        <img src="<?php echo $ti; ?>" alt="<?php $altKey=$altMap[$tf]; echo !empty($p[$altKey]) ? htmlspecialchars($p[$altKey]) : htmlspecialchars($p['product_name']); ?>" class="pd-thumb <?php echo $tf=='image'?'active':''; ?>" onclick="document.getElementById('pd-main-img').src='<?php echo $ti; ?>'; document.querySelectorAll('.pd-thumb').forEach(function(t){t.classList.remove('active');}); this.classList.add('active');">
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>

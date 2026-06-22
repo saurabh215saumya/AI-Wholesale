@@ -9,9 +9,49 @@ $cartProductArr = getUserCartProduct($userId);
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><?php echo isset($pageTitle) ? $pageTitle.' | '.SITE_NAME : SITE_NAME; ?></title>
+    <title><?php
+    if(!empty($productDetails) && !empty($productDetails['meta_title'])) echo htmlspecialchars($productDetails['meta_title']).' | '.SITE_NAME;
+    elseif(isset($pageTitle)) echo $pageTitle.' | '.SITE_NAME;
+    else echo SITE_NAME;
+    ?></title>
     <link rel="shortcut icon" href="<?php echo base_url('assets/images/img/demos/shop/logo-shop.png'); ?>" type="image/x-icon">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<?php if(!empty($productDetails)): $seo = $productDetails; ?>
+<?php if(!empty($seo['meta_description'])): ?><meta name="description" content="<?php echo htmlspecialchars($seo['meta_description']); ?>"><?php endif; ?>
+<?php if(!empty($seo['meta_keywords'])): ?><meta name="keywords" content="<?php echo htmlspecialchars($seo['meta_keywords']); ?>"><?php endif; ?>
+<?php if(!empty($seo['robots'])): ?><meta name="robots" content="<?php echo htmlspecialchars($seo['robots']); ?>"><?php endif; ?>
+<?php if(!empty($seo['revisit_after'])): ?><meta name="revisit-after" content="<?php echo htmlspecialchars($seo['revisit_after']); ?>"><?php endif; ?>
+<?php if(!empty($seo['author'])): ?><meta name="author" content="<?php echo htmlspecialchars($seo['author']); ?>"><?php endif; ?>
+<?php if(!empty($seo['subject'])): ?><meta name="subject" content="<?php echo htmlspecialchars($seo['subject']); ?>"><?php endif; ?>
+<?php if(!empty($seo['owner'])): ?><meta name="owner" content="<?php echo htmlspecialchars($seo['owner']); ?>"><?php endif; ?>
+<?php if(!empty($seo['coverage'])): ?><meta name="coverage" content="<?php echo htmlspecialchars($seo['coverage']); ?>"><?php endif; ?>
+<?php if(!empty($seo['language'])): ?><meta name="language" content="<?php echo htmlspecialchars($seo['language']); ?>"><?php endif; ?>
+<?php if(!empty($seo['distribution'])): ?><meta name="distribution" content="<?php echo htmlspecialchars($seo['distribution']); ?>"><?php endif; ?>
+<?php if(!empty($seo['country'])): ?><meta name="country" content="<?php echo htmlspecialchars($seo['country']); ?>"><?php endif; ?>
+<?php if(!empty($seo['cache_control'])): ?><meta name="cache-control" content="<?php echo htmlspecialchars($seo['cache_control']); ?>"><?php endif; ?>
+<?php if(!empty($seo['geo_region'])): ?><meta name="geo.region" content="<?php echo htmlspecialchars($seo['geo_region']); ?>"><?php endif; ?>
+<?php if(!empty($seo['geo_place_name'])): ?><meta name="geo.placename" content="<?php echo htmlspecialchars($seo['geo_place_name']); ?>"><?php endif; ?>
+<?php if(!empty($seo['geo_position'])): ?><meta name="geo.position" content="<?php echo htmlspecialchars($seo['geo_position']); ?>"><?php endif; ?>
+<?php if(!empty($seo['icbm'])): ?><meta name="ICBM" content="<?php echo htmlspecialchars($seo['icbm']); ?>"><?php endif; ?>
+<?php if(!empty($seo['og_locale'])): ?><meta property="og:locale" content="<?php echo htmlspecialchars($seo['og_locale']); ?>"><?php endif; ?>
+<?php if(!empty($seo['og_type'])): ?><meta property="og:type" content="<?php echo htmlspecialchars($seo['og_type']); ?>"><?php endif; ?>
+<?php $ogTitle = !empty($seo['og_title']) ? $seo['og_title'] : (!empty($seo['meta_title']) ? $seo['meta_title'] : $seo['product_name']); ?>
+<meta property="og:title" content="<?php echo htmlspecialchars($ogTitle); ?>">
+<?php $ogUrl = !empty($seo['og_url']) ? $seo['og_url'] : current_url(); ?>
+<meta property="og:url" content="<?php echo htmlspecialchars($ogUrl); ?>">
+<?php if(!empty($seo['og_site_name'])): ?><meta property="og:site_name" content="<?php echo htmlspecialchars($seo['og_site_name']); ?>"><?php endif; ?>
+<?php if(!empty($seo['og_description'])): ?><meta property="og:description" content="<?php echo htmlspecialchars($seo['og_description']); ?>"><?php endif; ?>
+<?php $ogImg = !empty($seo['og_image']) ? $seo['og_image'] : (!empty($seo['image']) ? SHOW_PRODUCT_PATH.$seo['image'] : ''); ?>
+<?php if($ogImg): ?><meta property="og:image" content="<?php echo htmlspecialchars($ogImg); ?>"><?php endif; ?>
+<?php if(!empty($seo['og_tag'])): ?><meta property="og:tag" content="<?php echo htmlspecialchars($seo['og_tag']); ?>"><?php endif; ?>
+<?php if(!empty($seo['twitter_site'])): ?><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="<?php echo htmlspecialchars($seo['twitter_site']); ?>"><?php endif; ?>
+<?php if(!empty($seo['twitter_description'])): ?><meta name="twitter:description" content="<?php echo htmlspecialchars($seo['twitter_description']); ?>"><?php endif; ?>
+<?php if(!empty($seo['instagram'])): ?><meta name="instagram" content="<?php echo htmlspecialchars($seo['instagram']); ?>"><?php endif; ?>
+<?php if(!empty($seo['facebook'])): ?><meta name="facebook" content="<?php echo htmlspecialchars($seo['facebook']); ?>"><?php endif; ?>
+<?php if(!empty($seo['youtube'])): ?><meta name="youtube" content="<?php echo htmlspecialchars($seo['youtube']); ?>"><?php endif; ?>
+<?php $canonical = !empty($seo['canonical']) ? $seo['canonical'] : current_url(); ?>
+<link rel="canonical" href="<?php echo htmlspecialchars($canonical); ?>">
+<?php endif; ?>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?php echo base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('assets/vendor/font-awesome/css/font-awesome.min.css'); ?>">
