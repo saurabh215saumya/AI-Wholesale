@@ -16,6 +16,24 @@ class Product_model extends CI_Model {
             ->get()->result_array();
     }
 
+    public function allproductsFiltered($category_id = '', $sub_cat_id = '', $grand_sub_cat_id = '') {
+        $this->db->select('tbl_products.*, tbl_category.category_name, sc.category_name as sub_category_name, gc.category_name as grand_sub_category_name')
+            ->from($this->table)
+            ->join('tbl_category', 'tbl_category.id = tbl_products.category_id', 'left')
+            ->join('tbl_category sc', 'sc.id = tbl_products.sub_cat_id', 'left')
+            ->join('tbl_category gc', 'gc.id = tbl_products.grand_sub_cat_id', 'left')
+            ->where('tbl_products.is_deleted', '0');
+        if ($grand_sub_cat_id) $this->db->where('tbl_products.grand_sub_cat_id', $grand_sub_cat_id);
+        elseif ($sub_cat_id)   $this->db->where('tbl_products.sub_cat_id', $sub_cat_id);
+        elseif ($category_id)  $this->db->where('tbl_products.category_id', $category_id);
+        return $this->db->order_by('tbl_products.id', 'DESC')->get()->result_array();
+    }
+
+    public function deleteMultiple($ids) {
+        if (empty($ids)) return;
+        $this->db->where_in('id', $ids)->update($this->table, array('is_deleted' => 1));
+    }
+
     public function productDetails($id) {
         return $this->db->where('id', $id)->where('is_deleted', '0')->get($this->table)->row_array();
     }

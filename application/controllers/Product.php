@@ -16,12 +16,40 @@ class Product extends CI_Controller {
 
     public function index() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
-        $data['allproducts'] = $this->Product_model->allproducts();
-        $data['controller']  = $this->controller;
+        $data['allproducts']  = $this->Product_model->allproducts();
+        $data['categories']   = $this->Category_model->rootCategories();
+        $data['controller']   = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
         $this->load->view('product/index', $data);
         $this->load->view('template/admin_footer');
+    }
+
+    public function filter_products() {
+        if (!$this->session->userdata('logged_in')) { echo json_encode([]); return; }
+        $cat_id       = $this->input->post('category_id');
+        $sub_cat_id   = $this->input->post('sub_cat_id');
+        $grand_sub_id = $this->input->post('grand_sub_cat_id');
+        $products = $this->Product_model->allproductsFiltered($cat_id, $sub_cat_id, $grand_sub_id);
+        echo json_encode($products);
+    }
+
+    public function get_subcategories() {
+        if (!$this->session->userdata('logged_in')) { echo json_encode([]); return; }
+        $parent_id = $this->input->post('parent_id');
+        $subs = $this->Category_model->childrenOf($parent_id);
+        echo json_encode($subs);
+    }
+
+    public function delete_multiple() {
+        if (!$this->session->userdata('logged_in')) redirect('user/login');
+        $ids = $this->input->post('product_ids');
+        if (!empty($ids)) {
+            $ids = array_filter(array_map('intval', (array)$ids));
+            $this->Product_model->deleteMultiple($ids);
+            $this->session->set_flashdata('response', '<div class="alert alert-success">Selected products deleted successfully.</div>');
+        }
+        redirect($this->controller);
     }
 
     public function addproduct() {

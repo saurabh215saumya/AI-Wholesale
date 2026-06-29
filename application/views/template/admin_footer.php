@@ -77,14 +77,18 @@
   
     $(function () {
         //$("#example1").DataTable();
-        $('#example1').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false
-        });
+        if (!$('#example1').hasClass('dt-managed')) {
+            $('#example1').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false
+            });
+        } else if (typeof initDataTable === 'function') {
+            initDataTable();
+        }
 
         var request;
         $("#webapiform").submit(function (event) {
