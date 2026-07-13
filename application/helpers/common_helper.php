@@ -245,6 +245,14 @@ if (!function_exists('getSeoPageMetaData')) {
     }
 }
 
+if (!function_exists('getKeywordLocations')) {
+    function getKeywordLocations() {
+        $CI =& get_instance();
+        $rows = $CI->db->select('location')->where('status', 1)->where('is_deleted', 0)->where('location !=', '')->group_by('location')->order_by('location', 'ASC')->get('tbl_keywords')->result_array();
+        return array_column($rows, 'location');
+    }
+}
+
 if (!function_exists('getCategoryNameBySlug')) {
     function getCategoryNameBySlug($slug) {
         $CI =& get_instance();

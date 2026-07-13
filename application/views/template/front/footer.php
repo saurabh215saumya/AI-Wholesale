@@ -37,12 +37,25 @@
 <script>
 (function(){
     if(sessionStorage.getItem('age_verified') === '1') return;
+    if(localStorage.getItem('age_verified') === '1') { sessionStorage.setItem('age_verified','1'); return; }
+    // Skip on keyword SEO pages and location pages
+    var path = window.location.pathname;
+    if(path.indexOf('/location/') !== -1) return;
+    var skipSlugs = <?php
+        $CI =& get_instance();
+        $slugs = $CI->db->select('page_slug')->where('status',1)->where('is_deleted',0)->where('page_slug !=','')->get('tbl_keywords')->result_array();
+        echo json_encode(array_column($slugs, 'page_slug'));
+    ?>;
+    for(var i=0;i<skipSlugs.length;i++){
+        if(path.indexOf(skipSlugs[i]) !== -1) return;
+    }
     var overlay = document.getElementById('age-verify-overlay');
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 })();
 function ageVerifyConfirm(){
     sessionStorage.setItem('age_verified','1');
+    localStorage.setItem('age_verified','1');
     document.getElementById('age-verify-overlay').style.display = 'none';
     document.body.style.overflow = '';
 }
@@ -89,10 +102,12 @@ function ageVerifyDecline(){
                 </ul>
             </div>
             <div class="col-md-3">
-                <div class="newsletter">
-                    <h4>Be the First to Know</h4>
-                    <p class="newsletter-info">Get all the latest information on Events, Sales and Offers. Sign up for newsletter today.</p>
-                </div>
+                <h4>Locations</h4>
+                <ul class="links">
+                    <?php foreach(getKeywordLocations() as $loc): ?>
+                    <li><i class="fa fa-map-marker text-color-primary"></i><a href="<?php echo base_url('location/'.urlencode($loc)); ?>"><?php echo htmlspecialchars($loc); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
     </div>
@@ -168,6 +183,124 @@ function showToast(msg, type) {
     $('body').append($t);
     setTimeout(function(){ $t.addClass('show'); }, 10);
     setTimeout(function(){ $t.removeClass('show'); setTimeout(function(){ $t.remove(); }, 400); }, 2500);
+}
+</script>
+<!-- ── Chat Widget ───────────────────────────────────────────────────────── -->
+<style>
+#cw-wrap{position:fixed;bottom:25px;right:25px;z-index:99999;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+#cw-trigger{width:58px;height:58px;border-radius:50%;background:#25d366;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0;}
+#cw-trigger:hover{background:#1ebe5d;}
+#cw-trigger svg{width:30px;height:30px;fill:#fff;display:block;}
+#cw-channels{display:none;flex-direction:column;align-items:flex-end;gap:8px;}
+#cw-channels.open{display:flex;}
+.cw-channel-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;position:relative;transition:transform .15s;}
+.cw-channel-btn:hover{transform:scale(1.08);}
+.cw-channel-btn svg{width:26px;height:26px;fill:#fff;display:block;}
+.cw-channel-btn .cw-label{position:absolute;right:58px;background:#fff;color:#333;font-size:13px;font-family:sans-serif;white-space:nowrap;padding:5px 10px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.15);pointer-events:none;opacity:0;transition:opacity .15s;}
+.cw-channel-btn:hover .cw-label{opacity:1;}
+#cw-form-box{display:none;position:fixed;bottom:100px;right:25px;width:300px;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:99999;font-family:sans-serif;overflow:hidden;}
+#cw-form-box.open{display:block;}
+.cw-form-header{background:#a886cd;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:600;}
+.cw-form-header button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0;}
+.cw-form-body{padding:16px;}
+.cw-field{margin-bottom:12px;}
+.cw-field label{display:block;font-size:13px;color:#444;margin-bottom:4px;}
+.cw-field input,.cw-field textarea{width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;font-family:sans-serif;}
+.cw-field input:focus,.cw-field textarea:focus{border-color:#a886cd;}
+.cw-field textarea{height:80px;resize:none;}
+.cw-submit{width:100%;background:#a886cd;color:#fff;border:none;border-radius:6px;padding:10px;font-size:15px;cursor:pointer;margin-top:4px;}
+.cw-submit:hover{background:#9570c0;}
+.cw-msg{font-size:13px;text-align:center;margin-top:8px;display:none;}
+.cw-success{color:#00a700;}
+.cw-error{color:#da0000;}
+/* product enquiry pre-fill notice */
+#cw-product-info{font-size:12px;color:#888;margin-bottom:10px;padding:6px 8px;background:#f9f4ff;border-radius:4px;border-left:3px solid #a886cd;display:none;}
+</style>
+
+<div id="cw-wrap">
+    <!-- Channel buttons (hidden until trigger clicked) -->
+    <div id="cw-channels">
+        <!-- WhatsApp -->
+        <button class="cw-channel-btn" style="background:#25d366;" onclick="window.open('https://wa.me/447414560342','_blank')" title="WhatsApp">
+            <span class="cw-label">WhatsApp</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.67 4.823 1.836 6.83L2 30l7.418-1.807A13.93 13.93 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.418-.25-4.404 1.072 1.1-4.285-.274-.44A11.5 11.5 0 1116 27.5zm6.32-8.64c-.347-.174-2.053-1.013-2.372-1.128-.32-.115-.552-.174-.784.174-.232.347-.9 1.128-1.1 1.36-.203.232-.405.26-.752.087-.347-.174-1.466-.54-2.792-1.722-1.032-.92-1.728-2.056-1.93-2.404-.203-.347-.022-.535.152-.707.157-.156.347-.405.52-.608.174-.203.232-.347.347-.579.115-.232.058-.434-.029-.608-.087-.174-.784-1.89-1.074-2.59-.283-.68-.57-.587-.784-.598l-.667-.011c-.232 0-.608.087-.927.434-.32.347-1.218 1.19-1.218 2.902s1.247 3.367 1.42 3.599c.174.232 2.453 3.746 5.942 5.252.83.358 1.479.572 1.984.733.833.265 1.592.228 2.192.138.668-.1 2.053-.84 2.343-1.651.29-.812.29-1.508.203-1.651-.087-.145-.32-.232-.667-.405z"/></svg>
+        </button>
+        <!-- Contact / Enquiry form -->
+        <button class="cw-channel-btn" style="background:#a886cd;" onclick="cwToggleForm()" title="Contact Us">
+            <span class="cw-label">Contact Us</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </button>
+    </div>
+
+    <!-- Main trigger bubble -->
+    <button id="cw-trigger" onclick="cwToggle()" title="Chat with us">
+        <!-- Chat icon (shown when closed) -->
+        <svg id="cw-icon-chat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <!-- Close icon (shown when open) -->
+        <svg id="cw-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+</div>
+
+<!-- Contact / Enquiry Form popup -->
+<div id="cw-form-box">
+    <div class="cw-form-header">
+        <span>Send Enquiry</span>
+        <button onclick="cwCloseForm()">&times;</button>
+    </div>
+    <div class="cw-form-body">
+        <div id="cw-product-info"></div>
+        <form id="cw-form" onsubmit="cwSubmit(event)">
+            <input type="hidden" name="product_name" id="cw-hidden-product">
+            <div class="cw-field"><label>Name *</label><input type="text" name="name" placeholder="Your name" required></div>
+            <div class="cw-field"><label>Email *</label><input type="email" name="email" placeholder="Your email" required></div>
+            <div class="cw-field"><label>Phone</label><input type="text" name="phone" placeholder="Your phone"></div>
+            <div class="cw-field"><label>Message *</label><textarea name="message" placeholder="How can we help?" required></textarea></div>
+            <button type="submit" class="cw-submit">Send Message</button>
+            <p class="cw-msg cw-success" id="cw-ok"></p>
+            <p class="cw-msg cw-error" id="cw-err"></p>
+        </form>
+    </div>
+</div>
+
+<script>
+var cwOpen = false;
+function cwToggle(){
+    cwOpen = !cwOpen;
+    document.getElementById('cw-channels').classList.toggle('open', cwOpen);
+    document.getElementById('cw-icon-chat').style.display  = cwOpen ? 'none'  : 'block';
+    document.getElementById('cw-icon-close').style.display = cwOpen ? 'block' : 'none';
+    document.getElementById('cw-trigger').style.background = cwOpen ? '#e05555' : '#25d366';
+    if(!cwOpen) cwCloseForm();
+}
+function cwToggleForm(){
+    var box = document.getElementById('cw-form-box');
+    box.classList.toggle('open');
+}
+function cwCloseForm(){
+    document.getElementById('cw-form-box').classList.remove('open');
+}
+/* Called from product pages: cwEnquireProduct('Product Name') */
+function cwEnquireProduct(name){
+    document.getElementById('cw-hidden-product').value = name;
+    var info = document.getElementById('cw-product-info');
+    info.textContent = 'Enquiry about: ' + name;
+    info.style.display = 'block';
+    var msg = document.querySelector('#cw-form textarea[name=message]');
+    if(msg && !msg.value) msg.value = 'I would like to enquire about: ' + name;
+    if(!cwOpen) cwToggle();
+    document.getElementById('cw-form-box').classList.add('open');
+}
+function cwSubmit(e){
+    e.preventDefault();
+    var ok  = document.getElementById('cw-ok');
+    var err = document.getElementById('cw-err');
+    ok.style.display = err.style.display = 'none';
+    fetch('<?php echo base_url('chatbot/submit'); ?>', {method:'POST', body: new FormData(document.getElementById('cw-form'))})
+        .then(function(r){return r.json();})
+        .then(function(res){
+            if(res.status==1){ok.textContent=res.message;ok.style.display='block';document.getElementById('cw-form').reset();document.getElementById('cw-product-info').style.display='none';}
+            else{err.textContent=res.message||'Something went wrong.';err.style.display='block';}
+        }).catch(function(){err.textContent='Request failed.';err.style.display='block';});
 }
 </script>
 </body>

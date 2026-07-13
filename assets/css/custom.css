@@ -1241,7 +1241,6 @@ html.sticky-header-enabled #header .header-body {
 #footer .footer-copyright .logo {
     display: inline-block;
     transition: opacity 0.2s, transform 0.2s;
-    filter: brightness(1);
 }
 #footer .footer-copyright .logo:hover {
     opacity: 0.85;

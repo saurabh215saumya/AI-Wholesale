@@ -23,6 +23,14 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Meta Heading</label>
+          <input type="text" name="meta_heading" class="form-control" value="<?php echo isset($d['meta_heading']) ? htmlspecialchars($d['meta_heading']) : ''; ?>">
+        </div>
+      </div>
+    </div>
     <div class="form-group">
       <label>Meta Description</label>
       <textarea name="meta_description" class="form-control" rows="2"><?php echo isset($d['meta_description']) ? htmlspecialchars($d['meta_description']) : ''; ?></textarea>

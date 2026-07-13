@@ -17,14 +17,15 @@
         <table class="table table-bordered table-hover table-striped">
           <thead>
             <tr>
-              <th>#</th><th>Keyword</th><th>Status</th><th>Added On</th><th>Action</th>
+              <th>#</th><th>Keyword</th><th>Location</th><th>Status</th><th>Added On</th><th>Action</th>
             </tr>
           </thead>
           <tbody>
-            <?php if(!empty($allKeywords)): $i=1; foreach($allKeywords as $row): ?>
+            <?php if(!empty($allKeywords)): $i = $offset + 1; foreach($allKeywords as $row): ?>
             <tr>
               <td><?php echo $i++; ?></td>
               <td><?php echo htmlspecialchars($row['keyword']); ?></td>
+              <td><?php echo htmlspecialchars($row['location'] ?? ''); ?></td>
               <td><?php echo $row['status'] ? '<span class="label label-success">Active</span>' : '<span class="label label-danger">Inactive</span>'; ?></td>
               <td><?php echo date('d M Y', strtotime($row['addedOn'])); ?></td>
               <td>
@@ -33,11 +34,16 @@
               </td>
             </tr>
             <?php endforeach; else: ?>
-            <tr><td colspan="5" class="text-center">No keywords found.</td></tr>
+            <tr><td colspan="6" class="text-center">No keywords found.</td></tr>
             <?php endif; ?>
           </tbody>
         </table>
       </div>
+      <?php if(!empty($pagination)): ?>
+      <div class="box-footer clearfix">
+        <?php echo $pagination; ?>
+      </div>
+      <?php endif; ?>
     </div>
   </section>
 </div>

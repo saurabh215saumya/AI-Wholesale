@@ -40,3 +40,17 @@ $route['ajax-signup'] = 'appuser/ajax_signup';
 $route['ajax-merge-guest-cart'] = 'product/ajax_merge_guest_cart';
 
 $route['page/(:any)'] = 'home/static_page/$1';
+
+$route['location/(:any)'] = 'keyword/location/$1';
+
+$route['keyword'] = 'keyword/index';
+$route['keyword/add'] = 'keyword/add';
+$route['keyword/save'] = 'keyword/save';
+$route['keyword/edit/(:num)'] = 'keyword/edit/$1';
+$route['keyword/update'] = 'keyword/update';
+$route['keyword/delete/(:num)'] = 'keyword/delete/$1';
+$route['keyword/upload_csv'] = 'keyword/upload_csv';
+$route['keyword/import_csv'] = 'keyword/import_csv';
+$route['keyword/sample_csv'] = 'keyword/sample_csv';
+
+$route['(:any)'] = 'keyword/keyword_page/$1';

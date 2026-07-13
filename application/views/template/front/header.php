@@ -17,8 +17,12 @@ $cartProductArr = getUserCartProduct($userId);
     <link rel="shortcut icon" href="<?php echo base_url('assets/images/img/demos/shop/logo-shop.png'); ?>" type="image/x-icon">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <?php if(!empty($productDetails)): $seo = $productDetails; ?>
+<?php elseif(!empty($kw)): $seo = $kw; ?>
+<?php endif; ?>
+<?php if(!empty($seo)): ?>
 <?php if(!empty($seo['meta_description'])): ?><meta name="description" content="<?php echo htmlspecialchars($seo['meta_description']); ?>"><?php endif; ?>
 <?php if(!empty($seo['meta_keywords'])): ?><meta name="keywords" content="<?php echo htmlspecialchars($seo['meta_keywords']); ?>"><?php endif; ?>
+<?php if(!empty($seo['meta_heading'])): ?><meta name="heading" content="<?php echo htmlspecialchars($seo['meta_heading']); ?>"><?php endif; ?>
 <?php if(!empty($seo['robots'])): ?><meta name="robots" content="<?php echo htmlspecialchars($seo['robots']); ?>"><?php endif; ?>
 <?php if(!empty($seo['revisit_after'])): ?><meta name="revisit-after" content="<?php echo htmlspecialchars($seo['revisit_after']); ?>"><?php endif; ?>
 <?php if(!empty($seo['author'])): ?><meta name="author" content="<?php echo htmlspecialchars($seo['author']); ?>"><?php endif; ?>
