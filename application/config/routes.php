@@ -53,4 +53,28 @@ $route['keyword/upload_csv'] = 'keyword/upload_csv';
 $route['keyword/import_csv'] = 'keyword/import_csv';
 $route['keyword/sample_csv'] = 'keyword/sample_csv';
 
+$route['banner'] = 'banner/index';
+$route['banner/(:any)'] = 'banner/$1';
+
+$route['category'] = 'category/index';
+$route['category/(:any)'] = 'category/$1';
+
+$route['product'] = 'product/index';
+$route['product/(:any)'] = 'product/$1';
+
+$route['appuser'] = 'appuser/index';
+$route['appuser/(:any)'] = 'appuser/$1';
+
+$route['staticpage'] = 'staticpage/index';
+$route['staticpage/(:any)'] = 'staticpage/$1';
+
+$route['testimonial'] = 'testimonial/index';
+$route['testimonial/(:any)'] = 'testimonial/$1';
+
+$route['order'] = 'order/index';
+$route['order/(:any)'] = 'order/$1';
+
+$route['user'] = 'user/index';
+$route['user/(:any)'] = 'user/$1';
+
 $route['(:any)'] = 'keyword/keyword_page/$1';
