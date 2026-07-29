@@ -46,16 +46,36 @@ class Appuser extends CI_Controller {
     public function update_user() {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
         $id = $this->input->post('user_id');
+        $newStatus = (int)$this->input->post('status');
+        $oldUser   = $this->Appuser_model->userDetails($id);
         $update = array(
             'first_name'   => $this->input->post('first_name'),
             'last_name'    => $this->input->post('last_name'),
             'email'        => $this->input->post('email'),
             'mobile'       => $this->input->post('mobile'),
             'company_name' => $this->input->post('company_name'),
-            'status'       => $this->input->post('status'),
+            'status'       => $newStatus,
             'updatedOn'    => date('Y-m-d H:i:s'),
         );
         $this->Appuser_model->updateUser($id, $update);
+
+        // Send account approved email if status changed from inactive to active
+        if ($oldUser && (int)$oldUser['status'] == 0 && $newStatus == 1) {
+            $fullName  = trim($oldUser['first_name'] . ' ' . $oldUser['last_name']);
+            $approvedBody = '
+                <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">Great News, ' . $fullName . '!</p>
+                <p style="background:#e8f5e9;border-left:4px solid #4caf50;padding:12px 16px;border-radius:4px;">
+                    Your <strong>' . SITE_NAME . '</strong> account has been <strong style="color:#2e7d32;">approved and activated</strong>!
+                </p>
+                <p>You can now log in and start exploring our wholesale products.</p>
+                <p style="text-align:center;">
+                    <a href="' . BASE_URL . '/sign-in" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">Login Now</a>
+                </p>
+                <p style="color:#777;font-size:13px;">If you have any questions, feel free to contact us at <a href="mailto:' . ADMIN_EMAIL . '" style="color:#c8a951;">' . ADMIN_EMAIL . '</a></p>
+                <p>Regards,<br><strong>' . SITE_NAME . ' Team</strong></p>';
+            sendMail($oldUser['email'], 'Account Approved - ' . SITE_NAME, emailTemplate('Account Approved!', $approvedBody));
+        }
+
         $this->session->set_flashdata('response', '<div class="alert alert-success">User updated successfully.</div>');
         redirect($this->controller);
     }
@@ -98,7 +118,7 @@ class Appuser extends CI_Controller {
             'company_name'       => $this->input->post('company_name'),
             'company_reg_number' => $this->input->post('company_reg_number'),
             'password'           => md5($this->input->post('password')),
-            'status'             => 1,
+            'status'             => 0,
             'addedOn'            => date('Y-m-d H:i:s'),
             'updatedOn'          => date('Y-m-d H:i:s'),
         );
@@ -114,8 +134,64 @@ class Appuser extends CI_Controller {
             $insert['postal_code']            = $this->input->post('postal_code');
             $insert['country']                = $this->input->post('country');
         }
-        $this->db->insert($this->table, $insert);
-        echo $this->db->insert_id() ? 'success' : 'error';
+        $this->db->insert('tbl_users', $insert);
+        if (!$this->db->insert_id()) { echo 'error'; return; }
+
+        $fullName = trim($insert['first_name'] . ' ' . $insert['last_name']);
+
+        // --- Email to User ---
+        $userBody = '
+            <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">Hello, ' . $fullName . '!</p>
+            <p>Thank you for registering with <strong>' . SITE_NAME . '</strong>.</p>
+            <p style="background:#fff8e1;border-left:4px solid #c8a951;padding:12px 16px;border-radius:4px;">
+                Your account is currently <strong>pending approval</strong>.<br>
+                Our team will review your details and activate your account shortly.
+            </p>
+            <p>Once approved, you will receive a confirmation email and can log in at:</p>
+            <p style="text-align:center;">
+                <a href="' . BASE_URL . '/sign-in" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">Login to Your Account</a>
+            </p>
+            <p style="color:#777;font-size:13px;">If you did not register, please ignore this email.</p>
+            <p>Regards,<br><strong>' . SITE_NAME . ' Team</strong></p>';
+        sendMail($email, 'Registration Received - ' . SITE_NAME, emailTemplate('Registration Received', $userBody));
+
+        // --- Email to Admin ---
+        $adminBody = '
+            <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">New User Registration</p>
+            <p>A new user has registered and is awaiting approval.</p>
+            <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;width:35%;">Name</td>
+                    <td style="border:1px solid #ddd;">' . $fullName . '</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd;font-weight:bold;">Email</td>
+                    <td style="border:1px solid #ddd;">' . $email . '</td>
+                </tr>
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;">Mobile</td>
+                    <td style="border:1px solid #ddd;">' . $insert['mobile'] . '</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd;font-weight:bold;">Company</td>
+                    <td style="border:1px solid #ddd;">' . $insert['company_name'] . '</td>
+                </tr>
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;">User Type</td>
+                    <td style="border:1px solid #ddd;">' . ucfirst($user_type) . '</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd;font-weight:bold;">Registered On</td>
+                    <td style="border:1px solid #ddd;">' . $insert['addedOn'] . '</td>
+                </tr>
+            </table>
+            <br>
+            <p style="text-align:center;">
+                <a href="' . BASE_URL . '/appuser" style="display:inline-block;background:#1a1a2e;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">Review in Admin Panel</a>
+            </p>';
+        sendMail(ADMIN_EMAIL, 'New User Registration - ' . SITE_NAME, emailTemplate('New User Registration', $adminBody));
+
+        echo 'success';
     }
 
     /* ---- FRONT-END SECTION ---- */

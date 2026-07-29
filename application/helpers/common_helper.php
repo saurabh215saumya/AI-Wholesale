@@ -267,26 +267,76 @@ if (!function_exists('getSubCategoryNameBySlug')) {
     }
 }
 
+if (!function_exists('sendMail')) {
+    function sendMail($to, $subject, $message) {
+        $CI =& get_instance();
+        $CI->load->library('email');
+        $CI->email->clear(true);
+        $CI->email->initialize(array(
+            'protocol'    => 'smtp',
+            'smtp_host'   => SMTP_HOST,
+            'smtp_port'   => SMTP_PORT,
+            'smtp_user'   => SMTP_USER,
+            'smtp_pass'   => SMTP_PASS,
+            'smtp_crypto' => 'tls',
+            'mailtype'    => 'html',
+            'charset'     => 'utf-8',
+            'newline'     => "\r\n",
+            'crlf'        => "\r\n",
+            'wordwrap'    => FALSE,
+        ));
+        $CI->email->from(SMTP_USER, SITE_NAME);
+        $CI->email->to($to);
+        $CI->email->subject($subject);
+        $CI->email->message($message);
+        return $CI->email->send();
+    }
+}
+
+if (!function_exists('emailTemplate')) {
+    function emailTemplate($title, $bodyHtml) {
+        return '<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>' . $title . '</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <!-- Header -->
+      <tr>
+        <td style="background:#1a1a2e;padding:24px 32px;text-align:center;">
+          <span style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:1px;">' . SITE_NAME . '</span>
+        </td>
+      </tr>
+      <!-- Body -->
+      <tr>
+        <td style="padding:32px 36px;color:#333333;font-size:15px;line-height:1.7;">
+          ' . $bodyHtml . '
+        </td>
+      </tr>
+      <!-- Footer -->
+      <tr>
+        <td style="background:#f9f9f9;border-top:1px solid #eeeeee;padding:18px 36px;text-align:center;font-size:12px;color:#999999;">
+          &copy; ' . date('Y') . ' ' . SITE_NAME . '. All rights reserved.<br>
+          <a href="' . BASE_URL . '" style="color:#c8a951;text-decoration:none;">' . BASE_URL . '</a>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>';
+    }
+}
+
 if (!function_exists('sendMailAdmin')) {
     function sendMailAdmin($to, $subject, $message, $from_mail = '', $from_name = '') {
         if (ISSMTP == 1) {
-            $CI =& get_instance();
-            $CI->load->library('email');
-            $config = array(
-                'protocol'  => SMTP_PROTOCOL,
-                'smtp_host' => SMTP_HOST,
-                'smtp_port' => SMTP_PORT,
-                'smtp_user' => SMTP_USER,
-                'smtp_pass' => SMTP_PASS,
-                'mailtype'  => MAIL_TYPE,
-                'newline'   => "\r\n",
-            );
-            $CI->email->initialize($config);
-            $CI->email->from(SMTP_USER, SITE_NAME);
-            $CI->email->to($to);
-            $CI->email->subject($subject);
-            $CI->email->message($message);
-            return $CI->email->send();
+            return sendMail($to, $subject, $message);
         }
         return false;
     }

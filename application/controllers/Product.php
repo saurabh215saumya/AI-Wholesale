@@ -386,6 +386,7 @@ class Product extends CI_Controller {
                 'quantity'        => isset($row['Quantity'])     ? trim($row['Quantity'])     : 0,
                 'description'     => isset($row['Description'])  ? trim($row['Description'])  : '',
                 'status'          => 1,
+                'is_deleted'          => 0,
                 'meta_title'          => trim($row['MetaTitle'] ?? ''),
                 'meta_description'    => trim($row['MetaDescription'] ?? ''),
                 'meta_keywords'       => trim($row['MetaKeywords'] ?? ''),
@@ -619,12 +620,14 @@ class Product extends CI_Controller {
 
     public function place_user_order_item() {
         if (!$this->session->userdata('front_logged_in')) { echo 'login'; return; }
-        $user_id           = $this->session->userdata('front_logged_in')['id'];
-        $payment_method    = $this->input->post('payment_method');
+        $front              = $this->session->userdata('front_logged_in');
+        $user_id            = $front['id'];
+        $payment_method     = $this->input->post('payment_method');
         $billing_address_id = $this->input->post('billing_address_id');
         $orderId = $this->Product_model->placeOrder($user_id, $payment_method, $billing_address_id);
         if ($orderId) {
             $this->Product_model->deleteAllUserCart($user_id);
+            $this->_sendOrderEmails($orderId, $front);
             echo $orderId;
         } else {
             echo 'error';
@@ -651,9 +654,11 @@ class Product extends CI_Controller {
                 'description' => 'AI Wholesale Order',
             ]);
             if ($charge->status === 'succeeded') {
+                $front   = $this->session->userdata('front_logged_in');
                 $orderId = $this->Product_model->placeOrder($user_id, 'stripe', $billing_address_id, $special_instructions, $delivery_option, $charge->id);
                 if ($orderId) {
                     $this->Product_model->deleteAllUserCart($user_id);
+                    $this->_sendOrderEmails($orderId, $front);
                     echo json_encode(['status'=>'success','order_id'=>$orderId]);
                 } else {
                     echo json_encode(['status'=>'error','msg'=>'Order creation failed']);
@@ -664,5 +669,85 @@ class Product extends CI_Controller {
         } catch (Exception $e) {
             echo json_encode(['status'=>'error','msg'=>$e->getMessage()]);
         }
+    }
+
+    private function _sendOrderEmails($orderId, $front) {
+        $order = $this->db->where('id', $orderId)->get('tbl_order')->row_array();
+        if (!$order) return;
+        $items = $this->db->select('toi.quantity, toi.amount, tp.product_name')
+            ->from('tbl_order_item toi')
+            ->join('tbl_products tp', 'tp.id = toi.product_id', 'left')
+            ->where('toi.order_id', $orderId)
+            ->get()->result_array();
+
+        $itemRows = '';
+        foreach ($items as $item) {
+            $itemRows .= '<tr>
+                <td style="border:1px solid #ddd;padding:10px;">' . $item['product_name'] . '</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:center;">' . $item['quantity'] . '</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:right;">' . CURRENCY_SYMBOL . number_format($item['amount'], 2) . '</td>
+            </tr>';
+        }
+        $total    = CURRENCY_SYMBOL . number_format($order['total_amount'], 2);
+        $fullName = trim($front['first_name'] . ' ' . $front['last_name']);
+        $table    = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+            <tr style="background:#1a1a2e;color:#ffffff;">
+                <th style="border:1px solid #ddd;padding:10px;text-align:left;">Product</th>
+                <th style="border:1px solid #ddd;padding:10px;text-align:center;">Qty</th>
+                <th style="border:1px solid #ddd;padding:10px;text-align:right;">Amount</th>
+            </tr>
+            ' . $itemRows . '
+            <tr style="background:#f9f9f9;">
+                <td colspan="2" style="border:1px solid #ddd;padding:10px;font-weight:bold;">Total</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:right;font-weight:bold;color:#c8a951;font-size:16px;">' . $total . '</td>
+            </tr>
+        </table>';
+
+        // --- Email to User ---
+        $userBody = '
+            <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">Thank you for your order, ' . $fullName . '!</p>
+            <p style="background:#e8f5e9;border-left:4px solid #4caf50;padding:12px 16px;border-radius:4px;">
+                Your order <strong>#' . $orderId . '</strong> has been placed successfully and is being processed.
+            </p>
+            <br>' . $table . '<br>
+            <p style="text-align:center;">
+                <a href="' . BASE_URL . '/order/order_summary/' . $orderId . '" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">View Order</a>
+            </p>
+            <p style="color:#777;font-size:13px;">For any queries, contact us at <a href="mailto:' . ADMIN_EMAIL . '" style="color:#c8a951;">' . ADMIN_EMAIL . '</a></p>
+            <p>Regards,<br><strong>' . SITE_NAME . ' Team</strong></p>';
+        sendMail($front['email'], 'Order Confirmation #' . $orderId . ' - ' . SITE_NAME, emailTemplate('Order Confirmation', $userBody));
+
+        // --- Email to Admin ---
+        $adminBody = '
+            <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">New Order Received</p>
+            <p>A new order has been placed on <strong>' . SITE_NAME . '</strong>.</p>
+            <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin-bottom:16px;">
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;width:35%;">Order ID</td>
+                    <td style="border:1px solid #ddd;">#' . $orderId . '</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd;font-weight:bold;">Customer</td>
+                    <td style="border:1px solid #ddd;">' . $fullName . '</td>
+                </tr>
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;">Email</td>
+                    <td style="border:1px solid #ddd;">' . $front['email'] . '</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid #ddd;font-weight:bold;">Payment Method</td>
+                    <td style="border:1px solid #ddd;">' . ucfirst($order['payment_method']) . '</td>
+                </tr>
+                <tr style="background:#f5f5f5;">
+                    <td style="border:1px solid #ddd;font-weight:bold;">Order Date</td>
+                    <td style="border:1px solid #ddd;">' . $order['addedOn'] . '</td>
+                </tr>
+            </table>
+            ' . $table . '
+            <br>
+            <p style="text-align:center;">
+                <a href="' . BASE_URL . '/admin" style="display:inline-block;background:#1a1a2e;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">View in Admin Panel</a>
+            </p>';
+        sendMail(ADMIN_EMAIL, 'New Order #' . $orderId . ' - ' . SITE_NAME, emailTemplate('New Order Received', $adminBody));
     }
 }

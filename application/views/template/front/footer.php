@@ -215,6 +215,34 @@ function showToast(msg, type) {
 .cw-error{color:#da0000;}
 /* product enquiry pre-fill notice */
 #cw-product-info{font-size:12px;color:#888;margin-bottom:10px;padding:6px 8px;background:#f9f4ff;border-radius:4px;border-left:3px solid #a886cd;display:none;}
+/* AI Chat Window */
+#ai-chat-box{display:none;position:fixed;bottom:100px;right:25px;width:320px;height:440px;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:99999;font-family:sans-serif;flex-direction:column;overflow:hidden;}
+#ai-chat-box.open{display:flex;}
+.ai-chat-header{background:linear-gradient(135deg,#a886cd,#7c5cbf);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.ai-chat-header span{font-size:15px;font-weight:600;}
+.ai-chat-header small{font-size:11px;opacity:.8;display:block;}
+.ai-chat-header button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0;}
+#ai-chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.ai-msg,.ai-user-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.5;word-break:break-word;}
+.ai-msg{background:#f3eeff;color:#333;align-self:flex-start;border-bottom-left-radius:3px;}
+.ai-user-msg{background:#a886cd;color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}
+.ai-msg a{color:#7c5cbf;}
+.cb-product-card{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8e0f5;border-radius:8px;padding:6px;margin:3px 0;}
+.cb-product-card img{width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;}
+.cb-product-info{display:flex;flex-direction:column;gap:2px;}
+.cb-product-info a{font-size:12px;color:#7c5cbf;text-decoration:none;font-weight:600;}
+.cb-price{font-size:12px;color:#333;font-weight:700;}
+.ai-typing{display:flex;gap:4px;align-items:center;padding:10px 14px;background:#f3eeff;border-radius:12px;align-self:flex-start;}
+.ai-typing span{width:7px;height:7px;background:#a886cd;border-radius:50%;animation:aiDot 1.2s infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes aiDot{0%,80%,100%{transform:scale(.7);opacity:.5;}40%{transform:scale(1);opacity:1;}}
+#ai-chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #f0e8ff;flex-shrink:0;background:#fff;}
+#ai-chat-input{flex:1;border:1px solid #ddd;border-radius:20px;padding:8px 14px;font-size:13px;outline:none;font-family:sans-serif;}
+#ai-chat-input:focus{border-color:#a886cd;}
+#ai-chat-send{background:#a886cd;color:#fff;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+#ai-chat-send:hover{background:#9570c0;}
+#ai-chat-send svg{width:16px;height:16px;fill:#fff;}
 </style>
 
 <div id="cw-wrap">
@@ -224,6 +252,11 @@ function showToast(msg, type) {
         <button class="cw-channel-btn" style="background:#25d366;" onclick="window.open('https://wa.me/447414560342','_blank')" title="WhatsApp">
             <span class="cw-label">WhatsApp</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.67 4.823 1.836 6.83L2 30l7.418-1.807A13.93 13.93 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.418-.25-4.404 1.072 1.1-4.285-.274-.44A11.5 11.5 0 1116 27.5zm6.32-8.64c-.347-.174-2.053-1.013-2.372-1.128-.32-.115-.552-.174-.784.174-.232.347-.9 1.128-1.1 1.36-.203.232-.405.26-.752.087-.347-.174-1.466-.54-2.792-1.722-1.032-.92-1.728-2.056-1.93-2.404-.203-.347-.022-.535.152-.707.157-.156.347-.405.52-.608.174-.203.232-.347.347-.579.115-.232.058-.434-.029-.608-.087-.174-.784-1.89-1.074-2.59-.283-.68-.57-.587-.784-.598l-.667-.011c-.232 0-.608.087-.927.434-.32.347-1.218 1.19-1.218 2.902s1.247 3.367 1.42 3.599c.174.232 2.453 3.746 5.942 5.252.83.358 1.479.572 1.984.733.833.265 1.592.228 2.192.138.668-.1 2.053-.84 2.343-1.651.29-.812.29-1.508.203-1.651-.087-.145-.32-.232-.667-.405z"/></svg>
+        </button>
+        <!-- AI Chatbot -->
+        <button class="cw-channel-btn" style="background:#7c5cbf;" onclick="aiChatToggle()" title="AI Assistant">
+            <span class="cw-label">AI Assistant</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M9 8h2v8H9zm4 0h2v8h-2z" style="display:none"/><path d="M20 9V7c0-1.1-.9-2-2-2h-1V3h-2v2H9V3H7v2H6C4.9 5 4 5.9 4 7v2H2v2h2v6c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-6h2V9h-2zm-4 8H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V7h8v2z"/></svg>
         </button>
         <!-- Contact / Enquiry form -->
         <button class="cw-channel-btn" style="background:#a886cd;" onclick="cwToggleForm()" title="Contact Us">
@@ -239,6 +272,21 @@ function showToast(msg, type) {
         <!-- Close icon (shown when open) -->
         <svg id="cw-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
+</div>
+
+<!-- AI Chat Window -->
+<div id="ai-chat-box">
+    <div class="ai-chat-header">
+        <div><span>🤖 AI Assistant</span><small>Ask about products, orders &amp; more</small></div>
+        <button onclick="aiChatToggle()">&times;</button>
+    </div>
+    <div id="ai-chat-messages"></div>
+    <div id="ai-chat-input-row">
+        <input id="ai-chat-input" type="text" placeholder="Ask me anything..." autocomplete="off">
+        <button id="ai-chat-send" onclick="aiChatSend()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
 </div>
 
 <!-- Contact / Enquiry Form popup -->
@@ -264,6 +312,46 @@ function showToast(msg, type) {
 
 <script>
 var cwOpen = false;
+var aiChatOpen = false;
+var aiChatGreeted = false;
+function aiChatToggle(){
+    aiChatOpen = !aiChatOpen;
+    document.getElementById('ai-chat-box').classList.toggle('open', aiChatOpen);
+    if(aiChatOpen && !aiChatGreeted){
+        aiChatGreeted = true;
+        aiAppendMsg('bot', '👋 Hi! I\'m your AI shopping assistant. Ask me about products, prices, categories, shipping, or anything else!');
+    }
+    if(aiChatOpen) setTimeout(function(){ document.getElementById('ai-chat-input').focus(); }, 100);
+}
+function aiAppendMsg(who, html){
+    var msgs = document.getElementById('ai-chat-messages');
+    var div = document.createElement('div');
+    div.className = who === 'bot' ? 'ai-msg' : 'ai-user-msg';
+    div.innerHTML = html;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+}
+function aiChatSend(){
+    var input = document.getElementById('ai-chat-input');
+    var text = input.value.trim();
+    if(!text) return;
+    aiAppendMsg('user', text.replace(/</g,'&lt;'));
+    input.value = '';
+    var typing = aiAppendMsg('bot', '<div class="ai-typing"><span></span><span></span><span></span></div>');
+    fetch('<?php echo base_url('chatbot/ask'); ?>', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'message='+encodeURIComponent(text)})
+        .then(function(r){return r.json();})
+        .then(function(res){
+            typing.remove();
+            aiAppendMsg('bot', res.reply || 'Sorry, I could not process that.');
+        }).catch(function(){
+            typing.remove();
+            aiAppendMsg('bot', '⚠️ Something went wrong. Please try again.');
+        });
+}
+document.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && document.activeElement && document.activeElement.id === 'ai-chat-input') aiChatSend();
+});
 function cwToggle(){
     cwOpen = !cwOpen;
     document.getElementById('cw-channels').classList.toggle('open', cwOpen);

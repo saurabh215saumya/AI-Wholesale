@@ -48,7 +48,7 @@ $config['proxy_ips'] = '';
 
 define('SITE_NAME', 'AI Wholesale');
 define('BASE_URL', $config['base_url']);
-define('ADMIN_EMAIL', 'admin@aiwholesale.com');
+define('ADMIN_EMAIL', 'info@mmswholesale.co.uk');
 define('CURRENT_DATE', date('Y-m-d'));
 define('PER_PAGE_DATA', 12);
 define('SHOW_ADMIN_PROFILE_PATH', BASE_URL.'/uploads/users/');
@@ -63,10 +63,10 @@ define('UPLOAD_PRODUCT_NO_IMAGE', BASE_URL.'/uploads/');
 define('STRIPE_PUBLISHABLE_KEY', 'pk_test_51TY9tX2fs6R6o5tbZ2sgsDgZkwqTRo1HxCAF0eausXsknsxw8EAXpeQbtorudsj2vpXR2rgKza1U9gfHphO2uJsB00dA1F1i1Q');
 define('STRIPE_SECRET_KEY', 'sk_test_51TY9tX2fs6R6o5tb6CdOMrUsB9uPk0ZKyvHpP6tFNsGmPTRrtUNNrMh10wtvAvxQ1dv3dQDPGJ2RSDJFhRsJ7Lln007LmGrnrB');
 
-define('ISSMTP', 0);
+define('ISSMTP', 1);
 define('SMTP_PROTOCOL', 'smtp');
-define('SMTP_HOST', 'ssl://smtp.gmail.com');
-define('SMTP_PORT', 465);
-define('SMTP_USER', 'admin@aiwholesale.com');
-define('SMTP_PASS', '');
+define('SMTP_HOST', 'smtp.office365.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'info@mmswholesale.co.uk');
+define('SMTP_PASS', 'Harford193');
 define('MAIL_TYPE', 'html');

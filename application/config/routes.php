@@ -35,6 +35,9 @@ $route['order-summary/(:any)'] = 'order/order_summary/$1';
 $route['wholesale'] = 'wholesale/index';
 $route['wholesale/apply'] = 'wholesale/apply';
 
+$route['chatbot/ask'] = 'chatbot/ask';
+$route['chatbot/submit'] = 'chatbot/submit';
+
 $route['ajax-login'] = 'appuser/ajax_login';
 $route['ajax-signup'] = 'appuser/ajax_signup';
 $route['ajax-merge-guest-cart'] = 'product/ajax_merge_guest_cart';
