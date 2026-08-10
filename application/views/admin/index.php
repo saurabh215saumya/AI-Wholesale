@@ -41,13 +41,20 @@
           <div class="box-header"><h3 class="box-title">Recent Orders</h3></div>
           <div class="box-body table-responsive">
             <table class="table table-bordered table-striped" id="example1">
-              <thead><tr><th>#</th><th>Transaction No</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+              <thead><tr><th>#</th><th>Transaction No</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
               <tbody>
               <?php if(!empty($recent_orders)): foreach($recent_orders as $o): ?>
               <tr>
                 <td><?php echo $o['id']; ?></td>
                 <td><?php echo $o['transaction_no']; ?></td>
                 <td>£<?php echo number_format($o['total_amount'],2); ?></td>
+                <td>
+                  <?php if($o['payment_method'] === 'offline'): ?>
+                  <span class="label label-warning">Offline</span>
+                  <?php else: ?>
+                  <span class="label label-success"><?php echo ucfirst($o['payment_method']); ?></span>
+                  <?php endif; ?>
+                </td>
                 <td><?php $s=['Processing','Complete','Cancel']; echo $s[$o['status']]??''; ?></td>
                 <td><?php echo $o['addedOn']; ?></td>
               </tr>

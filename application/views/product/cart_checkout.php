@@ -162,7 +162,7 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
   <div class="co-card" id="step-4">
     <div class="co-card-header">
       <div class="co-card-icon"><i class="fa fa-credit-card"></i></div>
-      <div><div class="co-card-title">Payment</div><div class="co-card-subtitle">Your payment is encrypted and secure</div></div>
+      <div><div class="co-card-title">Payment</div><div class="co-card-subtitle">Choose your payment method</div></div>
     </div>
 
     <!-- Order Summary -->
@@ -175,18 +175,51 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
       <div class="co-summary-total"><span>Total (inc. VAT)</span><span id="total-display">£<?php echo number_format($subTotal,2); ?></span></div>
     </div>
 
-    <div class="co-field">
-      <label><i class="fa fa-lock" style="color:#ff6b9d;"></i>&nbsp; Card Details</label>
-      <div class="co-stripe-box" id="stripe-card-element"></div>
-      <div class="co-stripe-error" id="stripe-card-errors"></div>
+    <!-- Payment Method Toggle -->
+    <div style="margin-bottom:20px;">
+      <label style="font-size:13px;font-weight:700;color:#555;display:block;margin-bottom:10px;">Payment Method</label>
+      <div style="display:flex;gap:12px;">
+        <label id="pm-offline-label" onclick="selectPaymentMethod('offline')" style="flex:1;border:2px solid #ff6000;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:#fff8f5;">
+          <input type="radio" name="payment_method" id="pm-offline" value="offline" checked style="accent-color:#ff6000;">
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#ff6000;"><i class="fa fa-money"></i>&nbsp; Offline Payment</div>
+            <div style="font-size:12px;color:#888;margin-top:2px;">Pay via bank transfer or cash on delivery</div>
+          </div>
+        </label>
+        <label id="pm-online-label" onclick="selectPaymentMethod('online')" style="flex:1;border:2px solid #ddd;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:#fff;">
+          <input type="radio" name="payment_method" id="pm-online" value="online" style="accent-color:#ff6000;">
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#555;"><i class="fa fa-credit-card"></i>&nbsp; Online Payment</div>
+            <div style="font-size:12px;color:#888;margin-top:2px;">Pay securely with card via Stripe</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Offline Payment Section -->
+    <div id="offline-payment-section">
+      <div style="background:#fff8f5;border:1px solid #ffe0cc;border-radius:8px;padding:16px;margin-bottom:16px;">
+        <p style="margin:0;font-size:14px;color:#555;"><i class="fa fa-info-circle" style="color:#ff6000;"></i>&nbsp; Your order will be confirmed and our team will contact you with payment details. You can pay via bank transfer or arrange cash on delivery.</p>
+      </div>
+      <button class="co-btn-pay" id="offline-place-btn" onclick="placeOfflineOrder()">
+        <i class="fa fa-check"></i>&nbsp; Confirm Order
+      </button>
+    </div>
+
+    <!-- Online Payment Section (Stripe) -->
+    <div id="online-payment-section" style="display:none;">
+      <div class="co-field">
+        <label><i class="fa fa-lock" style="color:#ff6b9d;"></i>&nbsp; Card Details</label>
+        <div class="co-stripe-box" id="stripe-card-element"></div>
+        <div class="co-stripe-error" id="stripe-card-errors"></div>
+      </div>
+      <button class="co-btn-pay" id="stripe-pay-btn">
+        <i class="fa fa-lock"></i>&nbsp; Pay £<span id="pay-btn-amount"><?php echo number_format($subTotal,2); ?></span> Securely
+      </button>
+      <div class="co-secure"><i class="fa fa-shield"></i> SSL Encrypted &nbsp;·&nbsp; <i class="fa fa-cc-stripe"></i> Powered by Stripe</div>
     </div>
 
     <input type="hidden" id="billing_address_id" value="<?php echo !empty($billing['id']) ? $billing['id'] : ''; ?>">
-
-    <!-- <button class="co-btn-pay" id="stripe-pay-btn">
-      <i class="fa fa-lock"></i>&nbsp; Pay £<span id="pay-btn-amount"><?php //echo number_format($subTotal,2); ?></span> Securely
-    </button> -->
-    <div class="co-secure"><i class="fa fa-shield"></i> SSL Encrypted &nbsp;·&nbsp; <i class="fa fa-cc-stripe"></i> Powered by Stripe</div>
     <button class="co-btn-back" onclick="goStep(3)" style="margin-top:10px;"><i class="fa fa-arrow-left"></i>&nbsp; Back</button>
   </div>
 
@@ -253,6 +286,54 @@ function selectDelivery(radio, optId, cost) {
     document.getElementById('shipping-display').style.color = cost > 0 ? '#222' : '#28a745';
     document.getElementById('total-display').textContent = '£' + total.toFixed(2);
     document.getElementById('pay-btn-amount').textContent = total.toFixed(2);
+}
+
+function selectPaymentMethod(method) {
+    var offlineLabel  = document.getElementById('pm-offline-label');
+    var onlineLabel   = document.getElementById('pm-online-label');
+    var offlineSection = document.getElementById('offline-payment-section');
+    var onlineSection  = document.getElementById('online-payment-section');
+    if (method === 'offline') {
+        document.getElementById('pm-offline').checked = true;
+        offlineLabel.style.borderColor = '#ff6000';
+        offlineLabel.style.background  = '#fff8f5';
+        onlineLabel.style.borderColor  = '#ddd';
+        onlineLabel.style.background   = '#fff';
+        offlineSection.style.display = 'block';
+        onlineSection.style.display  = 'none';
+    } else {
+        document.getElementById('pm-online').checked = true;
+        onlineLabel.style.borderColor  = '#ff6000';
+        onlineLabel.style.background   = '#fff8f5';
+        offlineLabel.style.borderColor = '#ddd';
+        offlineLabel.style.background  = '#fff';
+        offlineSection.style.display = 'none';
+        onlineSection.style.display  = 'block';
+    }
+}
+
+function placeOfflineOrder() {
+    if (!validateStep(1) || !validateStep(2)) { goStep(1); return; }
+    var btn = document.getElementById('offline-place-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>&nbsp; Placing Order...';
+    var deliveryOption = document.querySelector('input[name="delivery_option"]:checked').value;
+    $.post(BASE_URL + '/place-offline-order', {
+        billing_address_id:   document.getElementById('billing_address_id').value,
+        special_instructions: document.getElementById('co_instructions').value,
+        delivery_option:      deliveryOption
+    }, function(res) {
+        var r = typeof res === 'string' ? JSON.parse(res) : res;
+        if (r.status === 'success') {
+            window.location = BASE_URL + '/offline-order-confirmation/' + r.order_id;
+        } else if (r.status === 'login') {
+            window.location = BASE_URL + '/sign-in';
+        } else {
+            alert('Error placing order. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-check"></i>&nbsp; Confirm Order';
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {

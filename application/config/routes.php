@@ -30,7 +30,9 @@ $route['wish-list'] = 'product/wish_list';
 $route['cart-list'] = 'product/cart_list';
 $route['checkout'] = 'product/cart_checkout';
 $route['stripe-payment'] = 'product/stripe_payment';
+$route['place-offline-order'] = 'product/place_offline_order';
 $route['order-summary/(:any)'] = 'order/order_summary/$1';
+$route['offline-order-confirmation/(:any)'] = 'order/offline_confirmation/$1';
 
 $route['wholesale'] = 'wholesale/index';
 $route['wholesale/apply'] = 'wholesale/apply';

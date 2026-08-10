@@ -634,6 +634,23 @@ class Product extends CI_Controller {
         }
     }
 
+    public function place_offline_order() {
+        if (!$this->session->userdata('front_logged_in')) { echo json_encode(['status'=>'login']); return; }
+        $front              = $this->session->userdata('front_logged_in');
+        $user_id            = $front['id'];
+        $billing_address_id = $this->input->post('billing_address_id');
+        $special_instructions = $this->input->post('special_instructions');
+        $delivery_option    = $this->input->post('delivery_option');
+        $orderId = $this->Product_model->placeOrder($user_id, 'offline', $billing_address_id, $special_instructions, $delivery_option);
+        if ($orderId) {
+            $this->Product_model->deleteAllUserCart($user_id);
+            $this->_sendOrderEmails($orderId, $front);
+            echo json_encode(['status'=>'success','order_id'=>$orderId]);
+        } else {
+            echo json_encode(['status'=>'error']);
+        }
+    }
+
     public function stripe_payment() {
         if (!$this->session->userdata('front_logged_in')) { echo json_encode(['status'=>'login']); return; }
         $user_id            = $this->session->userdata('front_logged_in')['id'];
