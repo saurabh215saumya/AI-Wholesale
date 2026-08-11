@@ -6,6 +6,10 @@
         <a href="<?php echo base_url('admin'); ?>"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
       </li>
 
+      <li class="treeview <?php echo ($url=='admin-orders')?'active':''; ?>">
+        <a href="<?php echo base_url('admin-orders'); ?>"><i class="fa fa-shopping-cart"></i> <span>Order Management</span></a>
+      </li>
+
       <li class="treeview <?php echo ($url=='banner')?'active':''; ?>">
         <a href="javascript:void(0);"><i class="fa fa-image"></i> <span>Banner Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">

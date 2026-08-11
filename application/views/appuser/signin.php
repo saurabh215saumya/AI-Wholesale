@@ -36,6 +36,7 @@
                         </div>
                         <div class="form-action clearfix">
                             <input onclick="return doLogin();" class="btn btn-primary" value="Login" type="button">
+                            <a href="<?php echo base_url('forgot-password'); ?>" style="margin-left:12px;font-size:13px;color:#ff6000;line-height:34px;">Forgot Password?</a>
                         </div>
                     </div>
                 </div>

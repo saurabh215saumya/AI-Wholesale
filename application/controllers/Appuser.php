@@ -194,6 +194,71 @@ class Appuser extends CI_Controller {
         echo 'success';
     }
 
+    public function ajax_forgot_password() {
+        $email = trim($this->input->post('email'));
+        $user  = $this->Appuser_model->getUserByEmail($email);
+        if (!$user) { echo 'not_found'; return; }
+
+        // Invalidate old tokens
+        $this->db->where('user_id', $user['id'])->update('tbl_password_reset', ['used' => 1]);
+
+        $token   = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        $this->db->insert('tbl_password_reset', [
+            'user_id'    => $user['id'],
+            'token'      => $token,
+            'expires_at' => $expires,
+            'used'       => 0,
+            'addedOn'    => date('Y-m-d H:i:s'),
+        ]);
+
+        $fullName  = trim($user['first_name'] . ' ' . $user['last_name']);
+        $resetLink = BASE_URL . '/reset-password/' . $token;
+        $body = '
+            <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">Password Reset Request</p>
+            <p>Hi <strong>' . $fullName . '</strong>, we received a request to reset your password.</p>
+            <p style="text-align:center;margin:24px 0;">
+                <a href="' . $resetLink . '" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">Reset My Password</a>
+            </p>
+            <p style="color:#888;font-size:13px;">This link expires in 1 hour. If you did not request this, please ignore this email.</p>
+            <p>Regards,<br><strong>' . SITE_NAME . ' Team</strong></p>';
+        sendMail($email, 'Password Reset - ' . SITE_NAME, emailTemplate('Password Reset', $body));
+        echo 'success';
+    }
+
+    public function ajax_reset_password() {
+        $token    = trim($this->input->post('token'));
+        $password = trim($this->input->post('password'));
+        $row = $this->db->where('token', $token)->where('used', 0)->get('tbl_password_reset')->row_array();
+        if (empty($row)) { echo 'expired'; return; }
+        if (strtotime($row['expires_at']) < time()) {
+            $this->db->where('id', $row['id'])->update('tbl_password_reset', ['used' => 1]);
+            echo 'expired'; return;
+        }
+        $this->db->where('id', $row['user_id'])->update('tbl_users', ['password' => md5($password), 'updatedOn' => date('Y-m-d H:i:s')]);
+        $this->db->where('id', $row['id'])->update('tbl_password_reset', ['used' => 1]);
+        echo 'success';
+    }
+
+    public function forgot_password() {
+        if ($this->session->userdata('front_logged_in')) redirect('/');
+        $data['isActiveCategories'] = getAllRootCategories();
+        $this->load->view('template/front/header', $data);
+        $this->load->view('appuser/forgot_password', $data);
+        $this->load->view('template/front/footer', $data);
+    }
+
+    public function reset_password($token) {
+        if ($this->session->userdata('front_logged_in')) redirect('/');
+        $row = $this->db->where('token', $token)->where('used', 0)->get('tbl_password_reset')->row_array();
+        $data['valid_token'] = !empty($row) && strtotime($row['expires_at']) >= time();
+        $data['token']       = $token;
+        $data['isActiveCategories'] = getAllRootCategories();
+        $this->load->view('template/front/header', $data);
+        $this->load->view('appuser/reset_password', $data);
+        $this->load->view('template/front/footer', $data);
+    }
+
     /* ---- FRONT-END SECTION ---- */
 
     public function sign_up() {

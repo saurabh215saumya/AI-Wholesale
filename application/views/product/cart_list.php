@@ -105,9 +105,9 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                 <?php if(!empty($allCartProducts)): ?>
                                 <div class="totals-table-action">
                                     <?php if ($isGuest): ?>
-                                    <a href="<?php echo base_url('sign-in?redirect=checkout'); ?>" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                                    <a href="<?php echo base_url('sign-in?redirect=checkout'); ?>" class="btn btn-primary btn-block">Proceed to Order</a>
                                     <?php else: ?>
-                                    <a href="<?php echo base_url('checkout'); ?>" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                                    <a href="<?php echo base_url('checkout'); ?>" class="btn btn-primary btn-block">Proceed to Order</a>
                                     <?php endif; ?>
                                 </div>
                                 <?php endif; ?>

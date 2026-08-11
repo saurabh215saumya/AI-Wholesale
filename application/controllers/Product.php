@@ -723,16 +723,16 @@ class Product extends CI_Controller {
         // --- Email to User ---
         $userBody = '
             <p style="font-size:17px;font-weight:bold;color:#1a1a2e;">Thank you for your order, ' . $fullName . '!</p>
-            <p style="background:#e8f5e9;border-left:4px solid #4caf50;padding:12px 16px;border-radius:4px;">
-                Your order <strong>#' . $orderId . '</strong> has been placed successfully and is being processed.
+            <p style="background:#fff8e1;border-left:4px solid #c8a951;padding:12px 16px;border-radius:4px;">
+                Your order <strong>#' . $orderId . '</strong> has been placed and is <strong>in review</strong>. Our team will update you within 24 hours with the final amount and shipping charges.
             </p>
             <br>' . $table . '<br>
             <p style="text-align:center;">
-                <a href="' . BASE_URL . '/order/order_summary/' . $orderId . '" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">View Order</a>
+                <a href="' . BASE_URL . '/my-orders" style="display:inline-block;background:#c8a951;color:#ffffff;padding:12px 28px;border-radius:5px;text-decoration:none;font-weight:bold;font-size:15px;">View My Orders</a>
             </p>
             <p style="color:#777;font-size:13px;">For any queries, contact us at <a href="mailto:' . ADMIN_EMAIL . '" style="color:#c8a951;">' . ADMIN_EMAIL . '</a></p>
             <p>Regards,<br><strong>' . SITE_NAME . ' Team</strong></p>';
-        sendMail($front['email'], 'Order Confirmation #' . $orderId . ' - ' . SITE_NAME, emailTemplate('Order Confirmation', $userBody));
+        sendMail($front['email'], 'Order Received #' . $orderId . ' - ' . SITE_NAME, emailTemplate('Order in Review', $userBody));
 
         // --- Email to Admin ---
         $adminBody = '

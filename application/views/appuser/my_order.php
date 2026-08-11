@@ -33,7 +33,26 @@
 .ma-badge { display: inline-block; background: linear-gradient(90deg,#ff6000,#ff8c42); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
 </style>
 
+<?php if($this->input->get('payment') === 'success'): ?>
+<div class="container" style="padding-top:20px;">
+  <div class="alert alert-success"><i class="fa fa-check-circle"></i> <strong>Payment successful!</strong> Your payment has been received. A confirmation email has been sent to you.</div>
+</div>
+<?php elseif($this->input->get('payment') === 'confirmed'): ?>
+<div class="container" style="padding-top:20px;">
+  <div class="alert alert-info"><i class="fa fa-info-circle"></i> <strong>Offline payment confirmed.</strong> Our team will contact you with payment details shortly.</div>
+</div>
+<?php endif; ?>
+
 <section class="page-header mb-lg" style="background:linear-gradient(135deg,#fff5f0,#fff);border-bottom:2px solid #ffe5d0;">
+    <div class="container">
+        <h1 style="font-size:22px;font-weight:700;color:#222;margin:0 0 6px;">My Orders</h1>
+        <ul class="breadcrumb" style="background:none;padding:0;margin:0;">
+            <li><a href="<?php echo base_url(); ?>" style="color:#ff6000;">Home</a></li>
+            <li><a href="<?php echo base_url('my-account'); ?>" style="color:#ff6000;">My Account</a></li>
+            <li class="active">My Orders</li>
+        </ul>
+    </div>
+</section>
     <div class="container">
         <h1 style="font-size:22px;font-weight:700;color:#222;margin:0 0 6px;">My Orders</h1>
         <ul class="breadcrumb" style="background:none;padding:0;margin:0;">
@@ -69,28 +88,51 @@
                 <table class="ma-orders-table">
                     <thead><tr>
                         <th>Order #</th>
-                        <th>Transaction No</th>
                         <th>Amount</th>
                         <th>Payment</th>
-                        <th>Status</th>
+                        <th>Order Status</th>
+                        <th>Pay Status</th>
                         <th>Date</th>
+                        <th>Action</th>
                     </tr></thead>
                     <tbody>
-                    <?php $statuses = array('Processing','Complete','Cancelled');
+                    <?php $statusLabels = array('0'=>'In Review','1'=>'Confirmed','2'=>'Cancelled');
                     foreach($orders as $o): ?>
                     <tr>
                         <td><strong style="color:#ff6000;">#<?php echo $o['id']; ?></strong></td>
-                        <td style="font-size:12px;color:#888;"><?php echo $o['transaction_no'] ?: '-'; ?></td>
-                        <td><strong>£<?php echo number_format($o['total_amount'],2); ?></strong></td>
+                        <td><strong>€<?php echo number_format($o['total_amount'],2); ?></strong></td>
                         <td>
                           <?php if($o['payment_method'] === 'offline'): ?>
                           <span style="background:#fff3cd;color:#856404;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Offline</span>
+                          <?php elseif($o['payment_method'] === 'stripe'): ?>
+                          <span style="background:#d1e7dd;color:#0a5c36;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Stripe</span>
                           <?php else: ?>
-                          <span style="background:#d1e7dd;color:#0a5c36;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;"><?php echo ucfirst($o['payment_method']); ?></span>
+                          <span style="background:#e2e3e5;color:#383d41;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Pending</span>
                           <?php endif; ?>
                         </td>
-                        <td><span class="ma-status ma-status-<?php echo $o['status']; ?>"><?php echo $statuses[$o['status']] ?? 'Unknown'; ?></span></td>
+                        <td>
+                          <?php
+                          $sLabel = array('0'=>'In Review','1'=>'Confirmed','2'=>'Cancelled');
+                          $sColor = array('0'=>'#856404;background:#fff3cd','1'=>'#0a5c36;background:#d1e7dd','2'=>'#842029;background:#f8d7da');
+                          $s = $o['status'];
+                          ?>
+                          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;color:<?php echo $sColor[$s] ?? '#555;background:#eee'; ?>"><?php echo $sLabel[$s] ?? 'Unknown'; ?></span>
+                        </td>
+                        <td>
+                          <?php if($o['payment_status'] == 1): ?>
+                          <span style="background:#d1e7dd;color:#0a5c36;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Paid</span>
+                          <?php else: ?>
+                          <span style="background:#f8d7da;color:#842029;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Unpaid</span>
+                          <?php endif; ?>
+                        </td>
                         <td style="color:#888;"><?php echo date('d M Y', strtotime($o['addedOn'])); ?></td>
+                        <td>
+                          <?php if($o['status'] == 1 && $o['payment_status'] == 0): ?>
+                          <a href="<?php echo base_url('order/pay/'.$o['id']); ?>" class="ma-shop-btn" style="padding:6px 14px;font-size:12px;"><i class="fa fa-credit-card"></i> Pay Now</a>
+                          <?php else: ?>
+                          <span style="color:#aaa;font-size:12px;">-</span>
+                          <?php endif; ?>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                     </tbody>

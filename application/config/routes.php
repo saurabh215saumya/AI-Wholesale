@@ -8,6 +8,10 @@ $route['translate_uri_dashes'] = FALSE;
 $route['admin'] = 'admin/index';
 $route['admin/(:any)'] = 'admin/$1';
 
+$route['admin-orders'] = 'admin_orders/index';
+$route['admin-orders/edit/(:num)'] = 'admin_orders/edit/$1';
+$route['admin-orders/update/(:num)'] = 'admin_orders/update/$1';
+
 $route['sign-up'] = 'wholesale/apply';
 $route['sign-in'] = 'appuser/login';
 $route['sign-out'] = 'appuser/logout';
@@ -16,6 +20,10 @@ $route['update-account'] = 'appuser/update_account';
 $route['my-orders'] = 'appuser/my_orders';
 $route['billing-address'] = 'appuser/billing_address';
 $route['delete-billing/(:num)'] = 'appuser/delete_billing/$1';
+$route['forgot-password'] = 'appuser/forgot_password';
+$route['reset-password/(:any)'] = 'appuser/reset_password/$1';
+$route['ajax-forgot-password'] = 'appuser/ajax_forgot_password';
+$route['ajax-reset-password'] = 'appuser/ajax_reset_password';
 
 $route['about-us'] = 'home/about_us';
 $route['contact-us'] = 'home/contact_us';
@@ -33,6 +41,9 @@ $route['stripe-payment'] = 'product/stripe_payment';
 $route['place-offline-order'] = 'product/place_offline_order';
 $route['order-summary/(:any)'] = 'order/order_summary/$1';
 $route['offline-order-confirmation/(:any)'] = 'order/offline_confirmation/$1';
+$route['order/pay/(:num)'] = 'order/pay/$1';
+$route['order/confirm_offline_payment'] = 'order/confirm_offline_payment';
+$route['order/stripe_order_payment'] = 'order/stripe_order_payment';
 
 $route['wholesale'] = 'wholesale/index';
 $route['wholesale/apply'] = 'wholesale/apply';
@@ -43,6 +54,8 @@ $route['chatbot/submit'] = 'chatbot/submit';
 $route['ajax-login'] = 'appuser/ajax_login';
 $route['ajax-signup'] = 'appuser/ajax_signup';
 $route['ajax-merge-guest-cart'] = 'product/ajax_merge_guest_cart';
+$route['ajax-forgot-password'] = 'appuser/ajax_forgot_password';
+$route['ajax-reset-password'] = 'appuser/ajax_reset_password';
 
 $route['page/(:any)'] = 'home/static_page/$1';
 
