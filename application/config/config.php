@@ -56,6 +56,7 @@ define('SHOW_BANNER_PATH', BASE_URL.'/uploads/banners/');
 define('SHOW_CATEGORY_PATH', BASE_URL.'/uploads/categories/');
 define('SHOW_PRODUCT_PATH', BASE_URL.'/uploads/products/');
 define('SHOW_TESTIMONIAL_PATH', BASE_URL.'/uploads/testimonials/');
+define('SHOW_PROMO_BANNER_PATH', BASE_URL.'/uploads/promo_banners/');
 define('CURRENCY_SYMBOL', '£');
 define('UPLOAD_PRODUCT_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/uploads/products/');
 define('UPLOAD_BANNER_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/uploads/banners/');

@@ -71,6 +71,14 @@ $route['keyword/upload_csv'] = 'keyword/upload_csv';
 $route['keyword/import_csv'] = 'keyword/import_csv';
 $route['keyword/sample_csv'] = 'keyword/sample_csv';
 
+$route['promo-banner'] = 'promo_banner/index';
+$route['promo-banner/add'] = 'promo_banner/add';
+$route['promo-banner/save'] = 'promo_banner/save';
+$route['promo-banner/edit/(:num)'] = 'promo_banner/edit/$1';
+$route['promo-banner/update'] = 'promo_banner/update';
+$route['promo-banner/changestatus'] = 'promo_banner/changestatus';
+$route['promo-banner/delete/(:num)'] = 'promo_banner/delete/$1';
+
 $route['banner'] = 'banner/index';
 $route['banner/(:any)'] = 'banner/$1';
 

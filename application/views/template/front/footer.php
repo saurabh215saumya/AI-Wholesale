@@ -114,7 +114,7 @@ function ageVerifyDecline(){
     <div class="footer-copyright">
         <div class="container">
             <a href="<?php echo base_url(); ?>" class="logo">
-                <img alt="<?php echo SITE_NAME; ?>" class="img-responsive" width="111" height="51" src="<?php echo base_url('assets/images/img/demos/shop/logo-shop.png'); ?>">
+                <img alt="<?php echo SITE_NAME; ?>" class="img-responsive" width="111" height="51" src="<?php echo base_url('assets/images/img/demos/shop/logo.png'); ?>">
             </a>
             <ul class="social-icons">
                 <li class="social-icons-facebook"><a href="http://www.facebook.com/" target="_blank" title="Facebook"><i class="fa fa-facebook"></i></a></li>

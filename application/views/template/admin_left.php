@@ -10,6 +10,14 @@
         <a href="<?php echo base_url('admin-orders'); ?>"><i class="fa fa-shopping-cart"></i> <span>Order Management</span></a>
       </li>
 
+      <li class="treeview <?php echo ($url=='promo_banner')?'active':''; ?>">
+        <a href="javascript:void(0);"><i class="fa fa-th-large"></i> <span>Promo Banners</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+          <li><a href="<?php echo base_url('promo-banner'); ?>"><i class="fa fa-circle-o"></i> Promo Banner List</a></li>
+          <li><a href="<?php echo base_url('promo-banner/add'); ?>"><i class="fa fa-circle-o"></i> Add Promo Banner</a></li>
+        </ul>
+      </li>
+
       <li class="treeview <?php echo ($url=='banner')?'active':''; ?>">
         <a href="javascript:void(0);"><i class="fa fa-image"></i> <span>Banner Management</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">

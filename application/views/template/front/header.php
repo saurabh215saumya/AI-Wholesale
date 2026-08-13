@@ -14,7 +14,7 @@ $cartProductArr = getUserCartProduct($userId);
     elseif(isset($pageTitle)) echo $pageTitle.' | '.SITE_NAME;
     else echo SITE_NAME;
     ?></title>
-    <link rel="shortcut icon" href="<?php echo base_url('assets/images/img/demos/shop/logo-shop.png'); ?>" type="image/x-icon">
+    <link rel="shortcut icon" href="<?php echo base_url('assets/images/img/demos/shop/logo.png'); ?>" type="image/x-icon">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <?php if(!empty($productDetails)): $seo = $productDetails; ?>
 <?php elseif(!empty($kw)): $seo = $kw; ?>
@@ -86,7 +86,7 @@ $cartProductArr = getUserCartProduct($userId);
                         <div class="header-column">
                             <div class="header-logo">
                                 <a href="<?php echo base_url(); ?>">
-                                    <img alt="<?php echo SITE_NAME; ?>" width="111" height="51" src="<?php echo base_url('assets/images/img/demos/shop/logo-shop.png'); ?>">
+                                    <img alt="<?php echo SITE_NAME; ?>" width="111" height="51" src="<?php echo base_url('assets/images/img/demos/shop/logo.png'); ?>">
                                 </a>
                             </div>
                         </div>
