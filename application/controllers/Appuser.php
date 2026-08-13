@@ -25,7 +25,8 @@ class Appuser extends CI_Controller {
 
     public function view_user($id) {
         if (!$this->session->userdata('logged_in')) redirect('user/login');
-        $data['details'] = $this->Appuser_model->userDetails($id);
+        $data['details']    = $this->Appuser_model->userDetails($id);
+        $data['billingArr'] = $this->db->where('user_id', $id)->get('tbl_user_billing')->result_array();
         $data['controller'] = $this->controller;
         $this->load->view('template/admin_header');
         $this->load->view('template/admin_left');
