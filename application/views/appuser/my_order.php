@@ -100,7 +100,7 @@
                     foreach($orders as $o): ?>
                     <tr>
                         <td><strong style="color:#ff6000;">#<?php echo $o['id']; ?></strong></td>
-                        <td><strong>€<?php echo number_format($o['total_amount'],2); ?></strong></td>
+                        <td><strong>£<?php echo number_format($o['total_amount'],2); ?></strong></td>
                         <td>
                           <?php if($o['payment_method'] === 'offline'): ?>
                           <span style="background:#fff3cd;color:#856404;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Offline</span>

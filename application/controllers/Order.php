@@ -82,7 +82,7 @@ class Order extends CI_Controller {
         try {
             $charge = \Stripe\Charge::create([
                 'amount'      => (int)round($order['total_amount'] * 100),
-                'currency'    => 'eur',
+                'currency'    => 'gbp',
                 'source'      => $stripe_token,
                 'description' => 'Order #' . $order_id . ' - ' . SITE_NAME,
             ]);
@@ -108,7 +108,7 @@ class Order extends CI_Controller {
         $order    = $this->db->where('id', $orderId)->get('tbl_order')->row_array();
         if (!$order) return;
         $fullName = trim($front['first_name'] . ' ' . $front['last_name']);
-        $total    = '€' . number_format($order['total_amount'], 2);
+        $total    = '£' . number_format($order['total_amount'], 2);
         $methodLabel = $method === 'stripe' ? 'Online (Stripe)' : 'Offline';
 
         $userBody = '

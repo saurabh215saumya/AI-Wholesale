@@ -63,7 +63,7 @@ class Product_model extends CI_Model {
     public function getAllProducts($limit = '', $offset = '', $search = '') {
         $this->db->where('is_deleted', '0')->where('status', '1');
         if ($search) $this->db->like('product_name', $search);
-        $this->db->order_by('id', 'DESC');
+        $this->db->order_by('(quantity > 0)', 'DESC', FALSE)->order_by('id', 'DESC');
         if ($limit) $this->db->limit($limit, $offset);
         return $this->db->get($this->table)->result_array();
     }
@@ -82,7 +82,7 @@ class Product_model extends CI_Model {
                 ->or_where_in('sub_cat_id', $allIds)
                 ->or_where_in('grand_sub_cat_id', $allIds)
             ->group_end()
-            ->order_by('id', 'DESC');
+            ->order_by('(quantity > 0)', 'DESC', FALSE)->order_by('id', 'DESC');
         if ($limit) $this->db->limit($limit, $offset);
         return $this->db->get($this->table)->result_array();
     }
@@ -99,7 +99,7 @@ class Product_model extends CI_Model {
     }
 
     public function getProductsBySubCategory($sub_cat_id, $limit = '', $offset = '') {
-        $this->db->where('sub_cat_id', $sub_cat_id)->where('is_deleted', '0')->where('status', '1')->order_by('id', 'DESC');
+        $this->db->where('sub_cat_id', $sub_cat_id)->where('is_deleted', '0')->where('status', '1')->order_by('(quantity > 0)', 'DESC', FALSE)->order_by('id', 'DESC');
         if ($limit) $this->db->limit($limit, $offset);
         return $this->db->get($this->table)->result_array();
     }
@@ -252,19 +252,20 @@ class Product_model extends CI_Model {
 
     public function placeOrder($user_id, $payment_method, $billing_address_id, $special_instructions = '', $delivery_option = '', $transaction_ref = '') {
         $cartItems  = $this->getUserCartProduct($user_id);
-        $totalAmt   = 0;
-        $totalQty   = 0;
+        $subTotal   = 0;
         foreach ($cartItems as $item) {
-            $totalAmt += $item['amount'];
-            $totalQty += $item['quantity'];
+            $subTotal += $item['amount'];
         }
+        $vatAmount  = round($subTotal * 0.20, 2);
+        $totalAmt   = round($subTotal + $vatAmount, 2);
         $txnNo = $transaction_ref ?: generateCode(10);
         $orderId = null;
         $this->db->insert('tbl_order', array(
             'user_id'              => $user_id,
             'transaction_no'       => $txnNo,
             'status'               => 0,
-            'pay_amount'           => $totalAmt,
+            'pay_amount'           => $subTotal,
+            'vat_amount'           => $vatAmount,
             'shipping_charge'      => 0,
             'total_amount'         => $totalAmt,
             'payment_method'       => $payment_method,

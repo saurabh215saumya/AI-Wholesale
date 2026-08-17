@@ -43,7 +43,15 @@
             </tr>
           <?php endforeach; ?>
             <tr style="background:#f9f9f9;">
-              <td colspan="2" style="padding:10px;border:1px solid #ddd;font-weight:700;">Total</td>
+              <td colspan="2" style="padding:10px;border:1px solid #ddd;">Subtotal (ex. VAT)</td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['pay_amount'],2); ?></td>
+            </tr>
+            <tr style="background:#f9f9f9;">
+              <td colspan="2" style="padding:10px;border:1px solid #ddd;">VAT (20%)</td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['vat_amount'],2); ?></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="padding:10px;border:1px solid #ddd;font-weight:700;">Total (inc. VAT)</td>
               <td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:700;color:#c8a951;font-size:16px;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['total_amount'],2); ?></td>
             </tr>
           </tbody>

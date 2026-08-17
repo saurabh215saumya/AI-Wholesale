@@ -11,6 +11,7 @@ $route['admin/(:any)'] = 'admin/$1';
 $route['admin-orders'] = 'admin_orders/index';
 $route['admin-orders/edit/(:num)'] = 'admin_orders/edit/$1';
 $route['admin-orders/update/(:num)'] = 'admin_orders/update/$1';
+$route['admin-orders/update_item_qty/(:num)'] = 'admin_orders/update_item_qty/$1';
 
 $route['sign-up'] = 'wholesale/apply';
 $route['sign-in'] = 'appuser/login';

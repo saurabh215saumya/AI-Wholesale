@@ -22,6 +22,7 @@
               <th>Email</th>
               <th>Items</th>
               <th>Pay Amount</th>
+              <th>VAT (20%)</th>
               <th>Shipping</th>
               <th>Other</th>
               <th>Total</th>
@@ -44,10 +45,11 @@
             <td><?php echo htmlspecialchars($o['first_name'].' '.$o['last_name']); ?></td>
             <td><?php echo htmlspecialchars($o['email']); ?></td>
             <td><?php echo $o['item_count']; ?></td>
-            <td>€<?php echo number_format($o['pay_amount'],2); ?></td>
-            <td>€<?php echo number_format($o['shipping_charge'],2); ?></td>
-            <td>€<?php echo number_format($o['other_charges'],2); ?></td>
-            <td><strong>€<?php echo number_format($o['total_amount'],2); ?></strong></td>
+            <td>£<?php echo number_format($o['pay_amount'],2); ?></td>
+            <td>£<?php echo number_format($o['vat_amount'],2); ?></td>
+            <td>£<?php echo number_format($o['shipping_charge'],2); ?></td>
+            <td>£<?php echo number_format($o['other_charges'],2); ?></td>
+            <td><strong>£<?php echo number_format($o['total_amount'],2); ?></strong></td>
             <td><?php echo ucfirst($o['payment_method']); ?></td>
             <td><span class="label label-<?php echo $payClass[$o['payment_status']] ?? 'default'; ?>"><?php echo $payLabels[$o['payment_status']] ?? '-'; ?></span></td>
             <td><span class="label label-<?php echo $statusClass[$o['status']] ?? 'default'; ?>"><?php echo $statusLabels[$o['status']] ?? '-'; ?></span></td>

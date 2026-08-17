@@ -28,7 +28,7 @@ class Admin_orders extends CI_Controller {
         $data['order'] = $this->db->where('id', $id)->get('tbl_order')->row_array();
         if (empty($data['order'])) redirect('admin-orders');
         $data['user']  = $this->db->where('id', $data['order']['user_id'])->get('tbl_users')->row_array();
-        $data['items'] = $this->db->select('toi.quantity, toi.amount, tp.product_name')
+        $data['items'] = $this->db->select('toi.id as item_id, toi.quantity, toi.amount, tp.product_name, tp.id as product_id')
             ->from('tbl_order_item toi')
             ->join('tbl_products tp', 'tp.id = toi.product_id', 'left')
             ->where('toi.order_id', $id)
@@ -45,6 +45,7 @@ class Admin_orders extends CI_Controller {
 
         $shipping     = floatval($this->input->post('shipping_charge'));
         $other        = floatval($this->input->post('other_charges'));
+        $discount     = floatval($this->input->post('discount'));
         $total        = floatval($this->input->post('total_amount'));
         $status       = (int)$this->input->post('status');
         $payStatus    = (int)$this->input->post('payment_status');
@@ -60,6 +61,7 @@ class Admin_orders extends CI_Controller {
         $update = [
             'shipping_charge' => $shipping,
             'other_charges'   => $other,
+            'discount'        => $discount,
             'total_amount'    => $total,
             'status'          => $confirmOrder == '1' ? 1 : $status,
             'payment_status'  => $payStatus,
@@ -84,6 +86,26 @@ class Admin_orders extends CI_Controller {
         redirect('admin-orders/edit/' . $id);
     }
 
+    public function update_item_qty($order_id) {
+        $item_id  = (int)$this->input->post('item_id');
+        $quantity = max(1, (int)$this->input->post('quantity'));
+        $item = $this->db->where('id', $item_id)->where('order_id', $order_id)->get('tbl_order_item')->row_array();
+        if (!$item) { echo json_encode(['status'=>'error']); return; }
+        $unit_price = $item['quantity'] > 0 ? $item['amount'] / $item['quantity'] : 0;
+        $new_amount = round($unit_price * $quantity, 2);
+        $this->db->where('id', $item_id)->update('tbl_order_item', ['quantity'=>$quantity,'amount'=>$new_amount]);
+        // Recalculate order totals
+        $items     = $this->db->select('amount')->where('order_id', $order_id)->get('tbl_order_item')->result_array();
+        $subTotal  = array_sum(array_column($items, 'amount'));
+        $vatAmount = round($subTotal * 0.20, 2);
+        $order     = $this->db->where('id', $order_id)->get('tbl_order')->row_array();
+        $discount  = floatval($order['discount'] ?? 0);
+        $total     = round($subTotal + $vatAmount - $discount + floatval($order['shipping_charge']) + floatval($order['other_charges']), 2);
+        $total     = max(0, $total);
+        $this->db->where('id', $order_id)->update('tbl_order', ['pay_amount'=>$subTotal,'vat_amount'=>$vatAmount,'total_amount'=>$total]);
+        echo json_encode(['status'=>'ok','sub_total'=>$subTotal,'vat_amount'=>$vatAmount,'total'=>$total,'item_amount'=>$new_amount]);
+    }
+
     private function _sendOrderConfirmedEmail($orderId) {
         $order = $this->db->where('id', $orderId)->get('tbl_order')->row_array();
         if (!$order) return;
@@ -101,12 +123,12 @@ class Admin_orders extends CI_Controller {
             $itemRows .= '<tr>
                 <td style="border:1px solid #ddd;padding:10px;">' . htmlspecialchars($item['product_name']) . '</td>
                 <td style="border:1px solid #ddd;padding:10px;text-align:center;">' . $item['quantity'] . '</td>
-                <td style="border:1px solid #ddd;padding:10px;text-align:right;">€' . number_format($item['amount'], 2) . '</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:right;">£' . number_format($item['amount'], 2) . '</td>
             </tr>';
         }
 
         $fullName = trim($user['first_name'] . ' ' . $user['last_name']);
-        $total    = '€' . number_format($order['total_amount'], 2);
+        $total    = '£' . number_format($order['total_amount'], 2);
 
         $chargesTable = '<table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin-bottom:16px;">
             <tr style="background:#1a1a2e;color:#fff;">
@@ -117,11 +139,11 @@ class Admin_orders extends CI_Controller {
             ' . $itemRows . '
             <tr style="background:#f9f9f9;">
                 <td colspan="2" style="border:1px solid #ddd;padding:10px;">Shipping</td>
-                <td style="border:1px solid #ddd;padding:10px;text-align:right;">€' . number_format($order['shipping_charge'], 2) . '</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:right;">£' . number_format($order['shipping_charge'], 2) . '</td>
             </tr>
             <tr style="background:#f9f9f9;">
                 <td colspan="2" style="border:1px solid #ddd;padding:10px;">Other Charges</td>
-                <td style="border:1px solid #ddd;padding:10px;text-align:right;">€' . number_format($order['other_charges'], 2) . '</td>
+                <td style="border:1px solid #ddd;padding:10px;text-align:right;">£' . number_format($order['other_charges'], 2) . '</td>
             </tr>
             <tr>
                 <td colspan="2" style="border:1px solid #ddd;padding:10px;font-weight:bold;">Total</td>
@@ -167,7 +189,7 @@ class Admin_orders extends CI_Controller {
         if (!$user) return;
 
         $fullName = trim($user['first_name'] . ' ' . $user['last_name']);
-        $total    = '€' . number_format($order['total_amount'], 2);
+        $total    = '£' . number_format($order['total_amount'], 2);
         $method   = ucfirst($order['payment_method']);
 
         // Email to user

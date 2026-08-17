@@ -106,17 +106,17 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
   <div class="co-card" id="step-3">
     <div class="co-card-header">
       <div class="co-card-icon"><i class="fa fa-check-square-o"></i></div>
-      <div><div class="co-card-title">Review Your Order</div><div class="co-card-subtitle">Orders over €1000 qualify for free shipping</div></div>
+      <div><div class="co-card-title">Review Your Order</div><div class="co-card-subtitle">Orders over £1000 qualify for free shipping</div></div>
     </div>
 
     <!-- Order Summary -->
     <div style="background:#fafafa;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
       <div style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Order Summary</div>
-      <?php $netTotal = $subTotal / 1.20; $vatTotal = $subTotal - $netTotal; ?>
-      <div class="co-summary-item"><span>Subtotal (ex. VAT)</span><span>€<?php echo number_format($netTotal,2); ?></span></div>
-      <div class="co-summary-item"><span>VAT (20%)</span><span>€<?php echo number_format($vatTotal,2); ?></span></div>
-      <div class="co-summary-item"><span>Shipping</span><span style="color:#28a745;font-weight:700;"><?php echo $subTotal >= 1000 ? 'FREE (over €1000)' : 'To be confirmed by admin'; ?></span></div>
-      <div class="co-summary-total"><span>Total (inc. VAT)</span><span>€<?php echo number_format($subTotal,2); ?></span></div>
+      <?php $netTotal = $subTotal; $vatTotal = round($subTotal * 0.20, 2); $grandTotal = $subTotal + $vatTotal; ?>
+      <div class="co-summary-item"><span>Subtotal (ex. VAT)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($netTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>VAT (20%)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($vatTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>Shipping</span><span style="color:#28a745;font-weight:700;"><?php echo $grandTotal >= 1000 ? 'FREE (over '.CURRENCY_SYMBOL.'1000)' : 'To be confirmed by admin'; ?></span></div>
+      <div class="co-summary-total"><span>Total (inc. VAT)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($grandTotal,2); ?></span></div>
     </div>
 
     <div style="background:#fff8f5;border:1px solid #ffe0cc;border-radius:8px;padding:16px;margin-bottom:16px;">
@@ -143,7 +143,7 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-var SUBTOTAL = <?php echo floatval($subTotal); ?>;
+var SUBTOTAL = <?php echo floatval($subTotal * 1.20); ?>;
 var currentStep = 1;
 
 function goStep(n) {

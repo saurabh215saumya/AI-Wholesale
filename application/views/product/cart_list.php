@@ -98,7 +98,7 @@ $isGuest  = isset($isGuest) ? $isGuest : false;
                                         <?php $netTotal = $subTotal / 1.20; $vatTotal = $subTotal - $netTotal; ?>
                                         <tr><td>Subtotal (ex. VAT)</td><td>£ <?php echo number_format($netTotal,2); ?></td></tr>
                                         <tr><td>VAT (20%)</td><td>£ <?php echo number_format($vatTotal,2); ?></td></tr>
-                                        <tr><td>Shipping</td><td>Free</td></tr>
+                                        <tr><td>Shipping</td><td><em>To be calculated</em></td></tr>
                                         <tr><td><strong>Grand Total</strong><br><small style="font-weight:400;color:#888;">(inc. VAT)</small></td><td><strong>£ <?php echo number_format($subTotal,2); ?></strong></td></tr>
                                     </tbody>
                                 </table>

@@ -233,7 +233,13 @@ function doSignup() {
     if (!mobile)          { $('#mobileError').show().html('<strong>Enter your contact number.</strong>'); valid = false; }
     if (!email || email.indexOf('@') < 1) { $('#emailError').show().html('<strong>Enter a valid email.</strong>'); valid = false; }
     if (!company_name)       { $('#companyNameError').show().html('<strong>Enter your company name.</strong>'); valid = false; }
-    if (!company_reg_number) { $('#companyRegError').show().html('<strong>Company Registration Number is required.</strong>'); valid = false; }
+    if (!company_reg_number) {
+        $('#companyRegError').show().html('<strong>Company Registration Number is required.</strong>'); valid = false;
+    } else if (company_reg_number.length !== 8) {
+        $('#companyRegError').show().html('<strong>Company Registration Number must be exactly 8 characters.</strong>'); valid = false;
+    } else if (!/^[0-9]{8}$/.test(company_reg_number) && !/^[A-Za-z]{2}[0-9]{6}$/.test(company_reg_number)) {
+        $('#companyRegError').show().html('<strong>Must be 8 digits OR 2 letters followed by 6 digits (e.g. 12345678 or AB123456).</strong>'); valid = false;
+    }
     if (!business_type)      { $('#businessTypeError').show().html('<strong>Select your business type.</strong>'); valid = false; }
     if (!estimated_volume)   { $('#estimatedVolumeError').show().html('<strong>Select estimated volume.</strong>'); valid = false; }
     if (!business_address)   { $('#businessAddressError').show().html('<strong>Enter your business address.</strong>'); valid = false; }

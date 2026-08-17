@@ -996,10 +996,19 @@ html.sticky-header-enabled #header .header-body {
     border-bottom: 2px solid #ff6000;
 }
 
-/* Logo: subtle scale on hover */
+/* Logo */
 .header-logo a {
     display: inline-block;
     transition: transform 0.25s ease, opacity 0.25s ease;
+    background: transparent !important;
+    padding: 0;
+}
+.header-logo a img {
+    background: transparent !important;
+    mix-blend-mode: normal;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+    max-height: 54px;
+    width: auto;
 }
 .header-logo a:hover { transform: scale(1.04); opacity: 0.9; }
 

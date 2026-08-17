@@ -27,22 +27,36 @@
           <tr>
             <td style="padding:10px;border:1px solid #ddd;"><?php echo htmlspecialchars($item['product_name']); ?></td>
             <td style="padding:10px;text-align:center;border:1px solid #ddd;"><?php echo $item['quantity']; ?></td>
-            <td style="padding:10px;text-align:right;border:1px solid #ddd;">€<?php echo number_format($item['amount'],2); ?></td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;">£<?php echo number_format($item['amount'],2); ?></td>
           </tr>
           <?php endforeach; ?>
           <tr style="background:#f9f9f9;">
-            <td colspan="2" style="padding:10px;border:1px solid #ddd;">Shipping</td>
-            <td style="padding:10px;text-align:right;border:1px solid #ddd;">€<?php echo number_format($order['shipping_charge'],2); ?></td>
+            <td colspan="2" style="padding:10px;border:1px solid #ddd;">Subtotal (ex. VAT)</td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;">£<?php echo number_format($order['pay_amount'],2); ?></td>
           </tr>
-          <?php if($order['other_charges'] > 0): ?>
+          <tr style="background:#f9f9f9;">
+            <td colspan="2" style="padding:10px;border:1px solid #ddd;">VAT (20%)</td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;">£<?php echo number_format($order['vat_amount'],2); ?></td>
+          </tr>
+          <?php if(!empty($order['discount']) && $order['discount'] > 0): ?>
+          <tr style="background:#fff8f5;">
+            <td colspan="2" style="padding:10px;border:1px solid #ddd;color:#e74c3c;">Discount</td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;color:#e74c3c;">-£<?php echo number_format($order['discount'],2); ?></td>
+          </tr>
+          <?php endif; ?>
+          <tr style="background:#f9f9f9;">
+            <td colspan="2" style="padding:10px;border:1px solid #ddd;">Shipping</td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;">£<?php echo number_format($order['shipping_charge'],2); ?></td>
+          </tr>
+          <?php if(!empty($order['other_charges']) && $order['other_charges'] > 0): ?>
           <tr style="background:#f9f9f9;">
             <td colspan="2" style="padding:10px;border:1px solid #ddd;">Other Charges</td>
-            <td style="padding:10px;text-align:right;border:1px solid #ddd;">€<?php echo number_format($order['other_charges'],2); ?></td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;">£<?php echo number_format($order['other_charges'],2); ?></td>
           </tr>
           <?php endif; ?>
           <tr>
-            <td colspan="2" style="padding:10px;border:1px solid #ddd;font-weight:700;">Total</td>
-            <td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:700;color:#c8a951;font-size:16px;">€<?php echo number_format($order['total_amount'],2); ?></td>
+            <td colspan="2" style="padding:10px;border:1px solid #ddd;font-weight:700;">Total (inc. VAT)</td>
+            <td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:700;color:#c8a951;font-size:16px;">£<?php echo number_format($order['total_amount'],2); ?></td>
           </tr>
           </tbody>
         </table>
@@ -87,7 +101,7 @@
             <div id="stripe-card-errors" style="color:#e44;font-size:13px;margin-top:8px;"></div>
           </div>
           <button id="stripe-pay-btn" class="btn btn-success btn-block" style="font-weight:700;font-size:15px;padding:14px;">
-            <i class="fa fa-lock"></i> Pay €<?php echo number_format($order['total_amount'],2); ?> Securely
+            <i class="fa fa-lock"></i> Pay £<?php echo number_format($order['total_amount'],2); ?> Securely
           </button>
           <p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px;"><i class="fa fa-shield"></i> SSL Encrypted · Powered by Stripe</p>
         </div>
@@ -170,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('stripe-card-errors').textContent = result.error.message;
         loggerError('Card error: ' + result.error.message);
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa fa-lock"></i> Pay €' + ORDER_TOTAL.toFixed(2) + ' Securely';
+        btn.innerHTML = '<i class="fa fa-lock"></i> Pay £' + ORDER_TOTAL.toFixed(2) + ' Securely';
         return;
       }
       showLogger('Card tokenised. Authorising payment...');
@@ -187,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           loggerError('Payment failed: ' + (r.msg || 'Unknown error'));
           btn.disabled = false;
-          btn.innerHTML = '<i class="fa fa-lock"></i> Pay €' + ORDER_TOTAL.toFixed(2) + ' Securely';
+          btn.innerHTML = '<i class="fa fa-lock"></i> Pay £' + ORDER_TOTAL.toFixed(2) + ' Securely';
         }
       });
     });

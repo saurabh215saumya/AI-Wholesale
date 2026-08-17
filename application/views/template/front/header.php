@@ -86,7 +86,7 @@ $cartProductArr = getUserCartProduct($userId);
                         <div class="header-column">
                             <div class="header-logo">
                                 <a href="<?php echo base_url(); ?>">
-                                    <img alt="<?php echo SITE_NAME; ?>" width="111" height="51" src="<?php echo base_url('assets/images/img/demos/shop/logo.png'); ?>">
+                                    <img alt="<?php echo SITE_NAME; ?>" src="<?php echo base_url('assets/images/img/demos/shop/logo.png'); ?>" style="max-height:54px;width:auto;background:transparent;">
                                 </a>
                             </div>
                         </div>
