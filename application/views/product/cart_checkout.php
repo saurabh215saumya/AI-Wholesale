@@ -113,10 +113,10 @@ $countries = ['United Kingdom','United States','Canada','Australia','Germany','F
     <div style="background:#fafafa;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
       <div style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Order Summary</div>
       <?php $netTotal = $subTotal; $vatTotal = round($subTotal * 0.20, 2); $grandTotal = $subTotal + $vatTotal; ?>
-      <div class="co-summary-item"><span>Subtotal (ex. VAT)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($netTotal,2); ?></span></div>
-      <div class="co-summary-item"><span>VAT (20%)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($vatTotal,2); ?></span></div>
-      <div class="co-summary-item"><span>Shipping</span><span style="color:#28a745;font-weight:700;"><?php echo $grandTotal >= 1000 ? 'FREE (over '.CURRENCY_SYMBOL.'1000)' : 'To be confirmed by admin'; ?></span></div>
-      <div class="co-summary-total"><span>Total (inc. VAT)</span><span><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($grandTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>Subtotal (ex. VAT)</span><span><?php echo '£'; ?><?php echo number_format($netTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>VAT (20%)</span><span><?php echo '£'; ?><?php echo number_format($vatTotal,2); ?></span></div>
+      <div class="co-summary-item"><span>Shipping</span><span style="color:#28a745;font-weight:700;"><?php echo $grandTotal >= 1000 ? 'FREE (over £1000)' : 'To be confirmed by admin'; ?></span></div>
+      <div class="co-summary-total"><span>Total (inc. VAT)</span><span><?php echo '£'; ?><?php echo number_format($grandTotal,2); ?></span></div>
     </div>
 
     <div style="background:#fff8f5;border:1px solid #ffe0cc;border-radius:8px;padding:16px;margin-bottom:16px;">

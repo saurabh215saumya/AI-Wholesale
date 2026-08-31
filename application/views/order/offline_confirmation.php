@@ -16,7 +16,7 @@
           <h3 style="margin-top:20px;font-weight:700;">Thank You! Your Order is in Review, update within 24 hours.</h3>
           <?php if(!empty($orderDetails)): ?>
           <p style="color:#666;">Order <strong>#<?php echo $orderDetails['id']; ?></strong> &mdash; Ref: <strong><?php echo $orderDetails['transaction_no']; ?></strong></p>
-          <p style="font-size:20px;font-weight:700;color:#e44;">Total: <?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['total_amount'],2); ?></p>
+          <p style="font-size:20px;font-weight:700;color:#e44;">Total: <?php echo '£'; ?><?php echo number_format($orderDetails['total_amount'],2); ?></p>
           <?php endif; ?>
           <div style="background:#fff8f5;border:1px solid #ffe0cc;border-radius:8px;padding:16px;margin:20px 0;text-align:left;">
             <p style="margin:0 0 8px;font-weight:700;color:#ff6000;"><i class="fa fa-money"></i>&nbsp; Offline Payment Selected</p>
@@ -39,20 +39,20 @@
             <tr>
               <td style="padding:10px;border:1px solid #ddd;"><?php echo htmlspecialchars($item['product_name']); ?></td>
               <td style="padding:10px;text-align:center;border:1px solid #ddd;"><?php echo $item['quantity']; ?></td>
-              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($item['amount'],2); ?></td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo '£'; ?><?php echo number_format($item['amount'],2); ?></td>
             </tr>
           <?php endforeach; ?>
             <tr style="background:#f9f9f9;">
               <td colspan="2" style="padding:10px;border:1px solid #ddd;">Subtotal (ex. VAT)</td>
-              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['pay_amount'],2); ?></td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo '£'; ?><?php echo number_format($orderDetails['pay_amount'],2); ?></td>
             </tr>
             <tr style="background:#f9f9f9;">
               <td colspan="2" style="padding:10px;border:1px solid #ddd;">VAT (20%)</td>
-              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['vat_amount'],2); ?></td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;"><?php echo '£'; ?><?php echo number_format($orderDetails['vat_amount'],2); ?></td>
             </tr>
             <tr>
               <td colspan="2" style="padding:10px;border:1px solid #ddd;font-weight:700;">Total (inc. VAT)</td>
-              <td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:700;color:#c8a951;font-size:16px;"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($orderDetails['total_amount'],2); ?></td>
+              <td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:700;color:#c8a951;font-size:16px;"><?php echo '£'; ?><?php echo number_format($orderDetails['total_amount'],2); ?></td>
             </tr>
           </tbody>
         </table>

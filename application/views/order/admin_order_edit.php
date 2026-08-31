@@ -127,12 +127,12 @@
           <p><strong>Order #:</strong> <?php echo $order['id']; ?></p>
           <p><strong>Transaction:</strong> <?php echo $order['transaction_no'] ?: '-'; ?></p>
           <p><strong>Payment Method:</strong> <?php echo ucfirst($order['payment_method']); ?></p>
-          <p><strong>Subtotal (ex. VAT):</strong> <span id="summary-subtotal"><?php echo CURRENCY_SYMBOL.number_format($order['pay_amount'],2); ?></span></p>
-          <p><strong>VAT (20%):</strong> <span id="summary-vat"><?php echo CURRENCY_SYMBOL.number_format($order['vat_amount'],2); ?></span></p>
-          <p><strong>Discount:</strong> <span id="summary-discount" style="color:#e74c3c;">-<?php echo CURRENCY_SYMBOL.number_format($order['discount'] ?? 0,2); ?></span></p>
-          <p><strong>Shipping:</strong> <?php echo CURRENCY_SYMBOL.number_format($order['shipping_charge'],2); ?></p>
-          <p><strong>Other:</strong> <?php echo CURRENCY_SYMBOL.number_format($order['other_charges'],2); ?></p>
-          <p><strong>Total (inc. VAT):</strong> <span id="summary-total" style="font-size:16px;font-weight:700;color:#c8a951;"><?php echo CURRENCY_SYMBOL.number_format($order['total_amount'],2); ?></span></p>
+          <p><strong>Subtotal (ex. VAT):</strong> <span id="summary-subtotal"><?php echo '£'.number_format($order['pay_amount'],2); ?></span></p>
+          <p><strong>VAT (20%):</strong> <span id="summary-vat"><?php echo '£'.number_format($order['vat_amount'],2); ?></span></p>
+          <p><strong>Discount:</strong> <span id="summary-discount" style="color:#e74c3c;">-<?php echo '£'.number_format($order['discount'] ?? 0,2); ?></span></p>
+          <p><strong>Shipping:</strong> <?php echo '£'.number_format($order['shipping_charge'],2); ?></p>
+          <p><strong>Other:</strong> <?php echo '£'.number_format($order['other_charges'],2); ?></p>
+          <p><strong>Total (inc. VAT):</strong> <span id="summary-total" style="font-size:16px;font-weight:700;color:#c8a951;"><?php echo '£'.number_format($order['total_amount'],2); ?></span></p>
           <p><strong>Date:</strong> <?php echo date('d M Y H:i', strtotime($order['addedOn'])); ?></p>
           <?php if(!empty($order['comment'])): ?>
           <p><strong>Customer Note:</strong> <?php echo htmlspecialchars($order['comment']); ?></p>
